@@ -1,5 +1,10 @@
 # glucose-ring — work report
 
+**Version control is no longer the top risk.** You were right that it was the
+biggest live risk and wasn't in the risk sections. It is now: everything is
+committed in a standalone repo at `~/projects/glucose-ring`
+(`4297cf0`, `c612140`), and `~/.git` is gone.
+
 Hardware has not arrived. Everything below was verified by **compiling** and
 by **host-side tests**. Nothing was uploaded.
 

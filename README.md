@@ -363,9 +363,15 @@ glucose-ring/
 │   ├── test_all.cpp     host tests for all three pure modules
 │   └── run_tests.sh
 ├── PROTOCOL.md          wire format (for the phone app)
+├── PHONE_APP.md         phone app status, toolchain, xDrip+ contract
 ├── REPORT.md            what is verified, assumed, and unverifiable
+├── android/             Kotlin courier app (xDrip+ -> BLE NUS -> ring)
+│   └── app/src/test/    JVM unit tests against PROTOCOL.md vectors
 └── tools/bin/python     shim for the core's hardcoded `python`
 ```
+
+The firmware and the phone app share one repo so PROTOCOL.md sits between
+them and both ends are tested against the same vectors.
 
 Arduino compiles top-level `.cpp` files; `tests/` and `tools/` are ignored by
 the build.

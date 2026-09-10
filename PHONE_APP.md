@@ -1,40 +1,34 @@
-# Phone app — build specification
+# Phone app — build specification and status
 
-**Status: BLOCKED.** Nothing was scaffolded or compiled. This document
-specifies what needs building.
+**Status: BUILT.** The toolchain was installed with your approval, the app is
+scaffolded at `android/`, and it **compiles** — `app-debug.apk`, 3.2 MB,
+minSdk 26 / targetSdk 34 — with **22 JVM unit tests passing**.
 
----
+Nothing has been installed on a phone or run against real hardware.
 
-## 0. Why blocked
+## Toolchain actually installed
 
-Probed on this machine:
-
-| Tool | Result |
+| Component | Version |
 |---|---|
-| `java` / `javac` | **present** — OpenJDK 22.0.2 |
-| `sdkmanager` | not found |
-| `adb` | not found |
-| `gradle` | not found |
-| `kotlinc` | not found |
-| Android Studio | not installed |
-| `ANDROID_HOME` / `ANDROID_SDK_ROOT` | unset |
-| `~/Library/Android/sdk`, `~/Android/Sdk`, `/usr/local/share/android-sdk`, `/opt/homebrew/share/android-sdk` | all absent |
+| `android-commandlinetools` (Homebrew cask) | SDK root `/opt/homebrew/share/android-commandlinetools` |
+| SDK platform | android-34 |
+| Build tools | 34.0.0 |
+| Gradle (wrapper, pinned) | 8.11.1 |
+| Android Gradle Plugin | 8.7.3 |
+| Kotlin | 2.0.21 |
+| JDK used for the build | 21.0.4 |
 
-A JDK on its own cannot build an Android app. It needs the Android SDK
-(`android.jar`, platform, build-tools), Gradle, and the Android Gradle
-Plugin. Even a Gradle *wrapper* downloads Gradle on first run, and AGP pulls
-the SDK and requires accepting SDK licences — all of which is installing
-software. You said not to install anything, so I stopped here.
+Homebrew's `gradle` is 9.7.1 on JDK 26, and **no AGP supports either**. The
+project therefore pins a Gradle 8.11.1 wrapper and points
+`org.gradle.java.home` at the JDK 21 already on the machine
+(`android/gradle.properties`). Build with the wrapper, not with `gradle`.
 
-**To unblock**, either:
-
-```
-brew install --cask android-studio
+```bash
+cd ~/projects/glucose-ring/android && ANDROID_HOME=/opt/homebrew/share/android-commandlinetools ./gradlew :app:assembleDebug :app:testDebugUnitTest
 ```
 
-then open it once to install an SDK platform and accept licences; or install
-just the command-line tools and set `ANDROID_HOME`. Tell me when that's done
-and I'll scaffold and compile.
+`android/local.properties` holds `sdk.dir` and is gitignored, so it must be
+recreated on another machine.
 
 ---
 

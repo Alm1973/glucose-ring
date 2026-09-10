@@ -111,6 +111,8 @@ int cmd_execute(const char *line, RingConfig *cfg, const CmdHost *host,
       return resp_fmt(resp, resp_size, "#REPEAT %u", (unsigned)cfg->repeat_minutes);
     if (!strcmp(key, "INTENSITY"))
       return resp_fmt(resp, resp_size, "#INTENSITY %u", (unsigned)cfg->intensity);
+    if (!strcmp(key, "STALEREPEATS"))
+      return resp_fmt(resp, resp_size, "#STALEREPEATS %u", (unsigned)cfg->stale_max_repeats);
 
     if (!strcmp(key, "PATTERN")) {
       if (tk.count < 3) return err(resp, resp_size, "GET", "missing pattern name");
@@ -187,6 +189,12 @@ int cmd_execute(const char *line, RingConfig *cfg, const CmdHost *host,
       int32_t v; if (!scan_int(tk.t[2], &v) || v < 0 || v > 255)
         return err(resp, resp_size, "SET", "bad value");
       next.intensity = (uint8_t)v;
+    }
+    else if (!strcmp(key, "STALEREPEATS")) {
+      if (tk.count < 3) return err(resp, resp_size, "SET", "missing value");
+      int32_t v; if (!scan_int(tk.t[2], &v) || v < 0 || v > RC_STALE_REPEATS_MAX)
+        return err(resp, resp_size, "SET", "bad value");
+      next.stale_max_repeats = (uint8_t)v;   /* 0 = never stop repeating */
     }
     else if (!strcmp(key, "PATTERN")) {
       if (tk.count < 4) return err(resp, resp_size, "SET", "usage: !SET PATTERN <name> <on/off,...>");

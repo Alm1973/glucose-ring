@@ -204,8 +204,62 @@ visible rather than silent.
 **Bring-up caveat:** once started, the nRF52 WDT cannot be stopped or
 reconfigured, and it is not cleared by a soft reset. If the UF2 bootloader
 does not feed it, entering DFU could reset mid-upload. **This is unverified
-without hardware.** If uploads misbehave, rebuild with
-`-DWATCHDOG_ENABLE=0`, flash that, then re-enable.
+without hardware.** Flash first with `-DWATCHDOG_ENABLE=0`, then re-enable.
+
+The serial DFU recipe uses `--singlebank` (`platform.txt:143`), which erases
+the application before writing the new one. A watchdog reset partway through
+that leaves **no valid application** — so this is not merely an annoyance.
+
+### HARD GATE — do not seal the ring until this passes
+
+> **Prove OTA/BLE DFU works with `WATCHDOG_ENABLE=1` before sealing the
+> enclosure or removing the USB-C connector.**
+>
+> A 30 s watchdog against a fast UF2 upload over USB is probably fine. Against
+> a **slow BLE DFU** it is a real question: if the transfer or the bootloader's
+> pre-write erase takes longer than the watchdog between feeds, the ring
+> resets mid-flash. With `--singlebank` that means a device with no valid
+> application — and with USB-C removed and the case sealed, no way back in.
+>
+> Sequence: enable the watchdog, perform a **full OTA DFU over BLE**, confirm
+> the ring boots the new firmware, and repeat it at least once. Only then is
+> the thin/sealed build path viable. If OTA DFU proves unreliable with the
+> watchdog on, the options are a longer `WATCHDOG_TIMEOUT_S`, disabling the
+> watchdog immediately before a DFU handoff, or keeping USB-C.
+
+---
+
+## 7b. Alert behaviour and buzz patterns
+
+| Condition | Pattern | Configurable |
+|---|---|---|
+| **Low** | 3 x 400 ms — long and urgent | yes (`!SET PATTERN low`) |
+| **High** | 2 x 120 ms | yes |
+| **Stale** | 2 x 60 ms, deliberately gentler | yes |
+| **Battery** | 600/300/150 ms fade, always full drive | no |
+| **Fault** (watchdog reset) | 150/60/150 ms long-short-long, at boot, full drive | no |
+| **Gave up** (stale cap hit) | three 60 ms ticks then one 400 ms | no |
+
+An active alert re-buzzes every `repeat` minutes (default 5). A change of
+state buzzes immediately. Stale outranks the thresholds: once the value is
+not current the ring will not act on it in either direction.
+
+**Stale alerting is capped.** After `stale_repeats` consecutive stale buzzes
+(default 6 — about 30 minutes at the default repeat interval), the ring buzzes
+the distinct "gave up" pattern, sends `#ALERT stale_giveup`, and then goes
+**quiet** until fresh data arrives. The reasoning: a ring buzzing every few
+minutes in a drawer for eight hours trains you to ignore it, and an ignored
+alert is a worse hazard than the silence the repeats were guarding against.
+The giving-up signal is distinct precisely so silence afterwards reads as
+"it stopped trying", not as "it got fixed".
+
+`!SET STALEREPEATS 0` restores unlimited repeating if you want the old
+behaviour.
+
+**A watchdog reset buzzes.** If the firmware hangs and the watchdog restarts
+it, the ring buzzes the fault pattern at boot as well as reporting
+`#BOOT ... wdt_reset=1`. BLE alone only reaches you if a phone happens to be
+connected and looking; the motor reaches you regardless.
 
 ---
 
@@ -245,8 +299,15 @@ to wearing it.**
 4. Flash with `-DTEST_MODE=1 -DDEBUG_SERIAL=1 -DWATCHDOG_ENABLE=0`.
 5. Watch the boot pattern cycle: tick, low, high, stale, battery. If the
    motor never moves, the fault is the gate drive, not the firmware.
-6. On serial, confirm `chg=1` while USB is attached (validates the `~CHG` /
-   VBUS detection before you trust it to protect the ADC).
+6. **HARD GATE — charge-detect polarity.** On serial, confirm `chg=1` while
+   USB is attached and `chg=0` once unplugged. **Do not skip this and do not
+   proceed past it.** `~CHG` polarity is assumed, not verified against the
+   core (REPORT.md A3). If it is inverted, the guard fails *open* — the ring
+   samples the divider while the charger drives the BAT node, which is
+   precisely the P0.31 burnout the guard exists to prevent. A guard that
+   reads backwards is worse than no guard, because you will trust it.
+   If `chg` does not track USB, stop and fix the polarity before attaching a
+   cell.
 
 **Battery**
 

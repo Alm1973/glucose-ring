@@ -123,6 +123,7 @@ void rc_defaults(RingConfig *c)
   c->stale_minutes  = 15;
   c->repeat_minutes = 5;
   c->intensity      = 100;        /* full drive; lower it if it is too strong */
+  c->stale_max_repeats = 6;       /* ~30 min at the default 5-minute repeat */
 
   rc_pattern_parse("400/200,400/200,400/0", &c->pat_low);
   rc_pattern_parse("120/150,120/0",         &c->pat_high);
@@ -190,6 +191,7 @@ int rc_serialize(const RingConfig *c, char *buf, size_t bufsize)
                    "stale=%u\n"
                    "repeat=%u\n"
                    "intensity=%u\n"
+                   "stale_repeats=%u\n"
                    "pat_low=%s\n"
                    "pat_high=%s\n"
                    "pat_stale=%s\n",
@@ -199,6 +201,7 @@ int rc_serialize(const RingConfig *c, char *buf, size_t bufsize)
                    (unsigned)c->stale_minutes,
                    (unsigned)c->repeat_minutes,
                    (unsigned)c->intensity,
+                   (unsigned)c->stale_max_repeats,
                    pl, ph, ps);
 
   if (n < 0 || (size_t)n >= bufsize) return -1;
@@ -245,6 +248,7 @@ bool rc_deserialize(const char *text, RingConfig *out, const char **why)
           else if (key_is(k, k_end, "stale"))     { if (!scan_u16(v, v_end, &c.stale_minutes))  { if (why) *why = "bad stale";     return false; } }
           else if (key_is(k, k_end, "repeat"))    { if (!scan_u16(v, v_end, &c.repeat_minutes)) { if (why) *why = "bad repeat";    return false; } }
           else if (key_is(k, k_end, "intensity")) { uint16_t t; if (!scan_u16(v, v_end, &t) || t > 255) { if (why) *why = "bad intensity"; return false; } c.intensity = (uint8_t)t; }
+          else if (key_is(k, k_end, "stale_repeats")) { uint16_t t; if (!scan_u16(v, v_end, &t) || t > RC_STALE_REPEATS_MAX) { if (why) *why = "bad stale_repeats"; return false; } c.stale_max_repeats = (uint8_t)t; }
           else if (key_is(k, k_end, "pat_low"))   { if (!rc_pattern_parse(vbuf, &c.pat_low))    { if (why) *why = "bad pat_low";   return false; } }
           else if (key_is(k, k_end, "pat_high"))  { if (!rc_pattern_parse(vbuf, &c.pat_high))   { if (why) *why = "bad pat_high";  return false; } }
           else if (key_is(k, k_end, "pat_stale")) { if (!rc_pattern_parse(vbuf, &c.pat_stale))  { if (why) *why = "bad pat_stale"; return false; } }

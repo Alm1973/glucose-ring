@@ -150,13 +150,22 @@ using namespace Adafruit_LittleFS_Namespace;
 BLEUart bleuart;
 BLEBas  blebas;          // standard Battery Service, 0x180F
 
-enum BuzzId { BZ_LOW, BZ_HIGH, BZ_STALE, BZ_BATTERY, BZ_TICK };
+enum BuzzId { BZ_LOW, BZ_HIGH, BZ_STALE, BZ_BATTERY, BZ_TICK, BZ_FAULT, BZ_GIVEUP };
 enum AlertState { ALERT_NONE, ALERT_LOW, ALERT_HIGH, ALERT_STALE };
 
 /* Battery and tick patterns are fixed; the three alert patterns are
    configurable and live in RingConfig. */
 static const RcPulse PAT_BATTERY[] = { {600,250}, {300,250}, {150,0} };
 static const RcPulse PAT_TICK[]    = { {80,0} };
+
+/* Long-short-long. Deliberately unlike every other pattern: this one means
+   "the firmware hung and the watchdog restarted me", which the wearer should
+   be able to tell apart from any glucose condition. */
+static const RcPulse PAT_FAULT[]   = { {150,80}, {60,80}, {150,0} };
+
+/* Three ticks then one long: "I am giving up on the stale alert." Ends on a
+   long pulse so it reads as terminal rather than as another repeat. */
+static const RcPulse PAT_GIVEUP[]  = { {60,60}, {60,60}, {60,60}, {400,0} };
 
 static RingConfig g_cfg;
 static bool       g_cfgDirty     = false;
@@ -170,6 +179,8 @@ static bool       g_haveOffset   = false;
 
 static AlertState g_alert        = ALERT_NONE;
 static uint64_t   g_lastBuzzMs   = 0;
+static uint8_t    g_staleRepeats = 0;      // consecutive stale buzzes
+static bool       g_staleGaveUp  = false;  // capped out; silent until fresh data
 static uint64_t   g_lastVbatMs   = 0;
 static uint8_t    g_vbatLowCount = 0;
 static bool       g_vbatWarned   = false;
@@ -307,6 +318,8 @@ static void buzz(BuzzId id)
     case BZ_STALE:   runPattern(g_cfg.pat_stale.pulses, g_cfg.pat_stale.count, g_cfg.intensity); break;
     case BZ_BATTERY: runPattern(PAT_BATTERY, 3, 100); break;   // always full drive
     case BZ_TICK:    runPattern(PAT_TICK,    1, g_cfg.intensity); break;
+    case BZ_FAULT:   runPattern(PAT_FAULT,   3, 100); break;   // full drive: must not be missed
+    case BZ_GIVEUP:  runPattern(PAT_GIVEUP,  4, g_cfg.intensity); break;
     default:         motorHardOff(); break;
   }
 }
@@ -318,6 +331,8 @@ static bool buzzByName(const char *name)
   if (!strcmp(name, "stale"))   { buzz(BZ_STALE);   return true; }
   if (!strcmp(name, "battery")) { buzz(BZ_BATTERY); return true; }
   if (!strcmp(name, "tick"))    { buzz(BZ_TICK);    return true; }
+  if (!strcmp(name, "fault"))   { buzz(BZ_FAULT);   return true; }
+  if (!strcmp(name, "giveup"))  { buzz(BZ_GIVEUP);  return true; }
   return false;
 }
 
@@ -718,7 +733,19 @@ static void serviceAlerts(uint64_t now)
 {
   AlertState want = evaluate(now);
 
+  /* Any non-stale state -- including a fresh reading clearing staleness --
+     rearms the stale repeat budget. */
+  if (want != ALERT_STALE) {
+    g_staleRepeats = 0;
+    g_staleGaveUp  = false;
+  }
+
   if (want == ALERT_NONE) { g_alert = ALERT_NONE; return; }
+
+  /* Capped out: hold the state so #GET STATUS still reports stale, but stop
+     buzzing. A ring buzzing in a drawer for hours trains the wearer to ignore
+     it, and an ignored alert is worse than a quiet one. */
+  if (want == ALERT_STALE && g_staleGaveUp) { g_alert = want; return; }
 
   bool changed = (want != g_alert);
   bool due     = (now - g_lastBuzzMs) >= ((uint64_t)g_cfg.repeat_minutes * 60000ULL);
@@ -739,6 +766,17 @@ static void serviceAlerts(uint64_t now)
     case ALERT_HIGH:  buzz(BZ_HIGH);  break;
     case ALERT_STALE: buzz(BZ_STALE); break;
     default: break;
+  }
+
+  if (want == ALERT_STALE) {
+    if (g_staleRepeats < 255) g_staleRepeats++;
+    /* stale_max_repeats == 0 means "never stop". */
+    if (g_cfg.stale_max_repeats != 0 && g_staleRepeats >= g_cfg.stale_max_repeats) {
+      g_staleGaveUp = true;
+      sendLine("#ALERT stale_giveup");
+      buzz(BZ_GIVEUP);      /* distinct: it gave up, it did not get fixed */
+      DBG("stale: gave up after %u repeats\n", (unsigned)g_staleRepeats);
+    }
   }
 }
 
@@ -835,6 +873,17 @@ void setup()
   buzz(BZ_BATTERY);
   DBG("TEST_MODE: chg=%d vbat=%u mV\n", chargerActive(), readVbatMv());
 #endif
+
+  /*
+   * If the watchdog restarted us, say so with the motor as well as over BLE.
+   * A fault that silently restarted the ring is exactly the thing the wearer
+   * should know happened -- BLE alone only reaches them if a phone is
+   * connected and looking.
+   */
+  if (g_bootFromWdt) {
+    DBG("boot: watchdog reset\n");
+    buzz(BZ_FAULT);
+  }
 
   /* Started last: everything above must complete inside one timeout. */
   wdtStart(WATCHDOG_TIMEOUT_S);

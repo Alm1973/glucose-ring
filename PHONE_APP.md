@@ -97,12 +97,29 @@ Notes that bite:
 
 ## 3. xDrip+ intent contract
 
-> **UNVERIFIED.** There is no xDrip+ source or APK on this machine, so I could
-> not check these strings against anything. They are from knowledge of the
-> xDrip+ codebase, not from inspection. **Confirm against xDrip+'s
-> `Intents.java` before trusting them**, and log the full extras bundle on
-> first run to see what actually arrives. If a name is wrong the receiver
-> silently never fires, which is the worst failure mode — so verify first.
+> **UNVERIFIED — and this is the highest-probability time-waster in the whole
+> project.** There is no xDrip+ source or APK on this machine, so these strings
+> were not checked against anything. They come from knowledge of the xDrip+
+> codebase, not from inspection.
+>
+> **Step 0, before writing any forwarding logic: log the entire extras bundle
+> on first run.** Do not trust a single key name below until you have seen it
+> in logcat. If a key is wrong the receiver silently never fires, and that is
+> indistinguishable from "xDrip+ hasn't produced a reading yet" — you can burn
+> an evening on it.
+
+```kotlin
+// STEP 0 -- run this first, read logcat, THEN write the real receiver.
+override fun onReceive(ctx: Context, intent: Intent) {
+    Log.i("RingDebug", "action=${intent.action}")
+    intent.extras?.let { b ->
+        for (k in b.keySet()) Log.i("RingDebug", "  $k = ${b.get(k)}  (${b.get(k)?.javaClass?.simpleName})")
+    } ?: Log.i("RingDebug", "  no extras")
+}
+```
+
+Register it for the action below with no key assumptions at all. Once you can
+see the real bundle, replace it with the typed receiver.
 
 In xDrip+: **Settings → Inter-app settings → "Broadcast locally"** must be on.
 

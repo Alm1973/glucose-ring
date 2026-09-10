@@ -220,6 +220,14 @@ static void test_config()
   ok(rc_validate(&c, &why), std::string("defaults valid: ") + (why ? why : ""));
   ok(c.low_mg_dl == RC_UNSET && c.high_mg_dl == RC_UNSET, "thresholds default to unset");
   ok(c.stale_minutes == 15, "default stale 15");
+  ok(c.stale_max_repeats == 6, "default stale_max_repeats 6");
+  {
+    RingConfig t; rc_defaults(&t);
+    t.stale_max_repeats = 0;
+    ok(rc_validate(&t, NULL), "stale_max_repeats 0 (never stop) is legal");
+    t.stale_max_repeats = 255;
+    ok(rc_validate(&t, NULL), "stale_max_repeats 255 is legal");
+  }
 
   struct { const char *name; void (*mut)(RingConfig *); } bad[] = {
     { "stale=0",        [](RingConfig *x){ x->stale_minutes = 0; } },
@@ -252,6 +260,7 @@ static void test_config()
   {
     RingConfig a; rc_defaults(&a);
     a.low_mg_dl = 70; a.high_mg_dl = 200; a.stale_minutes = 20; a.intensity = 60;
+    a.stale_max_repeats = 3;
     rc_pattern_parse("500/300,500/0", &a.pat_low);
 
     char buf[RC_SERIAL_MAX];
@@ -286,6 +295,16 @@ static void test_config()
     ok(b.low_mg_dl == 80, "value after comments");
     ok(rc_deserialize("low=80\r\nhigh=200\r\n", &b, NULL), "CRLF tolerated");
     ok(b.high_mg_dl == 200, "CRLF value");
+
+    ok(rc_deserialize("stale_repeats=0\n", &b, NULL), "stale_repeats=0 accepted");
+    ok(b.stale_max_repeats == 0, "stale_repeats 0 applied");
+    ok(rc_deserialize("stale_repeats=12\n", &b, NULL), "stale_repeats=12 accepted");
+    ok(b.stale_max_repeats == 12, "stale_repeats 12 applied");
+    ok(!rc_deserialize("stale_repeats=256\n", &b, NULL), "reject stale_repeats 256");
+    ok(!rc_deserialize("stale_repeats=x\n", &b, NULL), "reject non-numeric stale_repeats");
+    /* a v1 config predates the field and must load with the default */
+    ok(rc_deserialize("version=1\nlow=70\nhigh=200\n", &b, NULL), "v1 config still loads");
+    ok(b.stale_max_repeats == 6, "v1 config gets default stale_max_repeats");
 
     ok(!rc_deserialize("low=abc\n", &b, NULL), "reject non-numeric");
     ok(!rc_deserialize("stale=0\n", &b, NULL), "reject out-of-range on load");
@@ -372,7 +391,9 @@ static CmdHost make_host(MockHost *m)
   h.uptime_s      = [](void *c){ return ((MockHost*)c)->up; };
   h.buzz          = [](void *c, const char *n){
       MockHost *m = (MockHost*)c;
-      if (strcmp(n,"low") && strcmp(n,"high") && strcmp(n,"stale") && strcmp(n,"tick")) return 0;
+      if (strcmp(n,"low") && strcmp(n,"high") && strcmp(n,"stale") &&
+          strcmp(n,"tick") && strcmp(n,"battery") && strcmp(n,"fault") &&
+          strcmp(n,"giveup")) return 0;
       m->last_buzz = n; m->buzz_calls++; return 1; };
   h.save          = [](void *c){ MockHost *m=(MockHost*)c; m->saves++; return m->save_ok; };
   h.mark_dirty    = [](void *c){ ((MockHost*)c)->dirty++; };
@@ -404,6 +425,7 @@ static void test_commands()
   ok(run("!GET THRESH", &cfg, &h) == "#THRESH low=unset high=unset", "THRESH unset");
   ok(run("!GET STALE", &cfg, &h) == "#STALE 15", "STALE");
   ok(run("!GET INTENSITY", &cfg, &h) == "#INTENSITY 100", "INTENSITY");
+  ok(run("!GET STALEREPEATS", &cfg, &h) == "#STALEREPEATS 6", "STALEREPEATS");
   ok(run("!GET PATTERN low", &cfg, &h) == "#PATTERN low 400/200,400/200,400/0", "PATTERN low");
   ok(run("!GET BATT", &cfg, &h) == "#BATT mv=4012 pct=87 chg=0", "BATT");
   ok(run("!GET STATUS", &cfg, &h) ==
@@ -441,6 +463,12 @@ static void test_commands()
   ok(run("!SET INTENSITY 0", &cfg, &h).rfind("#ERR SET", 0) == 0, "intensity 0 rejected");
   ok(run("!SET STALE 0", &cfg, &h).rfind("#ERR SET", 0) == 0, "stale 0 rejected");
   ok(run("!SET STALE 30", &cfg, &h) == "#OK SET STALE", "stale 30 ok");
+  ok(run("!SET STALEREPEATS 3", &cfg, &h) == "#OK SET STALEREPEATS", "SET STALEREPEATS");
+  ok(cfg.stale_max_repeats == 3, "stale_max_repeats applied");
+  ok(run("!SET STALEREPEATS 0", &cfg, &h) == "#OK SET STALEREPEATS", "SET STALEREPEATS 0 allowed");
+  ok(run("!SET STALEREPEATS 256", &cfg, &h).rfind("#ERR SET", 0) == 0, "256 rejected");
+  ok(run("!SET STALEREPEATS -1", &cfg, &h).rfind("#ERR SET", 0) == 0, "negative rejected");
+  run("!SET STALEREPEATS 6", &cfg, &h);
   ok(run("!SET PATTERN low 500/300", &cfg, &h) == "#OK SET PATTERN", "SET PATTERN");
   ok(cfg.pat_low.count == 1 && cfg.pat_low.pulses[0].on_ms == 500, "pattern applied");
   ok(run("!SET PATTERN bogus 500/300", &cfg, &h).rfind("#ERR SET", 0) == 0, "unknown pattern");
@@ -451,6 +479,8 @@ static void test_commands()
   ok(run("!BUZZ low", &cfg, &h) == "#OK BUZZ low", "BUZZ low");
   ok(m.buzz_calls == before_buzz + 1 && m.last_buzz == "low", "buzz dispatched");
   ok(run("!BUZZ nope", &cfg, &h).rfind("#ERR BUZZ", 0) == 0, "unknown buzz pattern");
+  ok(run("!BUZZ fault", &cfg, &h) == "#OK BUZZ fault", "BUZZ fault");
+  ok(run("!BUZZ giveup", &cfg, &h) == "#OK BUZZ giveup", "BUZZ giveup");
   ok(run("!SAVE", &cfg, &h) == "#OK SAVE", "SAVE");
   ok(m.saves == 1, "save called");
   m.save_ok = 0;
@@ -459,6 +489,7 @@ static void test_commands()
 
   ok(run("!RESET CONFIG", &cfg, &h) == "#OK RESET CONFIG", "RESET CONFIG");
   ok(cfg.low_mg_dl == RC_UNSET && cfg.stale_minutes == 15, "config back to defaults");
+  ok(cfg.stale_max_repeats == 6, "RESET restores stale_max_repeats");
   ok(m.resets == 1, "factory_reset called");
   ok(run("!RESET", &cfg, &h).rfind("#ERR RESET", 0) == 0, "RESET needs CONFIG");
 

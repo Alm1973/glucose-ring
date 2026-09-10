@@ -1,6 +1,6 @@
 # glucose-ring wire protocol
 
-**Protocol version 2** (`proto=2`), firmware `2.0.0`, schema `1`.
+**Protocol version 2** (`proto=2`), firmware `2.0.0`, schema `2`.
 
 Transport: **Nordic UART Service (NUS)**, the same link in both directions.
 
@@ -93,7 +93,7 @@ Every command produces **exactly one** response line.
 
 | Command | Success response |
 |---|---|
-| `!VER` | `#VER glucose-ring 2.0.0 proto=2 schema=1` |
+| `!VER` | `#VER glucose-ring 2.0.0 proto=2 schema=2` |
 | `!GET THRESH` | `#THRESH low=70 high=200` (or `low=unset`) |
 | `!SET THRESH <low> <high>` | `#OK SET THRESH` |
 | `!GET STALE` | `#STALE 15` |
@@ -102,6 +102,8 @@ Every command produces **exactly one** response line.
 | `!SET REPEAT <minutes>` | `#OK SET REPEAT` |
 | `!GET INTENSITY` | `#INTENSITY 100` |
 | `!SET INTENSITY <1-100>` | `#OK SET INTENSITY` |
+| `!GET STALEREPEATS` | `#STALEREPEATS 6` |
+| `!SET STALEREPEATS <0-255>` | `#OK SET STALEREPEATS` |
 | `!GET PATTERN <name>` | `#PATTERN low 400/200,400/0` |
 | `!SET PATTERN <name> <spec>` | `#OK SET PATTERN` |
 | `!GET BATT` | `#BATT mv=4012 pct=87 chg=0` |
@@ -111,7 +113,20 @@ Every command produces **exactly one** response line.
 | `!RESET CONFIG` | `#OK RESET CONFIG` |
 
 `<name>` for `PATTERN` is `low`, `high` or `stale`.
-`<name>` for `BUZZ` is `low`, `high`, `stale`, `battery` or `tick`.
+`<name>` for `BUZZ` is `low`, `high`, `stale`, `battery`, `tick`, `fault` or
+`giveup`.
+
+### Stale repeat cap
+
+`stale_repeats` (default **6**) is how many consecutive stale buzzes the ring
+emits before it gives up: it sends `#ALERT stale_giveup`, buzzes a distinct
+terminal pattern, and then stays **silent** on staleness until a fresh reading
+arrives. Any fresh reading rearms it.
+
+`!SET STALEREPEATS 0` means never stop repeating.
+
+A client must not read the silence after `stale_giveup` as recovery. The ring
+still reports `alert=stale` in `!GET STATUS`; it has merely stopped buzzing.
 
 ### `!GET STATUS`
 
@@ -201,12 +216,18 @@ including interleaved between a command and its response.
 |---|---|
 | `#BOOT ver=2.0.0 proto=2 wdt_reset=0 up_s=3` | once per connection, after the link is encrypted |
 | `#ALERT low sgv=55` | when the alert state *changes* to low/high/stale |
+| `#ALERT stale_giveup` | the stale repeat cap was reached; buzzing stops until fresh data |
 
 `wdt_reset=1` means the previous reset was caused by the **watchdog**, i.e.
 the firmware hung and was restarted. Surface this — it is the signal that the
 ring recovered from a fault rather than being power-cycled normally.
 
 `#ALERT` fires on **transitions only**, not on every repeat buzz.
+`#ALERT stale_giveup` is the exception: it fires once when the cap is hit, and
+is a *state* message, not a transition — the ring is still stale afterwards.
+
+`wdt_reset=1` is also accompanied by a distinct **fault buzz** at boot, so the
+wearer learns about it even with no phone connected.
 
 ---
 
@@ -239,7 +260,7 @@ queued**. Do not treat a successful GATT write as delivery.
 ```
 ring  -> #BOOT ver=2.0.0 proto=2 wdt_reset=0 up_s=2
 phone -> !VER
-ring  -> #VER glucose-ring 2.0.0 proto=2 schema=1
+ring  -> #VER glucose-ring 2.0.0 proto=2 schema=2
 phone -> !SET THRESH 70 200
 ring  -> #OK SET THRESH
 phone -> 112,Flat,1789238400000

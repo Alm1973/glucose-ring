@@ -1,0 +1,16 @@
+# Build output (arduino-cli builds to a temp dir by default, but --output-dir
+# or an IDE can drop artifacts here)
+build/
+*.elf
+*.hex
+*.map
+*.zip
+*.uf2
+*.bin
+
+# Host test binaries
+tests/test_all
+tests/*.dSYM/
+
+# macOS
+.DS_Store

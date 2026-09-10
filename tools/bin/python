@@ -1,0 +1,6 @@
+#!/bin/sh
+# Shim for the Seeed nRF52 core, whose platform.txt hardcodes `python`
+# in its .uf2 post-build step. macOS ships only `python3`, so the build
+# dies with: exec: "python": executable file not found in $PATH
+# Prefix this dir onto PATH when building (see README).
+exec python3 "$@"

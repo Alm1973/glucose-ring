@@ -10,7 +10,8 @@ Nothing has run on a phone or against the ring.
 it would show *NOT relaying: not configured*. Paste the token, rebuild, then
 install (see "Not done").
 
-Nothing is committed. Changes are in the working tree.
+Committed on branch `nightscout-relay`. It is not merged into `main`, and
+nothing is pushed (there is no remote).
 
 ---
 
@@ -90,14 +91,16 @@ replace its input with Nightscout; bake the token into the APK; approve
 | JVM unit tests | **76 run, 0 failures, 0 errors**: NightscoutTest 22, RelayTest 32, RingProtocolTest 21, WireExportTest 1 |
 | Firmware host suite | **passed: 343 failed: 0** (unchanged) |
 | App output through the **firmware's real `rp_parse()`** | `WireExportTest` dumped 27,888 wire lines (all sgv 20–600 × 16 directions incl. hostile ones × 3 epochs), **829,314 bytes**. A host harness compiled against `reading_parser.cpp` fed them in **20-byte chunks** through a copy of `pumpUart()`'s framing: **27,888 decoded exactly, 0 bad, 0 unterminated bytes.** |
+| The cross-check can fail | Three mutations each exit 1 with the harness's own summary: an extra field (`ERR_FIELD_COUNT`), a wrong expected value ("decoded differently"), and a missing final newline (28 unterminated bytes). A positive control with the same binary on the clean files passes. |
 | Live body → wire line | `NightscoutTest`: the real response gives `204,FortyFiveDown,1789184103083\n` |
 | Exhaustive "Relaying" check | `RelayTest`: 9 Nightscout outcomes × 8 link states × 3 ring replies; "Relaying" appears for exactly the one right combination |
 | Every truncation of the live body | rejected (`NightscoutTest`) |
 | APK metadata (`aapt2 dump badging`) | sdk 26 / target 34, expected permission set |
 | Token not leaked | `BuildConfig` checked by `grep -c` only, never printed. No `Log` call references the token, URL or `BuildConfig`. The one fetch log prints a `Fetch` value (HTTP code or fixed text). `NightscoutClient` maps all exceptions to fixed text. |
 
-The harness is in this session's scratchpad (`wire_check.cpp`) and is **not
-committed**. Say if you want it in `tests/`.
+The harness is now `tests/wire_crosscheck.cpp`. Re-run the whole check with
+`./tests/run_wire_crosscheck.sh`. It regenerates the export, builds with
+`run_tests.sh`'s flags (incl. UBSan) and exits non-zero on any mismatch.
 
 ## 2. Not done
 
@@ -106,7 +109,6 @@ committed**. Say if you want it in `tests/`.
 | Real token in the APK | You pasting it into `android/local.properties` (`nightscout.token=`), then rebuilding |
 | Install on a phone | No phone attached (`adb devices` was empty) |
 | Anything with the ring | Hardware not arrived |
-| Commit | Your go-ahead |
 | Follow the ring's configured stale window | The app uses a fixed 15 min (ring default). If you change it with `!SET STALE`, the app won't follow; reading `!GET STATUS`/`!GET STALE` on connect would fix it. Not built. |
 | Surface `#ALERT stale_giveup` | Not built. The notification already says *NOT relaying* in that situation, but not that the ring stopped buzzing. |
 | Config UI (PHONE_APP.md §9) | Out of scope for this task |
@@ -217,3 +219,12 @@ tested, plus the byte-level check against the firmware parser.
 - In Phase 0 I called the old app's **22 JVM tests** reusable. One of them
   tested `ReadingGate`, which I removed along with that class, so 21 remain.
   The dedupe behaviour it covered is now tested in `RelayTest`.
+- **Moving the harness into `tests/` broke it.** It included
+  `reading_parser.h` without the `../` that `tests/` needs; in the scratchpad
+  I had compiled with `-I` on the repo root. The first runner run failed to
+  compile. Fixed to `#include "../reading_parser.h"`, matching `test_all.cpp`.
+- **My first negative check of the harness was worthless.** It reported "failed
+  as it should" for all three mutations, but only because the binary had not
+  been built (exit 127). A check that accepts any failure would also pass a
+  broken harness. It now requires exit 1 plus the harness's own summary line,
+  and has a positive control; all four cases behave correctly.

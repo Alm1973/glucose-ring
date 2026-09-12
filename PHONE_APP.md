@@ -330,9 +330,9 @@ Automated (JVM, `./gradlew :app:testDebugUnitTest`):
 5. The live Nightscout body parses to the documented wire line, and every
    truncation of it is rejected — `NightscoutTest`.
 
-Host-side cross-check (one-off, PHONE_APP_REPORT.md): the formatter's output,
-fed in 20-byte chunks through the firmware's real `rp_parse()`, decodes
-exactly.
+Host-side cross-check, `./tests/run_wire_crosscheck.sh`: the formatter's
+output, fed in 20-byte chunks through the firmware's real `rp_parse()`, must
+decode exactly (27,888 lines).
 
 On a device — **not yet done**:
 

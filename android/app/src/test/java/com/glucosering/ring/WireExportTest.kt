@@ -6,9 +6,9 @@ import java.io.File
 
 /**
  * Writes the formatter's exact output for a sweep of inputs to
- * app/build/wire/, so a host-side harness can feed the bytes through the
- * firmware's real rp_parse() (PHONE_APP_REPORT.md, "Done"). This test itself
- * only checks that every input formats.
+ * app/build/wire/, so tests/run_wire_crosscheck.sh can feed the bytes through
+ * the firmware's real rp_parse(). This test itself only checks that every
+ * input formats.
  *
  *   lines.bin     every wire line concatenated, exactly as it would be written
  *   expected.tsv  sgv<TAB>direction<TAB>epoch_ms the ring should decode, one per line

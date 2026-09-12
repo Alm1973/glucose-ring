@@ -165,6 +165,17 @@ size from 1 to 24 bytes.
 
 The tests link the *same* `.cpp` files the firmware compiles — not copies.
 
+The phone app's wire output is checked against the same parser. This needs
+the Android toolchain (PHONE_APP.md), which `run_tests.sh` does not:
+
+```bash
+cd ~/projects/glucose-ring && ./tests/run_wire_crosscheck.sh
+```
+
+It formats every sgv 20–600 × 16 directions × 3 timestamps with the app's own
+code, feeds the bytes in 20-byte chunks through a copy of the firmware's line
+framing into `rp_parse()`, and fails on any line that doesn't decode exactly.
+
 > ASan is deliberately not enabled: Apple clang 14.0.3's ASan runtime aborts
 > at init on this macOS (Darwin 25.x). UBSan is on, and the tests carry
 > explicit sentinel-byte overflow checks. Re-add ASan on a newer toolchain.
@@ -361,7 +372,9 @@ glucose-ring/
 ├── command.*            PURE: text command protocol
 ├── tests/
 │   ├── test_all.cpp     host tests for all three pure modules
-│   └── run_tests.sh
+│   ├── run_tests.sh
+│   ├── wire_crosscheck.cpp     app wire bytes -> firmware rp_parse()
+│   └── run_wire_crosscheck.sh  (needs the Android toolchain)
 ├── PROTOCOL.md          wire format (for the phone app)
 ├── PHONE_APP.md         phone app status, toolchain, Nightscout contract
 ├── PHONE_APP_REPORT.md  phone app: verified, assumed, untested

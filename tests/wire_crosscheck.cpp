@@ -3,7 +3,8 @@
 // in 20-byte chunks as at the default 23-byte MTU.
 //
 // Run via tests/run_wire_crosscheck.sh, which produces the inputs from the
-// app's WireExportTest and builds this against reading_parser.cpp.
+// iOS core's exporter (ios/Tests/WireExport.swift) and builds this against
+// reading_parser.cpp.
 //
 // usage: wire_crosscheck lines.bin expected.tsv
 #include "../reading_parser.h"

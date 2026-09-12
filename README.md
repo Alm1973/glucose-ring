@@ -169,11 +169,23 @@ answering, and never acts on a reading that is not current.
 
 The tests link the *same* `.cpp` files the firmware compiles — not copies.
 
-`tests/wire_crosscheck.cpp` checks a phone app's exact wire output against the
-same parser, fed in 20-byte chunks through a copy of the firmware's line
-framing. Its byte source was the retired Android app, so
-`tests/run_wire_crosscheck.sh` deliberately exits "DISABLED" until the iOS
-app's exporter exists (IOS_APP_REPORT.md).
+The iOS app's exact wire output is checked against the same parser. Like
+`run_tests.sh`, this needs only Command Line Tools (`swiftc`):
+
+```bash
+cd ~/projects/glucose-ring && ./tests/run_wire_crosscheck.sh
+```
+
+It runs the iOS core's own tests. It then has the app's formatter write every
+sgv 20–600 × 16 directions × 3 timestamps, and feeds the bytes in 20-byte
+chunks through a copy of the firmware's line framing into `rp_parse()`. Any
+line that doesn't decode exactly fails the run.
+
+The iOS app's pure core has its own suite, which also runs without Xcode:
+
+```bash
+cd ~/projects/glucose-ring && ./ios/run_core_tests.sh
+```
 
 > ASan is deliberately not enabled: Apple clang 14.0.3's ASan runtime aborts
 > at init on this macOS (Darwin 25.x). UBSan is on, and the tests carry
@@ -395,12 +407,17 @@ glucose-ring/
 │   ├── test_all.cpp     host tests for all three pure modules
 │   ├── run_tests.sh
 │   ├── wire_crosscheck.cpp     app wire bytes -> firmware rp_parse()
-│   └── run_wire_crosscheck.sh  (disabled until the iOS exporter exists)
+│   └── run_wire_crosscheck.sh  (needs swiftc from Command Line Tools)
 ├── PROTOCOL.md          wire format (for the phone app)
 ├── PHONE_APP.md         phone app design (iOS), requirements, Nightscout contract
 ├── PHONE_APP_REPORT.md  retired Android app: verified, assumed, untested
 ├── IOS_APP_REPORT.md    iOS port: status, assumptions, battery impact
 ├── REPORT.md            what is verified, assumed, and unverifiable
+├── ios/                 Swift relay app (ring #REQ -> Nightscout -> ring)
+│   ├── Core/            PURE: protocol, Nightscout parsing, relay rules
+│   ├── Tests/           swiftc-built tests + wire exporter (no Xcode needed)
+│   ├── GlucoseRing/     the app: CoreBluetooth, state restoration, UI
+│   └── GlucoseRing.xcodeproj
 └── tools/bin/python     shim for the core's hardcoded `python`
 ```
 
@@ -419,9 +436,10 @@ No LEDs, `BANDWIDTH_LOW`, 200–400 ms connection interval with slave latency
 FreeRTOS tick idling in WFI.
 
 Protocol 3 adds one `#REQ` exchange about every 5 minutes, on the connection
-the ring already holds. That's calculated at roughly +0.03–0.13 µA average,
-under 0.3 % of the idle estimate below (IOS_APP_REPORT.md §6). It is
-unmeasured; confirm it at checklist step 11.
+the ring already holds: about 5–9 extra connection events at MTU 23. That's
+calculated at roughly +0.1–0.3 µA average, under 1 % of the idle estimate
+below (IOS_APP_REPORT.md §6). It is unmeasured; confirm it at checklist
+step 11.
 
 **On the 40 mAh cell: measure before you trust it.** A realistic idle figure
 for a XIAO nRF52840 with a live BLE connection is roughly 50–150 µA, which on

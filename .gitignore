@@ -23,3 +23,10 @@ android/local.properties
 android/.idea/
 *.apk
 *.aab
+
+# iOS -- Secrets.plist holds the Nightscout token and must never be committed
+ios/GlucoseRing/Secrets.plist
+ios/**/xcuserdata/
+ios/**/*.xcuserstate
+ios/build/
+DerivedData/

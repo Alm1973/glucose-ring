@@ -1,6 +1,9 @@
 # Phone app — iOS relay: design and status
 
-**Status: DESIGN. No iOS code yet** (2026-09-12). The phone is an iPhone. The
+**Status: WRITTEN, NOT YET BUILT FOR iOS** (2026-09-12). The source is in
+`ios/`. Its pure core passes its tests, built with `swiftc`, and the whole app
+typechecks against the Mac Catalyst SDK. It has never been compiled for iOS,
+opened in Xcode, or run on a phone, because Xcode is not installed. The phone is an iPhone. The
 Android app was retired on branch `ios-relay`; its code is in git history
 (`nightscout-relay`, app commit `c306487`), and its report is
 [PHONE_APP_REPORT.md](PHONE_APP_REPORT.md):
@@ -121,11 +124,14 @@ phase lands.
 
 ## 4. Secrets
 
-The URL and token come from a gitignored config file, following the old
-`android/local.properties` pattern. Its exact path is fixed in the app phase,
-where `git check-ignore` is run before anything is written to it. It is
-created with the placeholder `PASTE_READ_ONLY_TOKEN_HERE`; you paste the token
-yourself.
+`ios/GlucoseRing/Secrets.plist` holds `NightscoutURL` and `NightscoutToken`.
+It is gitignored; `git check-ignore` was confirmed before anything was written
+to it. The token is the placeholder `PASTE_READ_ONLY_TOKEN_HERE` until you
+paste yours.
+
+- The file is bundled into the app at build time, so, as on Android, **the
+  token is inside the built app**.
+- A fresh clone has no `Secrets.plist`; the app then says "Not configured".
 
 ---
 
@@ -137,6 +143,21 @@ yourself.
 - **Disk: 9.9 GiB free before cleanup.** Plan for roughly 20–25 GB free
   before installing Xcode (estimate).
 - **Signing: free Personal Team** (your choice). Builds expire after 7 days.
+
+### Building, once Xcode is installed
+
+1. Paste the token into `ios/GlucoseRing/Secrets.plist`.
+2. Open `ios/GlucoseRing.xcodeproj`. **It was written by hand and has never
+   been opened in Xcode**, so expect to fix small things.
+3. Target → Signing & Capabilities: choose your Personal Team. If the bundle
+   ID `com.glucosering.relay` is taken, change it to something unique.
+4. On the iPhone: Developer Mode on, trust this Mac. Then Run.
+5. Reinstall at least every 7 days (Personal Team). When the app stops
+   launching, the ring buzzes MISS.
+
+Without Xcode, `ios/run_core_tests.sh` builds and tests the pure core, and
+`tests/run_wire_crosscheck.sh` checks its wire output against the firmware
+parser.
 
 ---
 

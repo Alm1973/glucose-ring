@@ -11,8 +11,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define FW_VERSION      "2.0.0"
-#define PROTO_VERSION   2
+#define FW_VERSION      "3.0.0"
+#define PROTO_VERSION   3   /* 3: ring pokes (#REQ), !TIME, readings judged by trusted time */
 
 #define RC_SCHEMA_VERSION      2   /* 2 added stale_max_repeats */
 #define RC_UNSET               (-1)
@@ -63,6 +63,14 @@ typedef struct {
   RcPattern pat_high;
   RcPattern pat_stale;
 } RingConfig;
+
+/*
+ * The MISS pattern ("the phone stopped answering") is fixed, not
+ * configurable: it must never feel like a high or a low. rc_validate()
+ * therefore refuses a low/high/stale pattern identical to it. That is an
+ * exact-match guard only; a near copy is still possible.
+ */
+extern const RcPattern RC_PAT_MISS;
 
 /*
  * Factory defaults.

@@ -15,6 +15,6 @@ clang++ -std=c++17 -O1 -g \
   -Wall -Wextra -Wconversion -Wshadow -Wpedantic \
   -fsanitize=undefined -fno-omit-frame-pointer \
   -o "$OUT/test_all" \
-  tests/test_all.cpp reading_parser.cpp ring_config.cpp command.cpp
+  tests/test_all.cpp reading_parser.cpp ring_config.cpp command.cpp liveness.cpp
 
 "$OUT/test_all"

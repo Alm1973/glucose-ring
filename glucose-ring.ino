@@ -8,8 +8,11 @@
  * wearer's point of view. Keep the phone's own CGM alarms on.
  *
  * Protocol: see PROTOCOL.md.  Wiring and bring-up: see README.md.
- * Parsing, config and command handling live in the pure modules
- * (reading_parser / ring_config / command) and are covered by tests/.
+ * Protocol 3: the ring drives the cycle -- it pokes the phone ("#REQ") every
+ * ~5 min and alarms (MISS) when the phone stops answering.
+ * Parsing, config, commands, and the clock/poke/alert rules live in the pure
+ * modules (reading_parser / ring_config / command / liveness) and are covered
+ * by tests/.
  */
 
 #include <bluefruit.h>
@@ -19,6 +22,7 @@
 #include "reading_parser.h"
 #include "ring_config.h"
 #include "command.h"
+#include "liveness.h"
 
 using namespace Adafruit_LittleFS_Namespace;
 
@@ -150,8 +154,8 @@ using namespace Adafruit_LittleFS_Namespace;
 BLEUart bleuart;
 BLEBas  blebas;          // standard Battery Service, 0x180F
 
-enum BuzzId { BZ_LOW, BZ_HIGH, BZ_STALE, BZ_BATTERY, BZ_TICK, BZ_FAULT, BZ_GIVEUP };
-enum AlertState { ALERT_NONE, ALERT_LOW, ALERT_HIGH, ALERT_STALE };
+enum BuzzId { BZ_LOW, BZ_HIGH, BZ_STALE, BZ_BATTERY, BZ_TICK, BZ_FAULT, BZ_GIVEUP, BZ_MISS };
+/* Alert states (none/low/high/stale/miss) and their priority live in liveness.h. */
 
 /* Battery and tick patterns are fixed; the three alert patterns are
    configurable and live in RingConfig. */
@@ -167,17 +171,25 @@ static const RcPulse PAT_FAULT[]   = { {150,80}, {60,80}, {150,0} };
    long pulse so it reads as terminal rather than as another repeat. */
 static const RcPulse PAT_GIVEUP[]  = { {60,60}, {60,60}, {60,60}, {400,0} };
 
+/* MISS ("the phone stopped answering") plays RC_PAT_MISS from ring_config:
+   two long pulses at full drive. It is fixed, and refused as a low/high/stale
+   pattern, so it can never feel like a glucose alert. */
+
 static RingConfig g_cfg;
 static bool       g_cfgDirty     = false;
 static uint64_t   g_cfgDirtyMs   = 0;
 
 static RpReading  g_last;
 static bool       g_haveReading  = false;
-static uint64_t   g_lastDataMs   = 0;
-static int64_t    g_epochOffset  = 0;
-static bool       g_haveOffset   = false;
+static uint64_t   g_lastDataMs   = 0;      // when g_last ARRIVED -- for age_s only
 
-static AlertState g_alert        = ALERT_NONE;
+/* Protocol 3. Wall time comes only from the phone's !TIME, never from when a
+   reading happens to arrive; the poke state drives "#REQ" and the miss count. */
+static LvClock    g_clock;
+static LvPoke     g_poke;
+static bool       g_linkWasReady = false;
+
+static LvAlert    g_alert        = LV_ALERT_NONE;
 static uint64_t   g_lastBuzzMs   = 0;
 static uint8_t    g_staleRepeats = 0;      // consecutive stale buzzes
 static bool       g_staleGaveUp  = false;  // capped out; silent until fresh data
@@ -320,6 +332,7 @@ static void buzz(BuzzId id)
     case BZ_TICK:    runPattern(PAT_TICK,    1, g_cfg.intensity); break;
     case BZ_FAULT:   runPattern(PAT_FAULT,   3, 100); break;   // full drive: must not be missed
     case BZ_GIVEUP:  runPattern(PAT_GIVEUP,  4, g_cfg.intensity); break;
+    case BZ_MISS:    runPattern(RC_PAT_MISS.pulses, RC_PAT_MISS.count, 100); break;   // full drive
     default:         motorHardOff(); break;
   }
 }
@@ -333,6 +346,7 @@ static bool buzzByName(const char *name)
   if (!strcmp(name, "tick"))    { buzz(BZ_TICK);    return true; }
   if (!strcmp(name, "fault"))   { buzz(BZ_FAULT);   return true; }
   if (!strcmp(name, "giveup"))  { buzz(BZ_GIVEUP);  return true; }
+  if (!strcmp(name, "miss"))    { buzz(BZ_MISS);    return true; }
   return false;
 }
 
@@ -566,17 +580,7 @@ static bool peerIsTrusted(uint16_t conn_hdl)
 
 /* ---- command host bindings ---------------------------------------- */
 
-static const char *alertName(AlertState a)
-{
-  switch (a) {
-    case ALERT_LOW:   return "low";
-    case ALERT_HIGH:  return "high";
-    case ALERT_STALE: return "stale";
-    default:          return "none";
-  }
-}
-
-static bool isStale(uint64_t now);
+static LvData dataState(uint64_t now);
 
 static CmdHost g_host;
 
@@ -592,13 +596,24 @@ static void hostInit(void)
   g_host.direction     = [](void *) -> const char * { return g_last.direction; };
   g_host.reading_age_s = [](void *) -> uint32_t {
       return g_haveReading ? (uint32_t)((millis64() - g_lastDataMs) / 1000ULL) : 0U; };
-  g_host.is_stale      = [](void *) -> int      { return isStale(millis64()) ? 1 : 0; };
-  g_host.alert_name    = [](void *) -> const char * { return alertName(g_alert); };
+  g_host.is_stale      = [](void *) -> int      { return dataState(millis64()) == LV_DATA_NOT_CURRENT ? 1 : 0; };
+  g_host.alert_name    = [](void *) -> const char * { return lv_alert_name(g_alert); };
   g_host.uptime_s      = [](void *) -> uint32_t { return (uint32_t)((millis64() - g_bootMs) / 1000ULL); };
   g_host.buzz          = [](void *, const char *n) -> int { return buzzByName(n) ? 1 : 0; };
   g_host.save          = [](void *) -> int      { return configSave() ? 1 : 0; };
   g_host.mark_dirty    = [](void *)              { configMarkDirty(); };
   g_host.factory_reset = [](void *) -> int       { return configSave() ? 1 : 0; };
+
+  /* protocol 3 */
+  g_host.set_time      = [](void *, uint64_t ms) -> int {
+      lv_clock_sync(&g_clock, ms, millis64());
+      lv_poke_answered(&g_poke);        // proof of life: clears the miss count
+      return 1; };
+  g_host.link_misses   = [](void *) -> int      { return (int)g_poke.misses; };
+  g_host.clock_synced  = [](void *) -> int      { return g_clock.synced ? 1 : 0; };
+  g_host.next_poke_s   = [](void *) -> uint32_t {
+      uint64_t now = millis64();
+      return g_poke.next_poke_ms > now ? (uint32_t)((g_poke.next_poke_ms - now) / 1000ULL) : 0U; };
 }
 
 /* ---- line handling ------------------------------------------------ */
@@ -626,18 +641,21 @@ static void handleReading(const char *line, uint64_t now)
     return;
   }
 
-  /* Learn the phone's clock so we can judge the age of the reading itself,
-     not just how long ago the packet landed. Keep the largest offset seen:
-     it came from the push with the least latency. */
-  int64_t offset = (int64_t)r.epoch_ms - (int64_t)now;
-  if (!g_haveOffset || offset > g_epochOffset) {
-    g_epochOffset = offset;
-    g_haveOffset  = true;
+  /* Judge the reading by its OWN timestamp against the phone's !TIME, never
+     by when it arrived. Protocol 2 learned the clock from the readings
+     themselves, so after a reboot a 40-minute-old first reading looked
+     fresh. Now: no !TIME since boot, no reading. Too old, or dated in the
+     future (which would lock out every later reading): no reading. */
+  LvVerdict v = lv_judge(&g_clock, now, r.epoch_ms, (uint64_t)g_cfg.stale_minutes * 60000ULL);
+  if (v != LV_FRESH) {
+    DBG("drop: %s\n", lv_verdict_name(v));
+    return;
   }
 
   g_last        = r;
   g_haveReading = true;
   g_lastDataMs  = now;
+  lv_poke_align(&g_poke, &g_clock, now, r.epoch_ms);   // aim the next poke at the next reading
   DBG("sgv %ld %s\n", (long)r.sgv, r.direction);
 }
 
@@ -701,51 +719,68 @@ static void pumpUart(uint64_t now)
   }
 }
 
-/* ---- alert state machine ------------------------------------------ */
-
-static bool isStale(uint64_t now)
+/* ---- the poke cycle (protocol 3) -----------------------------------
+ * iOS will not let the phone poll on a timer in the background, but it wakes
+ * a bluetooth-central app when a connected peripheral notifies. So the ring
+ * drives the cycle: every ~5 min it sends "#REQ"; the phone answers
+ * "!TIME <epoch_ms>" and then the reading. Rules: liveness.h.
+ *
+ * This is a check in the existing 1 s loop, not a new wake source: the ring
+ * already wakes every TICK_MS and already holds the connection.
+ */
+static bool linkReady(void)
 {
-  const uint64_t limit = (uint64_t)g_cfg.stale_minutes * 60000ULL;
-
-  if (now - g_lastDataMs > limit) return true;
-
-  if (g_haveReading && g_haveOffset) {
-    int64_t nowEpoch = (int64_t)now + g_epochOffset;
-    int64_t age      = nowEpoch - (int64_t)g_last.epoch_ms;
-    if (age > (int64_t)limit) return true;
-  }
-  return false;
+  if (!Bluefruit.connected()) return false;
+  if (!peerIsTrusted(Bluefruit.connHandle())) return false;
+  return bleuart.notifyEnabled();          // the phone has subscribed to TX
 }
 
-static AlertState evaluate(uint64_t now)
+static void serviceWake(uint64_t now)
 {
-  /* Stale outranks the thresholds: once the value is not current we must
-     not act on it in either direction. */
-  if (isStale(now))   return ALERT_STALE;
-  if (!g_haveReading) return ALERT_NONE;
+  bool ready = linkReady();
+  if (ready && !g_linkWasReady) lv_poke_link_up(&g_poke, now);   // fresh link: ask now
+  g_linkWasReady = ready;
 
-  if (g_cfg.low_mg_dl  != RC_UNSET && g_last.sgv < g_cfg.low_mg_dl)  return ALERT_LOW;
-  if (g_cfg.high_mg_dl != RC_UNSET && g_last.sgv > g_cfg.high_mg_dl) return ALERT_HIGH;
-  return ALERT_NONE;
+  uint8_t before = g_poke.misses;
+  if (lv_poke_tick(&g_poke, now, ready) == LV_SEND_POKE) sendLine("#REQ");
+  if (g_poke.misses != before) DBG("poke: miss %u\n", (unsigned)g_poke.misses);
+}
+
+/* ---- alert state machine ------------------------------------------ */
+
+static LvData dataState(uint64_t now)
+{
+  return lv_data_state(&g_clock, now, g_haveReading, g_last.epoch_ms,
+                       (uint64_t)g_cfg.stale_minutes * 60000ULL, g_bootMs);
+}
+
+static LvAlert evaluate(uint64_t now)
+{
+  /* Stale outranks the thresholds (never act on old data), and a phone that
+     has stopped answering outranks "none": see lv_select(). */
+  return lv_select(dataState(now), g_last.sgv, g_cfg.low_mg_dl, g_cfg.high_mg_dl,
+                   lv_blind(&g_poke));
 }
 
 static void serviceAlerts(uint64_t now)
 {
-  AlertState want = evaluate(now);
+  LvAlert want  = evaluate(now);
+  bool    noData = (want == LV_ALERT_STALE || want == LV_ALERT_MISS);
 
-  /* Any non-stale state -- including a fresh reading clearing staleness --
-     rearms the stale repeat budget. */
-  if (want != ALERT_STALE) {
+  /* The repeat budget covers the two "no current data" alarms. It rearms on
+     any other state, and on a switch between them: STALE -> MISS says
+     something new (the phone itself has gone quiet). */
+  if (!noData || want != g_alert) {
     g_staleRepeats = 0;
     g_staleGaveUp  = false;
   }
 
-  if (want == ALERT_NONE) { g_alert = ALERT_NONE; return; }
+  if (want == LV_ALERT_NONE) { g_alert = LV_ALERT_NONE; return; }
 
-  /* Capped out: hold the state so #GET STATUS still reports stale, but stop
+  /* Capped out: hold the state so !GET STATUS still reports it, but stop
      buzzing. A ring buzzing in a drawer for hours trains the wearer to ignore
      it, and an ignored alert is worse than a quiet one. */
-  if (want == ALERT_STALE && g_staleGaveUp) { g_alert = want; return; }
+  if (noData && g_staleGaveUp) { g_alert = want; return; }
 
   bool changed = (want != g_alert);
   bool due     = (now - g_lastBuzzMs) >= ((uint64_t)g_cfg.repeat_minutes * 60000ULL);
@@ -756,26 +791,27 @@ static void serviceAlerts(uint64_t now)
 
   if (changed) {
     char msg[64];
-    if (g_haveReading) snprintf(msg, sizeof(msg), "#ALERT %s sgv=%ld", alertName(want), (long)g_last.sgv);
-    else               snprintf(msg, sizeof(msg), "#ALERT %s", alertName(want));
+    if (g_haveReading) snprintf(msg, sizeof(msg), "#ALERT %s sgv=%ld", lv_alert_name(want), (long)g_last.sgv);
+    else               snprintf(msg, sizeof(msg), "#ALERT %s", lv_alert_name(want));
     sendLine(msg);
   }
 
   switch (want) {
-    case ALERT_LOW:   buzz(BZ_LOW);   break;
-    case ALERT_HIGH:  buzz(BZ_HIGH);  break;
-    case ALERT_STALE: buzz(BZ_STALE); break;
+    case LV_ALERT_LOW:   buzz(BZ_LOW);   break;
+    case LV_ALERT_HIGH:  buzz(BZ_HIGH);  break;
+    case LV_ALERT_STALE: buzz(BZ_STALE); break;
+    case LV_ALERT_MISS:  buzz(BZ_MISS);  break;
     default: break;
   }
 
-  if (want == ALERT_STALE) {
+  if (noData) {
     if (g_staleRepeats < 255) g_staleRepeats++;
     /* stale_max_repeats == 0 means "never stop". */
     if (g_cfg.stale_max_repeats != 0 && g_staleRepeats >= g_cfg.stale_max_repeats) {
       g_staleGaveUp = true;
-      sendLine("#ALERT stale_giveup");
+      sendLine(want == LV_ALERT_MISS ? "#ALERT miss_giveup" : "#ALERT stale_giveup");
       buzz(BZ_GIVEUP);      /* distinct: it gave up, it did not get fixed */
-      DBG("stale: gave up after %u repeats\n", (unsigned)g_staleRepeats);
+      DBG("%s: gave up after %u repeats\n", lv_alert_name(want), (unsigned)g_staleRepeats);
     }
   }
 }
@@ -860,8 +896,10 @@ void setup()
   Bluefruit.Advertising.start(0);                 // 0 = advertise forever
 
   g_bootMs     = millis64();
-  g_lastDataMs = g_bootMs;                        // staleness grace starts now
+  g_lastDataMs = g_bootMs;
   g_lastVbatMs = g_bootMs;
+  lv_clock_init(&g_clock);                        // no wall time until the phone's !TIME
+  lv_poke_init(&g_poke, g_bootMs);                // first "#REQ" on link-up, else in 5 min
 
 #if TEST_MODE
   DBG("TEST_MODE: cycling patterns\n");
@@ -870,6 +908,7 @@ void setup()
   buzz(BZ_LOW);     delay(800);
   buzz(BZ_HIGH);    delay(800);
   buzz(BZ_STALE);   delay(800);
+  buzz(BZ_MISS);    delay(800);
   buzz(BZ_BATTERY);
   DBG("TEST_MODE: chg=%d vbat=%u mV\n", chargerActive(), readVbatMv());
 #endif
@@ -896,6 +935,7 @@ void loop()
   wdtFeed();
   announceBoot();
   pumpUart(now);
+  serviceWake(now);
   serviceAlerts(now);
   checkBattery(now);
   configServiceAutosave(now);

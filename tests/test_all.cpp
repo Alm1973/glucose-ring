@@ -9,6 +9,7 @@
 #include "../reading_parser.h"
 #include "../ring_config.h"
 #include "../command.h"
+#include "../liveness.h"
 
 #include <cstdio>
 #include <cstring>
@@ -372,6 +373,13 @@ struct MockHost {
   int      dirty = 0;
   int      resets = 0;
   int      save_ok = 1;
+  /* protocol 3 */
+  uint64_t time_set = 0;
+  int      time_calls = 0;
+  int      time_ok = 1;
+  int      misses = 2;
+  int      clock = 1;
+  uint32_t next_s = 123;
 };
 
 static CmdHost make_host(MockHost *m)
@@ -393,11 +401,16 @@ static CmdHost make_host(MockHost *m)
       MockHost *m = (MockHost*)c;
       if (strcmp(n,"low") && strcmp(n,"high") && strcmp(n,"stale") &&
           strcmp(n,"tick") && strcmp(n,"battery") && strcmp(n,"fault") &&
-          strcmp(n,"giveup")) return 0;
+          strcmp(n,"giveup") && strcmp(n,"miss")) return 0;
       m->last_buzz = n; m->buzz_calls++; return 1; };
   h.save          = [](void *c){ MockHost *m=(MockHost*)c; m->saves++; return m->save_ok; };
   h.mark_dirty    = [](void *c){ ((MockHost*)c)->dirty++; };
   h.factory_reset = [](void *c){ ((MockHost*)c)->resets++; return 1; };
+  h.set_time      = [](void *c, uint64_t ms){
+      MockHost *m = (MockHost*)c; m->time_set = ms; m->time_calls++; return m->time_ok; };
+  h.link_misses   = [](void *c){ return ((MockHost*)c)->misses; };
+  h.clock_synced  = [](void *c){ return ((MockHost*)c)->clock; };
+  h.next_poke_s   = [](void *c){ return ((MockHost*)c)->next_s; };
   return h;
 }
 
@@ -539,9 +552,236 @@ static void test_commands()
   }
 }
 
+/* ================= protocol 3: !TIME, !GET LINK, MISS pattern ================= */
+
+static void test_commands_proto3()
+{
+  MockHost m;
+  CmdHost h = make_host(&m);
+  RingConfig cfg; rc_defaults(&cfg);
+
+  section("command: !TIME (protocol 3)");
+  ok(run("!TIME 1789184103083", &cfg, &h) == "#OK TIME", "TIME ok");
+  ok(m.time_calls == 1 && m.time_set == 1789184103083ULL, "set_time got the exact value");
+  ok(run("!TIME 1600000000000", &cfg, &h) == "#OK TIME", "epoch floor accepted");
+  {
+    const char *bad[] = {
+      "!TIME", "!TIME 1599999999999", "!TIME 1789184103", "!TIME -1789184103083",
+      "!TIME +1789184103083", "!TIME 1789184103083.0", "!TIME 0x1A", "!TIME abc",
+      "!TIME 99999999999999999999999", "!TIME 1789184103083 extra",
+    };
+    int calls = m.time_calls;
+    for (const char *b : bad)
+      ok(run(b, &cfg, &h).rfind("#ERR TIME", 0) == 0, std::string("reject ") + show(b));
+    ok(m.time_calls == calls, "a rejected !TIME never reaches the clock");
+  }
+  m.time_ok = 0;
+  ok(run("!TIME 1789184103083", &cfg, &h).rfind("#ERR TIME", 0) == 0, "host refusal surfaced");
+  m.time_ok = 1;
+  {
+    CmdHost bare; memset(&bare, 0, sizeof(bare));
+    ok(run("!TIME 1789184103083", &cfg, &bare) == "#ERR TIME unsupported", "no set_time -> unsupported");
+    ok(run("!TIME 1789184103083", &cfg, NULL) == "#ERR TIME unsupported", "null host -> unsupported");
+  }
+
+  section("command: !GET LINK");
+  ok(run("!GET LINK", &cfg, &h) == "#LINK misses=2 clock=1 next_poke_s=123", "LINK");
+  {
+    CmdHost bare; memset(&bare, 0, sizeof(bare));
+    ok(run("!GET LINK", &cfg, &bare) == "#ERR GET unsupported", "LINK without host support");
+  }
+
+  section("command: BUZZ miss");
+  ok(run("!BUZZ miss", &cfg, &h) == "#OK BUZZ miss", "BUZZ miss");
+  ok(m.last_buzz == "miss", "miss dispatched");
+
+  section("config: MISS pattern is reserved");
+  {
+    const RcPattern &mp = RC_PAT_MISS;
+    bool shape = mp.count >= 1 && mp.count <= RC_PATTERN_MAX_PULSES;
+    for (uint8_t i = 0; shape && i < mp.count; i++)
+      shape = mp.pulses[i].on_ms >= RC_PULSE_ON_MIN && mp.pulses[i].on_ms <= RC_PULSE_ON_MAX &&
+              mp.pulses[i].off_ms <= RC_PULSE_OFF_MAX;
+    ok(shape, "MISS pattern is within the motor's pulse bounds");
+
+    const char *names[] = { "low", "high", "stale" };
+    for (const char *n : names) {
+      RingConfig t; rc_defaults(&t);
+      *rc_pattern_by_name(&t, n) = RC_PAT_MISS;
+      ok(!rc_validate(&t, NULL), std::string(n) + " pattern identical to MISS is refused");
+    }
+
+    RingConfig c; rc_defaults(&c);
+    RingConfig before = c;
+    ok(run("!SET PATTERN low 1000/400,1000/0", &c, &h).rfind("#ERR SET", 0) == 0,
+       "!SET PATTERN to the MISS pattern refused");
+    ok(memcmp(&before, &c, sizeof(c)) == 0, "config unchanged after refusal");
+    ok(run("!SET PATTERN low 1000/400,999/0", &c, &h) == "#OK SET PATTERN",
+       "a near copy is allowed: the guard is exact-match only");
+  }
+}
+
+/* ================= liveness (protocol 3) ================= */
+
+static const uint64_t T0      = 1789184103083ULL;   /* the live Nightscout reading */
+static const uint64_t ONE_MIN = 60000ULL;
+static const uint64_t STALE15 = 15ULL * 60000ULL;
+
+static void test_liveness_clock()
+{
+  section("liveness: trusted clock");
+  LvClock c; lv_clock_init(&c);
+  uint64_t e = 0;
+  ok(!lv_clock_now(&c, 1000, &e), "no wall time before the first !TIME");
+  ok(lv_judge(&c, 1000, T0, STALE15) == LV_NO_CLOCK, "no clock -> NO_CLOCK, never FRESH");
+
+  lv_clock_sync(&c, T0, 5000);   /* the phone says T0 at ring ms 5000 */
+  ok(lv_clock_now(&c, 5000, &e) && e == T0, "now == phone time at the sync");
+  ok(lv_clock_now(&c, 5000 + 90000, &e) && e == T0 + 90000, "advances with local time");
+  ok(lv_clock_now(&c, 4000, &e) && e == T0, "a sample before the sync clamps, never runs backwards");
+
+  ok(lv_judge(&c, 5000, T0 - STALE15, STALE15) == LV_FRESH, "age == stale window is still fresh");
+  ok(lv_judge(&c, 5000, T0 - STALE15 - 1, STALE15) == LV_STALE, "1 ms older is stale");
+  ok(lv_judge(&c, 5001, T0 - STALE15, STALE15) == LV_STALE, "and goes stale as time passes");
+  ok(lv_judge(&c, 5000, T0 + LV_FUTURE_TOLERANCE_MS, STALE15) == LV_FRESH, "skew within tolerance ok");
+  ok(lv_judge(&c, 5000, T0 + LV_FUTURE_TOLERANCE_MS + 1, STALE15) == LV_FUTURE, "beyond tolerance -> FUTURE");
+
+  /* The protocol-2 flaw: after a reboot the ring learned its clock from the
+     first reading, so a 40-minute-old first reading looked fresh. */
+  LvClock rebooted; lv_clock_init(&rebooted);
+  lv_clock_sync(&rebooted, T0, 10);
+  ok(lv_judge(&rebooted, 20, T0 - 40 * ONE_MIN, STALE15) == LV_STALE,
+     "40-min-old first reading after a reboot is STALE");
+  ok(strcmp(lv_verdict_name(LV_FUTURE), "FUTURE") == 0, "verdict names");
+}
+
+static void test_liveness_poke()
+{
+  section("liveness: pokes and misses");
+  const uint64_t I = LV_POKE_INTERVAL_MS;
+  LvPoke p; lv_poke_init(&p, 0);
+  ok(lv_poke_tick(&p, 1000, true) == LV_NOTHING, "no poke before the first interval");
+  ok(lv_poke_tick(&p, I, true) == LV_SEND_POKE, "poke at the interval");
+  ok(p.awaiting, "awaiting an answer");
+  lv_poke_answered(&p);
+  ok(!p.awaiting && p.misses == 0, "an answer clears it");
+
+  ok(lv_poke_tick(&p, 2 * I, true) == LV_SEND_POKE, "second poke");
+  ok(lv_poke_tick(&p, 2 * I + LV_ANSWER_TIMEOUT_MS - 1, true) == LV_NOTHING && p.misses == 0,
+     "not a miss before the deadline");
+  lv_poke_tick(&p, 2 * I + LV_ANSWER_TIMEOUT_MS, true);
+  ok(p.misses == 1 && !p.awaiting, "a miss at the deadline");
+
+  ok(lv_poke_tick(&p, 3 * I, false) == LV_NOTHING, "link down: nothing is sent");
+  ok(p.misses == 2, "link down when due counts as a miss");
+  ok(!lv_blind(&p), "2 misses is not blind");
+  lv_poke_tick(&p, 4 * I, false);
+  ok(p.misses == LV_MISS_ALERT_COUNT && lv_blind(&p), "3 consecutive misses -> blind");
+  lv_poke_answered(&p);
+  ok(p.misses == 0 && !lv_blind(&p), "any !TIME clears it, solicited or not");
+
+  {
+    LvPoke s; lv_poke_init(&s, 0);
+    for (uint64_t i = 1; i <= 300; i++) lv_poke_tick(&s, i * I, false);
+    ok(s.misses == 255, "miss count saturates, never wraps back to 0");
+  }
+  {
+    LvPoke u; lv_poke_init(&u, 0);
+    lv_poke_link_up(&u, 1000);
+    ok(lv_poke_tick(&u, 1000, true) == LV_SEND_POKE, "fresh link: poke at once");
+    ok(lv_poke_tick(&u, 1000 + I - 1, true) == LV_NOTHING, "then back to the cadence");
+  }
+
+  section("liveness: time to MISS");
+  /* Pin the required defaults: the bounds below are written in terms of the
+     constants, so without this a changed constant would move them silently. */
+  ok(LV_MISS_ALERT_COUNT == 3 && LV_POKE_INTERVAL_MS == 300000ULL && LV_ANSWER_TIMEOUT_MS == 30000ULL,
+     "defaults: 3 misses x 5 min, 30 s to answer (~15 min blind)");
+  for (int link = 0; link < 2; link++) {
+    LvPoke d; lv_poke_init(&d, 0);
+    lv_poke_tick(&d, I, true);
+    lv_poke_answered(&d);                        /* healthy until here */
+    const uint64_t died = I + 1000;
+    uint64_t blind_at = 0;
+    for (uint64_t now = died; now < died + 60 * ONE_MIN; now += 1000) {   /* the 1 s loop */
+      lv_poke_tick(&d, now, link != 0);
+      if (lv_blind(&d)) { blind_at = now; break; }
+    }
+    std::string how = link ? "connected but silent" : "out of range";
+    ok(blind_at != 0, how + ": goes blind");
+    ok(blind_at - died <= LV_MISS_ALERT_COUNT * I + LV_ANSWER_TIMEOUT_MS,
+       how + ": blind within N intervals + timeout (" + std::to_string((blind_at - died) / 1000) + " s)");
+    ok(blind_at - died > (LV_MISS_ALERT_COUNT - 1) * I, how + ": not after only N-1 intervals");
+    ok(blind_at - died <= 15 * ONE_MIN + 30000ULL, how + ": blind within 15.5 min (absolute)");
+  }
+}
+
+static void test_liveness_align()
+{
+  section("liveness: aligning pokes to the CGM cadence");
+  LvClock c; lv_clock_sync(&c, T0, 0);            /* wall T0 at local 0 */
+  LvPoke p; lv_poke_init(&p, 0);
+  lv_poke_align(&p, &c, 3 * ONE_MIN, T0);         /* reading taken at T0, arrived 3 min later */
+  ok(p.next_poke_ms == LV_POKE_INTERVAL_MS + LV_ALIGN_LAG_MS, "aimed at reading + interval + lag");
+  lv_poke_align(&p, &c, 20 * ONE_MIN, T0);        /* very late: target already passed */
+  ok(p.next_poke_ms == 20 * ONE_MIN + LV_MIN_POKE_GAP_MS, "late reading: clamped to the minimum gap");
+  lv_poke_align(&p, &c, 0, T0);                   /* just taken: target beyond one interval */
+  ok(p.next_poke_ms == LV_POKE_INTERVAL_MS, "never poke less often than the cadence");
+
+  LvClock none; lv_clock_init(&none);
+  LvPoke q; lv_poke_init(&q, 0);
+  uint64_t before = q.next_poke_ms;
+  lv_poke_align(&q, &none, 1000, T0);
+  ok(q.next_poke_ms == before, "no clock: no alignment");
+}
+
+static void test_liveness_select()
+{
+  section("liveness: alert selection");
+  const int32_t U = RC_UNSET;
+  ok(lv_select(LV_DATA_CURRENT, 60, 70, 200, false) == LV_ALERT_LOW, "current low");
+  ok(lv_select(LV_DATA_CURRENT, 250, 70, 200, false) == LV_ALERT_HIGH, "current high");
+  ok(lv_select(LV_DATA_CURRENT, 120, 70, 200, false) == LV_ALERT_NONE, "current, in range");
+  ok(lv_select(LV_DATA_NOT_CURRENT, 60, 70, 200, false) == LV_ALERT_STALE, "old low is STALE, never LOW");
+  ok(lv_select(LV_DATA_NOT_CURRENT, 60, 70, 200, true) == LV_ALERT_MISS, "old data + silent phone -> MISS");
+  ok(lv_select(LV_DATA_CURRENT, 120, 70, 200, true) == LV_ALERT_MISS, "in range + silent phone -> MISS");
+  ok(lv_select(LV_DATA_CURRENT, 60, 70, 200, true) == LV_ALERT_LOW, "a current LOW still buzzes LOW");
+  ok(lv_select(LV_DATA_GRACE, 0, 70, 200, false) == LV_ALERT_NONE, "boot grace, no reading yet");
+  ok(lv_select(LV_DATA_GRACE, 0, 70, 200, true) == LV_ALERT_MISS, "grace does not hide MISS");
+  ok(lv_select(LV_DATA_CURRENT, 30, U, U, false) == LV_ALERT_NONE, "unset thresholds never alert");
+
+  /* Exhaustive: the two rules this phase exists for. */
+  const LvData ds[] = { LV_DATA_GRACE, LV_DATA_CURRENT, LV_DATA_NOT_CURRENT };
+  const int32_t ths[][2] = { {U, U}, {70, U}, {U, 200}, {70, 200} };
+  int silent_while_blind = 0, acted_on_old = 0, cases = 0;
+  for (LvData d : ds)
+    for (const auto &th : ths)
+      for (int32_t sgv = 20; sgv <= 600; sgv++)
+        for (int b = 0; b < 2; b++) {
+          LvAlert a = lv_select(d, sgv, th[0], th[1], b != 0);
+          cases++;
+          if (b && a == LV_ALERT_NONE) silent_while_blind++;
+          if (d != LV_DATA_CURRENT && (a == LV_ALERT_LOW || a == LV_ALERT_HIGH)) acted_on_old++;
+        }
+  ok(silent_while_blind == 0, "never silent once blind (" + std::to_string(cases) + " cases)");
+  ok(acted_on_old == 0, "never LOW/HIGH on data that is not current");
+  ok(strcmp(lv_alert_name(LV_ALERT_MISS), "miss") == 0, "alert name: miss");
+
+  section("liveness: data state");
+  LvClock c; lv_clock_sync(&c, T0, 0);
+  ok(lv_data_state(&c, 0, false, 0, STALE15, 0) == LV_DATA_GRACE, "no reading at boot -> grace");
+  ok(lv_data_state(&c, STALE15, false, 0, STALE15, 0) == LV_DATA_GRACE, "grace lasts one stale window");
+  ok(lv_data_state(&c, STALE15 + 1, false, 0, STALE15, 0) == LV_DATA_NOT_CURRENT, "then not current");
+  ok(lv_data_state(&c, 0, true, T0, STALE15, 0) == LV_DATA_CURRENT, "fresh reading is current");
+  ok(lv_data_state(&c, STALE15 + 1, true, T0, STALE15, 0) == LV_DATA_NOT_CURRENT, "old reading is not");
+  LvClock none; lv_clock_init(&none);
+  ok(lv_data_state(&none, 0, true, T0, STALE15, 0) == LV_DATA_NOT_CURRENT,
+     "a reading with no trusted clock is never current");
+}
+
 int main(void)
 {
-  printf("glucose-ring host tests (parser / config / command protocol)\n");
+  printf("glucose-ring host tests (parser / config / command protocol / liveness)\n");
   test_parser_valid();
   test_parser_malformed();
   test_parser_truncated();
@@ -550,6 +790,11 @@ int main(void)
   test_parser_contract();
   test_config();
   test_commands();
+  test_commands_proto3();
+  test_liveness_clock();
+  test_liveness_poke();
+  test_liveness_align();
+  test_liveness_select();
 
   printf("\n=====================================\n");
   printf("passed: %d   failed: %d\n", g_pass, g_fail);

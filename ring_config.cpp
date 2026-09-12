@@ -130,6 +130,21 @@ void rc_defaults(RingConfig *c)
   rc_pattern_parse("60/120,60/0",           &c->pat_stale);
 }
 
+/* ---- reserved pattern ---- */
+
+/* Two long pulses: unlike low (3 x 400 ms), high (2 x 120 ms), stale
+   (2 x 60 ms) and every fixed pattern. Played at full drive. */
+const RcPattern RC_PAT_MISS = { 2, { {1000, 400}, {1000, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0} } };
+
+static bool same_pattern(const RcPattern *a, const RcPattern *b)
+{
+  if (a->count != b->count) return false;
+  for (uint8_t i = 0; i < a->count; i++)
+    if (a->pulses[i].on_ms  != b->pulses[i].on_ms ||
+        a->pulses[i].off_ms != b->pulses[i].off_ms) return false;
+  return true;
+}
+
 /* ---- validation ---- */
 
 static bool valid_threshold(int32_t v)
@@ -168,6 +183,9 @@ bool rc_validate(const RingConfig *c, const char **why)
   else if (!valid_pattern(&c->pat_low))   reason = "low pattern invalid";
   else if (!valid_pattern(&c->pat_high))  reason = "high pattern invalid";
   else if (!valid_pattern(&c->pat_stale)) reason = "stale pattern invalid";
+  else if (same_pattern(&c->pat_low,   &RC_PAT_MISS) ||
+           same_pattern(&c->pat_high,  &RC_PAT_MISS) ||
+           same_pattern(&c->pat_stale, &RC_PAT_MISS)) reason = "pattern reserved for miss";
 
   if (why) *why = reason;
   return reason == NULL;

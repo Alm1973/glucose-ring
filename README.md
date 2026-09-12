@@ -1,9 +1,10 @@
 # glucose-ring
 
 Haptic CGM alert ring on a **Seeed XIAO nRF52840** (plain BLE, *not* Sense).
-A phone app pushes glucose values over Nordic UART Service; the ring buzzes a
-coin motor on low / high / stale. Thresholds, timings and buzz patterns are
-configurable over BLE and persist in flash.
+Every ~5 minutes the ring asks a phone app for the latest glucose reading
+over Nordic UART Service (protocol 3). It buzzes a coin motor on low, high or
+stale, and when the phone stops answering (**miss**). Thresholds, timings and
+buzz patterns are configurable over BLE and persist in flash.
 
 > **This is a secondary alert.** A flat cell, a dropped BLE link, or a hung
 > sketch all fail *silently* from the wearer's point of view. Keep your
@@ -161,7 +162,10 @@ Covers valid input, malformed input, truncated input (every prefix of a good
 line), out-of-range values, garbage/high/control bytes, NULL contracts,
 non-mutation of caller buffers, config round-tripping and corrupt-file
 rejection, the full command surface, and response-buffer bounds at every
-size from 1 to 24 bytes.
+size from 1 to 24 bytes. For protocol 3 it also covers the trusted clock,
+poke/miss counting, time-to-MISS, poke alignment and alert priority. That
+includes exhaustive checks that the ring is never silent once the phone stops
+answering, and never acts on a reading that is not current.
 
 The tests link the *same* `.cpp` files the firmware compiles — not copies.
 
@@ -242,6 +246,7 @@ that leaves **no valid application** — so this is not merely an annoyance.
 | **Low** | 3 x 400 ms — long and urgent | yes (`!SET PATTERN low`) |
 | **High** | 2 x 120 ms | yes |
 | **Stale** | 2 x 60 ms, deliberately gentler | yes |
+| **Miss** (phone not answering) | 2 x 1000 ms, full drive | no: fixed, and refused as a low/high/stale pattern |
 | **Battery** | 600/300/150 ms fade, always full drive | no |
 | **Fault** (watchdog reset) | 150/60/150 ms long-short-long, at boot, full drive | no |
 | **Gave up** (stale cap hit) | three 60 ms ticks then one 400 ms | no |
@@ -250,9 +255,20 @@ An active alert re-buzzes every `repeat` minutes (default 5). A change of
 state buzzes immediately. Stale outranks the thresholds: once the value is
 not current the ring will not act on it in either direction.
 
-**Stale alerting is capped.** After `stale_repeats` consecutive stale buzzes
+**Miss means the phone stopped answering.** Every ~5 min the ring sends
+`#REQ`, and the phone must answer with `!TIME` within 30 s. After 3 misses in a
+row the ring buzzes MISS. That's about 15 minutes blind, and misses also count
+while no phone is connected at all. MISS is deliberately distinct from stale:
+
+- *stale*: the phone answers but has no current reading (CGM or Nightscout
+  trouble);
+- *miss*: the phone itself is gone (app killed, out of range, Bluetooth off).
+
+Only a current low or high outranks MISS. A blind ring is never silent.
+
+**Stale and miss alerting are capped.** After `stale_repeats` consecutive stale (or miss) buzzes
 (default 6 — about 30 minutes at the default repeat interval), the ring buzzes
-the distinct "gave up" pattern, sends `#ALERT stale_giveup`, and then goes
+the distinct "gave up" pattern, sends `#ALERT stale_giveup` (or `miss_giveup`), and then goes
 **quiet** until fresh data arrives. The reasoning: a ring buzzing every few
 minutes in a drawer for eight hours trains you to ignore it, and an ignored
 alert is a worse hazard than the silence the repeats were guarding against.
@@ -303,7 +319,7 @@ to wearing it.**
 **First power, USB only, no battery**
 
 4. Flash with `-DTEST_MODE=1 -DDEBUG_SERIAL=1 -DWATCHDOG_ENABLE=0`.
-5. Watch the boot pattern cycle: tick, low, high, stale, battery. If the
+5. Watch the boot pattern cycle: tick, low, high, stale, miss, battery. If the
    motor never moves, the fault is the gate drive, not the firmware.
 6. **HARD GATE — charge-detect polarity.** On serial, confirm `chg=1` while
    USB is attached and `chg=0` once unplugged. **Do not skip this and do not
@@ -343,10 +359,19 @@ to wearing it.**
 
 **Behaviour**
 
-18. Push a reading, confirm no response and `!GET STATUS` reflects it.
+18. Send `!TIME <now_ms>` (current Unix ms), then push a reading dated just
+    now. Confirm no response, and that `!GET STATUS` reflects it. **Without
+    the `!TIME` first, the reading is dropped**: protocol 3 judges readings by
+    trusted time.
 19. Push the same reading again; confirm it is dropped (timestamp not newer).
+    Push one dated 20 minutes ago (after a fresh `!TIME`); confirm it is
+    dropped as stale.
 20. Push a low reading; confirm `#ALERT` and the buzz.
-21. Stop pushing for `STALE_MINUTES`; confirm the stale buzz.
+21. Stop pushing readings for `STALE_MINUTES`, but keep answering `#REQ` with
+    `!TIME`. Confirm the **stale** buzz.
+22. Stop answering `#REQ`, or walk out of range. Confirm `!GET LINK` counts
+    misses, and that about 15 minutes later the ring buzzes **MISS**, not
+    stale. Answer with `!TIME`; confirm it stops.
 22. Confirm the watchdog: temporarily add an infinite loop, flash, and check
     that it resets and reports `wdt_reset=1`. **Remove it afterwards.**
 
@@ -365,6 +390,7 @@ glucose-ring/
 ├── reading_parser.*     PURE: glucose line parser
 ├── ring_config.*        PURE: config struct, validation, serialisation
 ├── command.*            PURE: text command protocol
+├── liveness.*           PURE: trusted clock, poke/miss counting, alert priority
 ├── tests/
 │   ├── test_all.cpp     host tests for all three pure modules
 │   ├── run_tests.sh
@@ -391,6 +417,11 @@ the build.
 No LEDs, `BANDWIDTH_LOW`, 200–400 ms connection interval with slave latency
 4, PWM released between buzzes, battery divider pulsed at ~0.01% duty, 1 s
 FreeRTOS tick idling in WFI.
+
+Protocol 3 adds one `#REQ` exchange about every 5 minutes, on the connection
+the ring already holds. That's calculated at roughly +0.03–0.13 µA average,
+under 0.3 % of the idle estimate below (IOS_APP_REPORT.md §6). It is
+unmeasured; confirm it at checklist step 11.
 
 **On the 40 mAh cell: measure before you trust it.** A realistic idle figure
 for a XIAO nRF52840 with a live BLE connection is roughly 50–150 µA, which on

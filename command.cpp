@@ -67,6 +67,21 @@ static bool scan_int(const char *s, int32_t *out)
   return true;
 }
 
+/* Strict unsigned decimal: digits only, no sign, no overflow. */
+static bool scan_u64(const char *s, uint64_t *out)
+{
+  if (!*s) return false;
+  uint64_t acc = 0;
+  for (const char *p = s; *p; p++) {
+    if (*p < '0' || *p > '9') return false;
+    uint64_t d = (uint64_t)(*p - '0');
+    if (acc > (UINT64_MAX - d) / 10ULL) return false;
+    acc = acc * 10ULL + d;
+  }
+  *out = acc;
+  return true;
+}
+
 int cmd_is_command(const char *line)
 {
   return line && line[0] == CMD_PREFIX;
@@ -150,6 +165,14 @@ int cmd_execute(const char *line, RingConfig *cfg, const CmdHost *host,
                       age, stale, alert, up);
     }
 
+    if (!strcmp(key, "LINK")) {
+      if (!host || !host->link_misses || !host->clock_synced || !host->next_poke_s)
+        return err(resp, resp_size, "GET", "unsupported");
+      return resp_fmt(resp, resp_size, "#LINK misses=%d clock=%d next_poke_s=%u",
+                      host->link_misses(host->ctx), host->clock_synced(host->ctx),
+                      (unsigned)host->next_poke_s(host->ctx));
+    }
+
     return err(resp, resp_size, "GET", "unknown key");
   }
 
@@ -216,6 +239,20 @@ int cmd_execute(const char *line, RingConfig *cfg, const CmdHost *host,
     *cfg = next;
     if (host && host->mark_dirty) host->mark_dirty(host->ctx);
     return resp_fmt(resp, resp_size, "#OK SET %s", key);
+  }
+
+  /* ---------------- TIME ---------------- */
+  /* The phone's wall clock, sent first in every answer to "#REQ". It lets
+     the ring judge a reading by its own timestamp, and it is the proof of
+     life that clears the miss count. */
+  if (!strcmp(verb, "TIME")) {
+    if (tk.count != 2) return err(resp, resp_size, "TIME", "usage: !TIME <epoch_ms>");
+    uint64_t ms;
+    if (!scan_u64(tk.t[1], &ms) || ms < CMD_TIME_MIN_MS)
+      return err(resp, resp_size, "TIME", "bad value");
+    if (!host || !host->set_time) return err(resp, resp_size, "TIME", "unsupported");
+    if (!host->set_time(host->ctx, ms)) return err(resp, resp_size, "TIME", "rejected");
+    return resp_fmt(resp, resp_size, "#OK TIME");
   }
 
   /* ---------------- BUZZ ---------------- */

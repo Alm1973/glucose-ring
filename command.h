@@ -12,6 +12,7 @@
 
 #define CMD_PREFIX      '!'
 #define CMD_RESP_MAX    200
+#define CMD_TIME_MIN_MS 1600000000000ULL   /* same floor as the reading parser */
 
 /* Hardware/state the command layer may need. Any pointer may be NULL; the
  * command that needs it then answers "#ERR ... unsupported". */
@@ -34,6 +35,12 @@ typedef struct {
   int         (*save)         (void *ctx);   /* persist now; 1 ok, 0 fail */
   void        (*mark_dirty)   (void *ctx);   /* config changed -> autosave later */
   int         (*factory_reset)(void *ctx);
+
+  /* protocol 3: trusted clock and the poke cycle (liveness.h) */
+  int         (*set_time)     (void *ctx, uint64_t epoch_ms);   /* !TIME; 1 ok */
+  int         (*link_misses)  (void *ctx);
+  int         (*clock_synced) (void *ctx);
+  uint32_t    (*next_poke_s)  (void *ctx);
 } CmdHost;
 
 /* True if the line should be routed to cmd_execute rather than the

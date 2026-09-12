@@ -165,16 +165,11 @@ size from 1 to 24 bytes.
 
 The tests link the *same* `.cpp` files the firmware compiles — not copies.
 
-The phone app's wire output is checked against the same parser. This needs
-the Android toolchain (PHONE_APP.md), which `run_tests.sh` does not:
-
-```bash
-cd ~/projects/glucose-ring && ./tests/run_wire_crosscheck.sh
-```
-
-It formats every sgv 20–600 × 16 directions × 3 timestamps with the app's own
-code, feeds the bytes in 20-byte chunks through a copy of the firmware's line
-framing into `rp_parse()`, and fails on any line that doesn't decode exactly.
+`tests/wire_crosscheck.cpp` checks a phone app's exact wire output against the
+same parser, fed in 20-byte chunks through a copy of the firmware's line
+framing. Its byte source was the retired Android app, so
+`tests/run_wire_crosscheck.sh` deliberately exits "DISABLED" until the iOS
+app's exporter exists (IOS_APP_REPORT.md).
 
 > ASan is deliberately not enabled: Apple clang 14.0.3's ASan runtime aborts
 > at init on this macOS (Darwin 25.x). UBSan is on, and the tests carry
@@ -374,13 +369,12 @@ glucose-ring/
 │   ├── test_all.cpp     host tests for all three pure modules
 │   ├── run_tests.sh
 │   ├── wire_crosscheck.cpp     app wire bytes -> firmware rp_parse()
-│   └── run_wire_crosscheck.sh  (needs the Android toolchain)
+│   └── run_wire_crosscheck.sh  (disabled until the iOS exporter exists)
 ├── PROTOCOL.md          wire format (for the phone app)
-├── PHONE_APP.md         phone app status, toolchain, Nightscout contract
-├── PHONE_APP_REPORT.md  phone app: verified, assumed, untested
+├── PHONE_APP.md         phone app design (iOS), requirements, Nightscout contract
+├── PHONE_APP_REPORT.md  retired Android app: verified, assumed, untested
+├── IOS_APP_REPORT.md    iOS port: status, assumptions, battery impact
 ├── REPORT.md            what is verified, assumed, and unverifiable
-├── android/             Kotlin relay app (Nightscout -> BLE NUS -> ring)
-│   └── app/src/test/    JVM tests: protocol vectors, Nightscout parsing, staleness
 └── tools/bin/python     shim for the core's hardcoded `python`
 ```
 

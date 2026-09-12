@@ -1,5 +1,11 @@
 # Phone app (Nightscout relay) — report
 
+> **Retired 2026-09-12.** The phone is an iPhone, so the Android app was
+> removed on branch `ios-relay`. This report is kept as the record of that
+> work. Restore the code with
+> `git restore --source=nightscout-relay -- android/`. Current status:
+> [IOS_APP_REPORT.md](IOS_APP_REPORT.md).
+
 **Status: BUILT AND TESTED AS FAR AS POSSIBLE WITHOUT HARDWARE.** 2026-09-12.
 
 The app is built (`app-debug.apk`, v0.2.0, minSdk 26 / targetSdk 34). **76 JVM

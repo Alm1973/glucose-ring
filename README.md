@@ -363,10 +363,11 @@ glucose-ring/
 │   ├── test_all.cpp     host tests for all three pure modules
 │   └── run_tests.sh
 ├── PROTOCOL.md          wire format (for the phone app)
-├── PHONE_APP.md         phone app status, toolchain, xDrip+ contract
+├── PHONE_APP.md         phone app status, toolchain, Nightscout contract
+├── PHONE_APP_REPORT.md  phone app: verified, assumed, untested
 ├── REPORT.md            what is verified, assumed, and unverifiable
-├── android/             Kotlin courier app (xDrip+ -> BLE NUS -> ring)
-│   └── app/src/test/    JVM unit tests against PROTOCOL.md vectors
+├── android/             Kotlin relay app (Nightscout -> BLE NUS -> ring)
+│   └── app/src/test/    JVM tests: protocol vectors, Nightscout parsing, staleness
 └── tools/bin/python     shim for the core's hardcoded `python`
 ```
 

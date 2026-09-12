@@ -81,14 +81,7 @@ class RingProtocolTest {
         assertEquals(RingProtocol.DIRECTION_MAX, RingProtocol.sanitizeDirection(long).length)
     }
 
-    // ---- duplicate suppression ----
-    @Test fun gateRejectsNonIncreasingTimestamps() {
-        val g = ReadingGate()
-        assertTrue(g.shouldSend(T)); g.markSent(T)
-        assertFalse(g.shouldSend(T))
-        assertFalse(g.shouldSend(T - 1))
-        assertTrue(g.shouldSend(T + 1))
-    }
+    // Duplicate suppression moved to Relay; see RelayTest.dedupesOnDate.
 
     // ---- response parsing ----
     @Test fun parsesStatus() {

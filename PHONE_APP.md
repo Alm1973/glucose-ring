@@ -1,8 +1,11 @@
 # Phone app — iOS relay: design and status
 
-**Status: BUILDS FOR iOS; NOT YET RUN ON A PHONE** (2026-09-12). It was built
-unsigned with Xcode 27.0 (iOS 27 SDK, Swift 6.4): 0 errors, 0 compiler
-warnings. It has not been signed, installed or run. The source is in
+**Status: RUNS ON THE iPHONE; NOT YET TESTED WITH THE RING** (2026-09-12).
+Built with Xcode 27.0 (iOS 27 SDK, Swift 6.4): 0 errors, 0 compiler warnings.
+- Signed with your Personal Team and installed on your iPhone 11 (iOS
+  26.6.2). It launches and shows the expected no-ring state.
+- **The signing expires Saturday 2026-09-19 at 21:26 MST.** Reconnect the
+  phone and press Run in Xcode before then. The source is in
 `ios/`. Its pure core passes its tests, built with `swiftc`, and the whole app
 typechecks against the Mac Catalyst SDK. The phone is an iPhone. The
 Android app was retired on branch `ios-relay`; its code is in git history

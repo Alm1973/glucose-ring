@@ -700,3 +700,44 @@ stayed Command Line Tools. The output went to a scratch folder, not the repo.
 - installing and running it on the iPhone.
 
 No simulator runtime is installed.
+
+### 10. Runs on the iPhone
+
+**Installed** by you from Xcode, onto your iPhone 11 on iOS 26.6.2.
+`devicectl` confirms **Glucose Ring 0.1.0 (build 1), `com.glucosering.relay`**
+in the device's app list.
+
+**First launch shows exactly the expected no-ring state:**
+- "Waiting for the ring", in red, because no data flows until a ring
+  pokes;
+- "No ring chosen yet. Tap Find ring."
+
+That second line also tells us something:
+- CoreBluetooth is **powered on and authorised**; a refusal would show
+  "Bluetooth permission was refused" instead.
+- The app launched through the SwiftUI and AppDelegate path, and created its
+  central manager without crashing.
+
+**Signing:**
+- Personal Team `TUQ2656V4Y`; Xcode added `DEVELOPMENT_TEAM` to both target
+  configurations, and that change is committed.
+- The profile "iOS Team Provisioning Profile: com.glucosering.relay" was
+  created 2026-09-13 04:26 UTC, covers 1 device, and **expires 2026-09-20
+  04:26 UTC, which is Saturday 2026-09-19 at 21:26 MST.**
+- After that the app will not launch until it is reinstalled (connect the
+  phone, then press Run in Xcode). While it's not running, the ring buzzes
+  MISS.
+- My first script put the expiry at "7 days 6 h" away. It compared a UTC
+  date with local time and was off by the 7-hour offset; the dates above
+  are corrected.
+
+**Still untested** (all of it needs the ring):
+- pairing;
+- `#REQ` wakes, including background and relaunch after the system kills
+  the app;
+- the Nightscout fetch from the app. The app only fetches when the ring asks,
+  so that path has not run on the phone yet.
+- the writes, and `!GET STATUS` confirmation;
+- the "token rejected" notification.
+
+Also untested: the firmware on the XIAO itself.

@@ -177,7 +177,7 @@ unknown, and Xcode is not installed.
 | Real token in the app | You, pasting into `ios/GlucoseRing/Secrets.plist` |
 | Anything on the ring | Hardware. You didn't say whether it has arrived. |
 | **Measure** the added sleep current | Hardware + µA meter (README checklist step 11). Section 6 is a calculation. |
-| Deployment target | Set to iOS 17.0 as a guess; I don't know your iPhone's iOS version. |
+| Deployment target | **Resolved:** iPhone 11 on iOS 26.6.2; set to iOS 26.0 (session (b), §7). |
 | Tuning `LV_ALIGN_LAG_MS` (2 min) | Real arrival-lag data; there's only one sample |
 | The app following a changed ring stale window (`!SET STALE`) | Not built. The app uses 15 min for its own checks; the ring is authoritative. |
 | Deleting `android/` leftovers, including `local.properties` with your live token | Your call. I recommend deleting it once the token is in `Secrets.plist`. |
@@ -337,3 +337,284 @@ answered, and with the phone away.
   log isn't misread.
 - **Reclaimed space.** In Phase 0 I estimated about 1.95 GB. It was 2.14 GiB
   by `df` and 1.92 GiB by `du`, and I did not explain the gap.
+
+---
+
+## Session 2026-09-12 (b): backup, disk, cleanup before Xcode
+
+**Status: DONE.** The repo is backed up to GitHub and the cleanup is done.
+Sections 1–5 are the read-only analysis as presented to you; the measured
+results after your go-ahead are in section 6.
+
+### 1. Backup — blocked on a GitHub credential
+
+**Repo:** `github.com/Alm1973/glucose-ring`. It is **not public**: GitHub's
+unauthenticated API returns 404, where a public repo returns 200. I can't
+check whether it is empty until I can authenticate.
+
+**Safe to push:**
+- The 9 commits reachable from any ref never contained a file named
+  `Secrets.plist` or `local.properties`, on any branch, at any point in
+  history.
+- The live token's *value* appears in **0** locations across every commit.
+  It was searched without being printed.
+- Both files are still ignored (`.gitignore:22`, `.gitignore:28`).
+
+**Local repo:** clean; branches `main` and `nightscout-relay` at `686093e`,
+`ios-relay` at `7aa9927`; no tags, no stash; `.git` is 1.0 MB.
+
+**Why I can't push yet:**
+- `gh` is not installed.
+- There is no HTTPS credential helper and no Keychain entry.
+- `~/.ssh/id_ed25519` exists, but **GitHub lists 0 keys for Alm1973**, and
+  SSH is refused. The key is also passphrase-protected and not loaded in
+  `ssh-agent`.
+- GitHub's host key was verified against the fingerprint GitHub publishes
+  over TLS (`SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU`). It is held
+  in a scratch file only; `~/.ssh` is untouched.
+
+**Planned once you've added the key and approved:**
+1. Add the verified GitHub host key to `~/.ssh/known_hosts`.
+2. `git remote add origin git@github.com:Alm1973/glucose-ring.git`.
+3. `git ls-remote origin`. Stop if the repo is not empty.
+4. `git push origin main nightscout-relay ios-relay`.
+5. Verify with `git ls-remote --heads origin`: all three branches, with SHAs
+   matching the local ones.
+
+### 2. Disk — measured, nothing deleted
+
+**Totals:** APFS container 245.1 GB; **free 12.1 GB** (`df`: 11 GiB avail);
+Data volume 192 GiB used.
+
+**Safe to delete** (regenerable caches; quit the app first). Subtotal
+**≈ 12 GB**.
+
+| Path | Size | What breaks |
+|---|---|---|
+| `~/Library/Caches` (all) | 9.3 GB | Apps rebuild their caches; slower first launch. Inside: Google 2.6G, Spotify 1.7G, Brave 1.5G, Google SoftwareUpdate 0.67G, Homebrew 0.65G, JetBrains 0.47G (IntelliJ is no longer installed), ms-playwright 0.45G (re-downloads its browsers), WhatsApp 0.43G, Zoo updater 0.3G, pip 0.13G |
+| `~/Library/Application Support/discord/Cache` | 756 MB | Discord re-downloads media |
+| `~/.cache/huggingface` | 680 MB | Models re-download on next use |
+| `~/Library/Application Support/Spotify/PersistentCache` | 625 MB | Streaming cache re-buffers |
+| Claude `Cache` + `Code Cache` | 451 MB | App caches rebuild |
+| `~/Library/Logs` | 201 MB | Old logs only |
+| `brew cleanup` | ~229 MB | Old Homebrew versions; overlaps the Homebrew cache above |
+| `~/.npm` | 25 MB | npm cache |
+
+**Ask first** (not caches, or not regenerable), ranked by size:
+
+| Path | Size | What breaks |
+|---|---|---|
+| `~/.ollama/models` | 11 GB | 4 local models (llava 4.7, qwen2.5vl 3.2, llama3.2 2.0, moondream 1.7 GB); gone until `ollama pull` again |
+| `~/Library/Application Support/Claude/vm_bundles` | 9.8 GB | Claude desktop's VM image for its sandboxed features. The app re-downloads it. **This session runs inside that app**: quit it first. |
+| `/Users/Shared/Epic Games/Fortnite` | 9.4 GB | Fortnite install. The Epic Games Launcher isn't installed, so it's likely orphaned. Re-download is about the same size. |
+| `~/Downloads`: 98 videos | 7.3 GB | Your own videos (`IMG_*.MOV`), gone unless kept elsewhere |
+| `~/Downloads`: 77 installers & archives | 5.9 GB | `.dmg`/`.pkg`/`.zip`; installed apps are unaffected |
+| `/Applications/iMovie.app` | 2.5 GB | Reinstallable from the App Store |
+| Chrome profiles 4, 3, 8 | 3.2 GB | Browsing data; clear the cache from inside Chrome instead |
+| `~/Downloads`: images | 1.7 GB | Personal |
+| Google `DriveFS` | 1.2 GB | Google Drive's local cache; **may hold unsynced files** |
+| `/Applications/ParaView-5.13.3.app` | 1.2 GB | Reinstallable |
+| `~/Movies` | 1.1 GB | Personal |
+| `~/Downloads/jdk-21.0.4.jdk` (×3) + `jdk-21_macos-aarch64_bin.tar.gz` | 1.1 GB | Copies of the JDK already installed in `/Library/Java`. *Assumed* unused. |
+| Google `GoogleUpdater` | 759 MB | Chrome's updater rebuilds it |
+| `~/.p2` | 656 MB | Eclipse bundle pool. No `Eclipse.app` was found, so it's *likely* leftover. |
+| `~/Library/Roblox` | 576 MB | Roblox data |
+| `~/mlx_env`, `~/robotenv`, `~/tf_env` | 0.49 / 0.20 / 0.01 GB | Python venvs; projects using them break until recreated |
+
+**Keep:**
+- `~/Library/Arduino15` (1.6 GB): the firmware build needs the Seeeduino core.
+- `/Library/Developer/CommandLineTools` (2.6 GB): Homebrew, `arduino-cli`,
+  `clang` and `swiftc` use it, at least until Xcode is installed.
+
+**Could not measure.** About 90 GB of the used space is hidden from this
+shell by macOS privacy protection:
+- `~/.Trash`, Mail, Messages, Safari, and iOS device backups (MobileSync);
+- `~/Pictures`, which reads 0 B here and is probably hidden too;
+- the two other accounts, `s_khidake` and `sakshiskhidake`;
+- system data.
+
+**System Settings → General → Storage** sees all of it. Check the Trash and
+iOS backups there first; they are often the biggest easy wins.
+
+**Getting to ~30 GB:** safe caches (≈ 12) + Ollama (11) + the Claude VM (9.8)
+≈ 33 GB. Alternatively, Fortnite (9.4) + Downloads installers and the JDK
+copies (7.0) + caches (12) ≈ 28 GB.
+
+### 3. Android leftovers — checked, deletion pending
+
+**Measured, ready to delete:** `android/` is 26,268 KiB (696 files, 0
+tracked):
+
+| Path | KiB |
+|---|---|
+| `local.properties` | 4 |
+| `app/build` | 24,940 |
+| `.gradle` | 1,192 |
+| `build` | 132 |
+| `.kotlin` | 0 |
+
+**`local.properties` still holds the only local copy of your token.**
+`Secrets.plist` still has the placeholder, so deleting it now would lose the
+token.
+
+**Homebrew `gradle` 9.7.1 (225M) and `openjdk` 26.0.2.1 (380M):**
+- `brew uses --installed`: nothing depends on `gradle`; `openjdk` is used
+  only by `gradle`.
+- No other Gradle or Maven project exists under `~`.
+- No shell config refers to them.
+- They are not linked into `/Library/Java`.
+
+**Safe to remove.**
+
+**JDKs: leaving them.** I can't show that nothing needs them.
+- `jdk-21` (Oracle package, installed 2024-08-06) and `openjdk-22.0.2`
+  (downloaded by IntelliJ, 2024-08-02; it is the default `java`).
+- The OpenFOAM (SimFlow) app bundles no Java of its own at depth ≤ 5, so it
+  may use one of these. Eclipse leftovers (`~/.p2`, `~/eclipse-workspace`)
+  also remain.
+
+### 4. Contradictions with the previous report
+
+1. **Homebrew `gradle` and `openjdk` did not predate the Android work.** They
+   were installed on **2026-09-10 at 11:21**, three minutes after the Android
+   SDK cask (11:18). `gradle` was installed on request and `openjdk` pulled in
+   as its dependency, i.e. by the earlier session. `PHONE_APP.md`,
+   `REPORT.md` and §1 above described them as already present ("may predate
+   the Android work"). That was wrong.
+2. **Free space:** the report said 11.81 GiB. Now `df` shows 11 GiB and the
+   container 12.1 GB (≈ 11.3 GiB); it moves with other activity.
+3. **A mistake in my own check this session:** my first HTTPS probe of the
+   repo used `timeout`, which macOS doesn't have, so it never ran. It is
+   superseded by the SSH checks above.
+4. **Not a contradiction, but worth knowing:** the Nightscout URL (not the
+   token) is in committed docs. Keep the repo private.
+
+### 5. iOS deployment target — what I need
+
+- Your iPhone's **iOS version** (Settings → General → About → iOS Version)
+  and **model name** (same screen).
+- Once installed, the **Xcode version**. It must support that iOS version.
+
+The deployment target is a *minimum*: the code typechecks at iOS 16.0 and
+needs nothing from 17. So if your phone is on iOS 16, I'll set 16.0;
+otherwise 17.0 already works, or I can raise it to match.
+
+### 6. Results after your go-ahead (measured)
+
+**Backup: done.**
+- Remote `origin` is `git@github.com:Alm1973/glucose-ring.git`, over SSH,
+  authenticated as Alm1973. The repo was confirmed empty (`git ls-remote`)
+  before pushing.
+- Pushed `main`, `nightscout-relay` and `ios-relay`; each now tracks
+  `origin`.
+- **Verified:**
+  - `git ls-remote --heads origin` shows `ios-relay` at `7aa9927`, and `main`
+    and `nightscout-relay` at `686093e`. All match the local branches.
+  - A fresh `--mirror` clone of the remote holds **all 9 commits** (9
+    locally).
+  - **0 files named `Secrets.plist` or `local.properties`** anywhere in the
+    remote's history.
+  - The anonymous API still returns 404, so the repo is not public.
+- GitHub's host key was re-verified against `api.github.com/meta` and was
+  already in `~/.ssh/known_hosts`, so I did not modify it.
+- This report update is **not yet committed or pushed**.
+
+**Token:** moved file-to-file from `android/local.properties` into
+`ios/GlucoseRing/Secrets.plist` by a script that never printed it.
+- It read back identical (21 characters), and the URL matched.
+- The plist lints, is still gitignored, and git lists it nowhere.
+
+**Reclaimed, measured with `df`:** free space went from 11,425,316 KiB
+(10.90 GiB) before to **24,473,956 KiB (23.34 GiB)** after. A few minutes
+later it read 23.22 GiB, as Chrome rebuilt its cache.
+
+| Step | Freed (KiB) | Notes |
+|---|---:|---|
+| `android/` leftovers | 25,620 | Includes `local.properties` and the old build's baked `BuildConfig` and APK, both of which contained the token |
+| Homebrew `gradle` + `openjdk` | 888,620 | Plus 27 orphaned dependencies Homebrew removed automatically (correction 1) |
+| Safe caches | 12,135,340 | `~/Library/Caches` except Claude/Anthropic entries (9.74 GB); Discord cache; Spotify stream cache; Hugging Face cache; `~/Library/Logs`; npm cache; `brew cleanup` (70 MB). macOS refused 12 protected cache folders, which remain. |
+| **Total freed now** | **13,048,640 (12.44 GiB)** | |
+| Downloads installers & archives, moved to the Trash | 0 until emptied | 69 files, 4,370,272 KiB (4.17 GiB): 31 zip, 22 dmg, 14 pkg, 2 gz. **Empty the Trash to free them.** |
+
+**Not done:**
+- **The Claude app's VM files (9.8 GB) and Claude's caches (451 MB).** They
+  are open in the running Claude app (4 and 2 open files), which this session
+  runs in. Deleting them would free nothing while they are open, and could
+  break the running VM. To remove them, quit Claude and then run:
+  ```bash
+  rm -rf ~/Library/Application\ Support/Claude/vm_bundles
+  ```
+  The app re-downloads the VM when it next needs it, so that space may come
+  back.
+- **The three JDK copies:** already gone before my run (correction 2).
+- **Left alone, per your instruction:** the Ollama models (11 GB) and
+  Fortnite (9.4 GB). The JDKs are untouched too.
+
+**Projection:** emptying the Trash (+4.17 GiB) and removing the Claude VM
+(+~9.1 GiB) would bring free space to about **36–37 GiB**. That clears the
+20–25 GB Xcode estimate, although the total freed (~26 GiB) is short of your
+30 GB target.
+
+**Still works:**
+- host tests 450/0;
+- iOS core tests 112/0;
+- wire cross-check 27,888/27,888;
+- both JDKs present;
+- the Seeeduino core installed;
+- `brew missing` clean;
+- `arduino-cli`, `cmake`, `python3.14`, `llama.cpp`, `pkgconf` and `swiftc`
+  all run.
+
+**Where I drew the line:** I don't permanently delete your own files, even
+with approval, so the Downloads items went to the Trash for you to empty.
+Regenerable things (caches, build output, Homebrew packages) I removed
+directly.
+
+**Corrections and contradictions from this step:**
+1. **Homebrew removed more than I told you.** By default, `brew uninstall
+   gradle openjdk` also removes dependencies nothing else needs, and it took
+   **27 more packages** (≈ 240 MB): `little-cms2`, `harfbuzz`,
+   `gradle-completion`, `libtiff`, `graphite2`, `cairo`, `icu4c@78`,
+   `pixman`, `glib`, `webp`, `fontconfig`, `libxrender`, `libxext`, `lzo`,
+   `freetype`, `giflib`, `gettext`, `pcre2`, `libx11`, `jpeg-turbo`,
+   `json-c`, `libpng`, `libunistring`, `libxcb`, `libxau`, `libxdmcp`,
+   `xorgproto`. I didn't warn you. `brew missing` reports nothing broken, and
+   any of them can come back with `brew install <name>`.
+2. **The three extracted JDK copies and `jdk-21_macos-aarch64_bin.tar.gz`
+   were no longer in Downloads when the cleanup ran; my run did not move
+   them.** Downloads is now 7.69 GiB. It was 16.18 GiB at the analysis, and
+   I moved 4.17 GiB, which would leave ~12.0. So about 4.3 GiB left Downloads
+   in between, by something other than my run: those JDK items plus 8 of the
+   77 archives I had counted. If you trashed them, emptying the Trash frees
+   them as well. I can't check: the Trash can't be listed from here, and
+   even a file I had just moved there doesn't show up.
+3. **Free space before the cleanup was 10.90 GiB,** a little under the
+   11 GiB / 12.1 GB measured an hour earlier. Normal drift.
+
+### 7. Deployment target: set
+
+**Your phone:** iPhone 11, iOS 26.6.2.
+
+**Change:** `IPHONEOS_DEPLOYMENT_TARGET` is now **26.0** in
+`ios/GlucoseRing.xcodeproj`, in both configurations. It was 17.0.
+
+**Why 26.0, when 17.0 would also install?** The deployment target is only a
+minimum, and the code needs nothing newer than iOS 16. But background
+Bluetooth wake, state restoration and pairing are exactly the behaviours that
+change between iOS releases, and they will only ever be tested on iOS 26.
+Declaring 26.0 makes the versions the app claims to support match the version
+it is tested on.
+
+**Knock-on change:** SwiftUI's `.foregroundColor` (deprecated since iOS 17)
+is replaced by `.foregroundStyle` (available since iOS 15), in 3 places in
+`GlucoseRingApp.swift`. At a 26.0 target the old call would have produced
+deprecation warnings. No behaviour changes.
+
+**Xcode:** you need **Xcode 26**, for its iOS 26 SDK. It fetches device
+support for 26.6.2 the first time the phone is connected. macOS 26.6.2 runs
+Xcode 26.
+
+**What I can't verify here:** the Command Line Tools SDK is macOS 13.3, so
+my Catalyst typecheck cannot target iOS 26. I re-ran it at iOS 16.0 after
+this edit. Raising the minimum removes no API, but newer deprecations will
+only show up in Xcode itself.

@@ -31,18 +31,18 @@ struct StatusView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text(model.status.title)
                     .font(.title2.bold())
-                    .foregroundColor(model.status.ok ? .primary : .red)
+                    .foregroundStyle(model.status.ok ? Color.primary : Color.red)
                 Text(model.status.detail)
                 Divider()
                 Text(model.linkText)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 Button("Find ring") { model.findRing() }
                     .buttonStyle(.borderedProminent)
                 Text("Leave this app in the app switcher. If you swipe it away, iOS stops waking it for the "
                      + "ring, and the ring buzzes MISS about 15 minutes later. This is a secondary alert: keep "
                      + "your CGM app's own alarms on.")
                     .font(.footnote)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)

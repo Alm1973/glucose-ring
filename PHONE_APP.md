@@ -140,6 +140,8 @@ paste yours.
 - **Xcode is required and is not installed.** There's only Command Line Tools
   14.3.1 (Swift 5.8.1, no iOS SDK). You install Xcode yourself; it needs your
   Apple ID sign-in and license acceptance.
+- **Target phone: iPhone 11 on iOS 26.6.2.** That needs **Xcode 26**. The
+  deployment target is iOS 26.0.
 - **Disk: 9.9 GiB free before cleanup.** Plan for roughly 20–25 GB free
   before installing Xcode (estimate).
 - **Signing: free Personal Team** (your choice). Builds expire after 7 days.

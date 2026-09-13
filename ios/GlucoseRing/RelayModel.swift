@@ -84,7 +84,7 @@ final class RelayModel: ObservableObject {
     /// A revoked token is permanent. Say so even when the app is not open.
     private static func notifyTokenRejected(_ code: Int) {
         let content = UNMutableNotificationContent()
-        content.title = "Glucose Ring: token rejected"
+        content.title = "GRing: token rejected"
         content.body = "Nightscout refused the token (HTTP \(code)). Readings will not reach the ring until it is replaced."
         UNUserNotificationCenter.current().add(
             UNNotificationRequest(identifier: "token-rejected", content: content, trigger: nil))

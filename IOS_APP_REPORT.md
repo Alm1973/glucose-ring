@@ -741,3 +741,28 @@ That second line also tells us something:
 - the "token rejected" notification.
 
 Also untested: the firmware on the XIAO itself.
+
+### 11. Cosmetics: app icon and the name "GRing"
+
+**App icon:** a brushed-silver ring with a red glucose drop, on a
+navy-to-teal background.
+- It is drawn by `ios/tools/make_app_icon.swift` (Core Graphics; it runs
+  with Command Line Tools). The output is
+  `ios/GlucoseRing/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`:
+  1024×1024 and opaque (`sips`: `hasAlpha: no`).
+- Xcode is told to use it via `ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon`
+  in both target configurations.
+- The unsigned build includes the compiled icon (`AppIcon60x60@2x.png`,
+  `Assets.car`), and `Info.plist` names it (`CFBundleIconName`). 0 errors,
+  0 warnings.
+
+**Name shown on the phone: "GRing".** Changed in three places:
+- `CFBundleDisplayName`;
+- the Bluetooth permission text;
+- the "token rejected" notification title.
+
+**Unchanged, on purpose:**
+- the Xcode target, project and bundle ID `com.glucosering.relay`. A new
+  bundle ID would be a different app to iOS and would redo signing.
+- the ring's Bluetooth name `GlucoseRing`, which the firmware advertises and
+  the app scans for.

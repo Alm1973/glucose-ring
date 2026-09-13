@@ -4,6 +4,8 @@
 Built with Xcode 27.0 (iOS 27 SDK, Swift 6.4): 0 errors, 0 compiler warnings.
 - Signed with your Personal Team and installed on your iPhone 11 (iOS
   26.6.2). It launches and shows the expected no-ring state.
+- **Its Nightscout fetch works on the phone:** the Test Nightscout button
+  reports "Nightscout works" (token accepted, reading parsed and current).
 - **The signing expires Saturday 2026-09-19 at 21:26 MST.** Reconnect the
   phone and press Run in Xcode before then. The source is in
 `ios/`. Its pure core passes its tests, built with `swiftc`, and the whole app

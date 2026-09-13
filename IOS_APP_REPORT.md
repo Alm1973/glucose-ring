@@ -813,3 +813,28 @@ time, and has no attendees.
 
 **`main`** is fast-forwarded to `ios-relay` with this commit, so GitHub's
 default branch shows the current project.
+
+### 13. Nightscout fetch verified on the iPhone
+
+You installed the build with the Test Nightscout button (⌘R from Xcode) and
+tapped it on your iPhone 11 (iOS 26.6.2). It reported **"Nightscout works"**.
+That is your report from the phone's screen; I can't see the phone.
+
+That result confirms, **on the real device:**
+- `NightscoutClient` (URLSession over HTTPS) reaches the live server;
+- the bundled `Secrets.plist` is read, and its token is **accepted**
+  (`?token=`);
+- iOS's JSONSerialization and the strict parser accept the live entry;
+- the reading is **current**. "Works" appears only for a fresh, usable reading.
+
+Before this, that path had been verified only with `curl` on the Mac.
+Section 10's "Nightscout fetch from the app" is therefore no longer
+untested.
+
+**Still untested, all needing the ring:**
+- pairing;
+- `#REQ` wakes, in the background and after the system kills the app;
+- `!TIME` and the reading being written to the ring, and `!GET STATUS`
+  confirmation;
+- the MISS and STALE alarms;
+- the firmware on the XIAO.

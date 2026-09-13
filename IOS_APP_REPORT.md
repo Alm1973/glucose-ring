@@ -668,3 +668,35 @@ with Xcode.
    printed the Xcode path only because my shell had `DEVELOPER_DIR` set. The
    real system setting is unchanged; I checked it separately without the
    override.
+
+### 9. First iOS build: succeeds
+
+**How it was built:** Xcode 27.0 (iOS 27 SDK, Swift 6.4), unsigned, Debug,
+for `iphoneos`. I used a `DEVELOPER_DIR` override, so the system default
+stayed Command Line Tools. The output went to a scratch folder, not the repo.
+
+**Result:**
+- **BUILD SUCCEEDED, with 0 errors and 0 compiler warnings.** The one warning
+  in the log comes from App Intents metadata extraction ("no
+  AppIntents.framework dependency found"); the app doesn't use App Intents.
+- **The hand-written Xcode project works.** All 8 source files compiled: 5
+  from the app folder and 3 from `Core`, through the synchronized groups.
+- **The built app is 504 KB:**
+  - bundle ID `com.glucosering.relay`;
+  - `MinimumOSVersion` 26.0;
+  - `UIBackgroundModes` `[bluetooth-central]`;
+  - `NSBluetoothAlwaysUsageDescription` present;
+  - iPhone only.
+- **Binary:** Mach-O arm64, platform iOS, minos 26.0, SDK 27.0.
+- **`Secrets.plist` is bundled with your real token,** checked by count and
+  never printed. As noted before, the token is inside the built app.
+- **The Swift core tests pass under Xcode's Swift 6.4,** warnings as errors:
+  112/0, as under Swift 5.8.
+- My worry that the newer compiler would raise concurrency errors did not
+  materialise; the project builds in Swift 5 language mode.
+
+**Not done** (needs you and the phone):
+- signing with your Personal Team;
+- installing and running it on the iPhone.
+
+No simulator runtime is installed.

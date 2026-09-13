@@ -1,10 +1,10 @@
 # Phone app — iOS relay: design and status
 
-**Status: WRITTEN, NOT YET BUILT FOR iOS** (2026-09-12). The source is in
+**Status: BUILDS FOR iOS; NOT YET RUN ON A PHONE** (2026-09-12). It was built
+unsigned with Xcode 27.0 (iOS 27 SDK, Swift 6.4): 0 errors, 0 compiler
+warnings. It has not been signed, installed or run. The source is in
 `ios/`. Its pure core passes its tests, built with `swiftc`, and the whole app
-typechecks against the Mac Catalyst SDK. It has never been compiled for iOS,
-opened in Xcode, or run on a phone. Xcode 27.0 is now installed, but its license has not been
-accepted yet. The phone is an iPhone. The
+typechecks against the Mac Catalyst SDK. The phone is an iPhone. The
 Android app was retired on branch `ios-relay`; its code is in git history
 (`nightscout-relay`, app commit `c306487`), and its report is
 [PHONE_APP_REPORT.md](PHONE_APP_REPORT.md):
@@ -141,7 +141,7 @@ paste yours.
 - **Xcode 27.0 (build 27A266a) is installed** at `/Applications/Xcode.app`.
   It is 3.6 GB, its full code signature verifies, and it includes the iOS 27
   SDK. It needs macOS 26.6 or later; this Mac runs 26.6.2.
-- **Its license has not been accepted yet;** that needs your admin password.
+- **License accepted,** and the first-launch setup is done.
 - **The system's default developer directory is still Command Line Tools
   14.3.1,** which the firmware build and both test scripts use.
 - **Target phone: iPhone 11 on iOS 26.6.2.** Any Xcode from 26 on builds for

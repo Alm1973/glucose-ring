@@ -618,3 +618,53 @@ Xcode 26.
 my Catalyst typecheck cannot target iOS 26. I re-ran it at iOS 16.0 after
 this edit. Raising the minimum removes no API, but newer deprecations will
 only show up in Xcode itself.
+
+### 8. Xcode: found already expanded, now installed
+
+**The download:** `~/Downloads/Xcode_27_Release_Candidate.xip`,
+2,014,229,334 bytes. It is **complete** (its archive table matches the file
+size) and **signed "Apple Software"**.
+
+**It had already been expanded.** `~/Downloads/Xcode.app` was **Xcode 27.0,
+build 27A266a**, 3.6 GB, and its full code signature was valid
+(`codesign --verify --deep --strict`). Nothing needed unzipping.
+
+**Installed.** I moved it (a same-disk rename) to `/Applications/Xcode.app`.
+- The signature re-verified in place.
+- `xcodebuild -version` runs through a `DEVELOPER_DIR` override, without
+  changing any system setting.
+- It needs macOS 26.6 or later (this Mac runs 26.6.2).
+- It ships the iOS 27 SDK and builds for iOS 26.0 and later, including your
+  iPhone 11 on 26.6.2.
+
+**Still yours** (each needs your admin password):
+1. Accept the license: open Xcode and agree, or run
+   `sudo xcodebuild -license accept`.
+2. Let it install its first-launch components:
+   `sudo xcodebuild -runFirstLaunch`.
+3. Optional: make it the system default with
+   `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`. The
+   default is still Command Line Tools, so the firmware build and both test
+   scripts keep running exactly as tested.
+
+**Next for me, once the license is accepted:** the first real iOS compile of
+this app, unsigned:
+`xcodebuild -target GlucoseRing -sdk iphoneos CODE_SIGNING_ALLOWED=NO build`.
+
+The `.xip` (2 GB) is now redundant; move it to the Trash when you're happy
+with Xcode.
+
+**Corrections:**
+1. **Xcode's size.** I estimated 20–25 GB installed. Xcode 27 is 3.6 GB
+   expanded, from a 2.0 GB download. The cleanup still helped, but Xcode
+   didn't need it.
+2. **Xcode 26 vs 27.** I wrote that you needed Xcode 26. You installed the
+   27.0 release candidate, which is newer and fine.
+3. **My first completeness check of the `.xip` was wrong.** A regex paired
+   the Metadata entry's offset with the Content entry's length, and reported
+   the download as truncated at 50 %. Re-parsed with an XML parser, it is
+   complete.
+4. **A misleading line in my own output.** After the move, `xcode-select -p`
+   printed the Xcode path only because my shell had `DEVELOPER_DIR` set. The
+   real system setting is unchanged; I checked it separately without the
+   override.

@@ -3,7 +3,8 @@
 **Status: WRITTEN, NOT YET BUILT FOR iOS** (2026-09-12). The source is in
 `ios/`. Its pure core passes its tests, built with `swiftc`, and the whole app
 typechecks against the Mac Catalyst SDK. It has never been compiled for iOS,
-opened in Xcode, or run on a phone, because Xcode is not installed. The phone is an iPhone. The
+opened in Xcode, or run on a phone. Xcode 27.0 is now installed, but its license has not been
+accepted yet. The phone is an iPhone. The
 Android app was retired on branch `ios-relay`; its code is in git history
 (`nightscout-relay`, app commit `c306487`), and its report is
 [PHONE_APP_REPORT.md](PHONE_APP_REPORT.md):
@@ -137,18 +138,24 @@ paste yours.
 
 ## 5. Toolchain
 
-- **Xcode is required and is not installed.** There's only Command Line Tools
-  14.3.1 (Swift 5.8.1, no iOS SDK). You install Xcode yourself; it needs your
-  Apple ID sign-in and license acceptance.
-- **Target phone: iPhone 11 on iOS 26.6.2.** That needs **Xcode 26**. The
-  deployment target is iOS 26.0.
-- **Disk: 9.9 GiB free before cleanup.** Plan for roughly 20–25 GB free
-  before installing Xcode (estimate).
+- **Xcode 27.0 (build 27A266a) is installed** at `/Applications/Xcode.app`.
+  It is 3.6 GB, its full code signature verifies, and it includes the iOS 27
+  SDK. It needs macOS 26.6 or later; this Mac runs 26.6.2.
+- **Its license has not been accepted yet;** that needs your admin password.
+- **The system's default developer directory is still Command Line Tools
+  14.3.1,** which the firmware build and both test scripts use.
+- **Target phone: iPhone 11 on iOS 26.6.2.** Any Xcode from 26 on builds for
+  it. The deployment target is iOS 26.0.
+- **Disk is no longer a constraint** (≈ 85 GiB free).
 - **Signing: free Personal Team** (your choice). Builds expire after 7 days.
 
 ### Building, once Xcode is installed
 
-1. Paste the token into `ios/GlucoseRing/Secrets.plist`.
+1. Accept Xcode's license and let it finish its first launch. Either open
+   `/Applications/Xcode.app` once and agree, or run
+   `sudo xcodebuild -license accept` and then
+   `sudo xcodebuild -runFirstLaunch`. The token is already in
+   `ios/GlucoseRing/Secrets.plist`.
 2. Open `ios/GlucoseRing.xcodeproj`. **It was written by hand and has never
    been opened in Xcode**, so expect to fix small things.
 3. Target → Signing & Capabilities: choose your Personal Team. If the bundle

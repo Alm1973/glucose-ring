@@ -766,3 +766,50 @@ navy-to-teal background.
   bundle ID would be a different app to iOS and would redo signing.
 - the ring's Bluetooth name `GlucoseRing`, which the firmware advertises and
   the app scans for.
+
+### 12. Test Nightscout button, thresholds, reminder, `main` caught up
+
+**Test Nightscout button** (commit `10f0c73`):
+- It runs the app's real, read-only fetch on demand and shows the result in
+  plain words.
+- It writes nothing to the ring and does not count as a ring request.
+- A 401/403 it sees is recorded as a rejected token; nothing else in the
+  relay state changes. It never uses up a reading the ring should still
+  receive.
+- The per-fetch wording now lives in one place, `Relay.dataProblem`, shared
+  by the status screen and the button.
+- **Verified:** core tests 134/0 (was 112), on Swift 5.8 and on Xcode's
+  Swift 6.4; the Catalyst typecheck is clean; the unsigned iOS build has 0
+  errors and 0 warnings.
+- **Not yet on the phone:** press ⌘R to install it.
+
+**Thresholds: low 60, high 160 mg/dL** (the wearer's choice, 2026-09-12),
+set as the firmware's compile-time defaults.
+- The comparisons are strict: **LOW below 60** (59 and under), **HIGH above
+  160** (161 and over).
+- *From memory, not verified:* Dexcom alerts "at or below" the low and "at or
+  above" the high. To match that exactly, the ring would need 61 and 159.
+  That's your call; the numbers were used as given.
+- The defaults seed the config **on first boot only**. After that, change
+  them with `!SET THRESH`. `!RESET CONFIG` returns both sides to unset, and
+  an unset side never alerts.
+- **New build guard:** `static_assert`s refuse out-of-range or inverted
+  defaults. Without them a typo would be saved to flash on first boot, and
+  nothing validates that write.
+  - **Negative check:** a scratch copy with low 200 failed to build with
+    "DEFAULT_LOW_MG_DL must be below DEFAULT_HIGH_MG_DL".
+- **Verified:** the firmware builds with **0 warnings anywhere**, in both
+  the default and the `TEST_MODE`/`DEBUG_SERIAL` builds; the old
+  placeholder-threshold `#warning` is gone because the thresholds are now
+  set. 137,292 bytes flash; host tests 450/0.
+- **Not verified:** any of it on the ring.
+- This resolves `REPORT.md` open question 1, which asked for the threshold
+  values.
+
+**Reminder:** a Google Calendar event on **Saturday 2026-09-19, 18:00–18:15
+America/Phoenix**, "Reinstall GRing on your iPhone (signing expires
+9:26 PM)". It has pop-ups 1 day and 1 hour before, is private, doesn't block
+time, and has no attendees.
+
+**`main`** is fast-forwarded to `ios-relay` with this commit, so GitHub's
+default branch shows the current project.

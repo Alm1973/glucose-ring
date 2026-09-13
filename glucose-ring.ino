@@ -27,16 +27,34 @@
 using namespace Adafruit_LittleFS_Namespace;
 
 /* ==================================================================
- * FACTORY DEFAULT THRESHOLDS -- YOU MUST SET THESE
+ * FACTORY DEFAULT THRESHOLDS
  * ==================================================================
- * These seed the config file on first boot. Left as RC_UNSET on purpose:
- * choosing clinical numbers is not this firmware's job. An unset side
- * simply never alerts. You can also set them at runtime with
+ * Chosen by the wearer on 2026-09-12: low 60, high 160 mg/dL. Choosing
+ * clinical numbers is not this firmware's job; these are theirs.
+ *
+ * The comparisons are strict: LOW fires when sgv < 60 (59 and under), HIGH
+ * when sgv > 160 (161 and over).
+ *
+ * These seed the config file on FIRST boot only. After that, change them at
+ * runtime with
  *     !SET THRESH <low> <high>
- * over BLE, which persists to flash -- no reflash needed.
+ * over BLE, which persists to flash -- no reflash needed. !RESET CONFIG
+ * returns both sides to RC_UNSET, and an unset side never alerts.
  */
-#define DEFAULT_LOW_MG_DL    RC_UNSET   // <<<< SET ME (mg/dL), or use !SET THRESH
-#define DEFAULT_HIGH_MG_DL   RC_UNSET   // <<<< SET ME (mg/dL), or use !SET THRESH
+#define DEFAULT_LOW_MG_DL    60    // mg/dL, wearer's choice 2026-09-12
+#define DEFAULT_HIGH_MG_DL   160   // mg/dL, wearer's choice 2026-09-12
+
+/* A typo here would save an invalid config to flash on first boot, and
+   nothing validates that write -- so refuse to build instead. */
+static_assert(DEFAULT_LOW_MG_DL == RC_UNSET ||
+              (DEFAULT_LOW_MG_DL >= RC_SGV_MIN && DEFAULT_LOW_MG_DL <= RC_SGV_MAX),
+              "DEFAULT_LOW_MG_DL must be RC_UNSET or within RC_SGV_MIN..RC_SGV_MAX");
+static_assert(DEFAULT_HIGH_MG_DL == RC_UNSET ||
+              (DEFAULT_HIGH_MG_DL >= RC_SGV_MIN && DEFAULT_HIGH_MG_DL <= RC_SGV_MAX),
+              "DEFAULT_HIGH_MG_DL must be RC_UNSET or within RC_SGV_MIN..RC_SGV_MAX");
+static_assert(DEFAULT_LOW_MG_DL == RC_UNSET || DEFAULT_HIGH_MG_DL == RC_UNSET ||
+              DEFAULT_LOW_MG_DL < DEFAULT_HIGH_MG_DL,
+              "DEFAULT_LOW_MG_DL must be below DEFAULT_HIGH_MG_DL");
 
 #if (DEFAULT_LOW_MG_DL == RC_UNSET) || (DEFAULT_HIGH_MG_DL == RC_UNSET)
   #warning "Threshold defaults are placeholders - that side never alerts until set (compile-time or !SET THRESH)."

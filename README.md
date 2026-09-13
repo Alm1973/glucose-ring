@@ -15,17 +15,24 @@ buzz patterns are configurable over BLE and persist in flash.
 
 ---
 
-## 1. Set your thresholds
+## 1. Thresholds
 
-Both thresholds ship as `RC_UNSET`. **An unset side never alerts.** Two ways
-to set them:
+**Set to low 60, high 160 mg/dL** (the wearer's choice, 2026-09-12), as the
+compile-time defaults in [glucose-ring.ino](glucose-ring.ino).
 
-- **Over BLE, no reflash:** `!SET THRESH 70 200` — persists to flash.
-- **At compile time:** edit `DEFAULT_LOW_MG_DL` / `DEFAULT_HIGH_MG_DL` in
-  [glucose-ring.ino](glucose-ring.ino). These seed the config on first boot only.
+The comparisons are strict:
+- **LOW buzzes below 60**: 59 and under.
+- **HIGH buzzes above 160**: 161 and over.
 
-Every build warns until the compile-time defaults are real numbers. Picking
-them is a clinical decision, not a firmware one.
+How they behave:
+- The defaults seed the config on **first boot only**. To change them later
+  without reflashing, send `!SET THRESH <low> <high>` over BLE; it persists
+  to flash.
+- `!RESET CONFIG` returns both sides to **unset**, and an unset side never
+  alerts.
+- The build refuses defaults that are out of range (20–600) or inverted.
+
+Picking the numbers is a clinical decision, not a firmware one.
 
 ---
 

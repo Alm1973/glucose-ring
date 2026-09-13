@@ -110,6 +110,34 @@ func relayTests() {
     }
     expectEqual(wrong, 0, "wrong combinations out of \(total)")
 
+    section("relay: Test Nightscout button")
+    let works = Relay.testStatus(.ok(entry(age: 3 * ONE_MIN)), nowMs: NOW)
+    check(works.ok && works.title == "Nightscout works", "fresh reading: works (\(works.title))")
+    check(works.detail.contains("204 FortyFiveDown") && works.detail.contains("3 min old"),
+          "says which reading and how old: \(works.detail)")
+    expectEqual(Relay.testStatus(.http(401), nowMs: NOW).title, "Token rejected", "401")
+    expectEqual(Relay.testStatus(.http(403), nowMs: NOW).title, "Token rejected", "403")
+    expectEqual(Relay.testStatus(.http(500), nowMs: NOW).title, "Nightscout error", "500")
+    expectEqual(Relay.testStatus(.unreachable("timed out"), nowMs: NOW).title, "Can't reach Nightscout", "unreachable")
+    expectEqual(Relay.testStatus(.badBody("x"), nowMs: NOW).title, "Unexpected reply", "bad body")
+    expectEqual(Relay.testStatus(.ok(nil), nowMs: NOW).title, "No readings in Nightscout", "empty")
+    expectEqual(Relay.testStatus(.ok(entry(age: 23 * ONE_MIN)), nowMs: NOW).title, "No current glucose data", "stale")
+    expectEqual(Relay.testStatus(.ok(entry(age: ONE_MIN, sgv: 5)), nowMs: NOW).title, "Not a usable reading", "error code")
+    for f in [Fetch.http(401), .http(500), .unreachable("x"), .badBody("x"), .ok(nil),
+              .ok(entry(age: 20 * ONE_MIN)), .ok(entry(age: ONE_MIN, sgv: 5))] {
+        check(!Relay.testStatus(f, nowMs: NOW).ok, "only a fresh, valid reading reports ok: \(f)")
+    }
+    var tb = RelayState()
+    tb.onTestFetch(.http(401))
+    expectEqual(tb.tokenRejectedCode, 401, "a test that gets 401 marks the token rejected")
+    check(tb.lastFetch == nil && tb.lastPokeAtMs == nil, "a test is neither a ring request nor a relay fetch")
+    tb.onTestFetch(.unreachable("timed out"))
+    expectEqual(tb.tokenRejectedCode, 401, "a failed test does not clear a rejected token")
+    tb.onTestFetch(.ok(entry(age: ONE_MIN)))
+    check(tb.tokenRejectedCode == nil, "a successful test clears it")
+    check(tb.onFetch(.ok(entry(age: ONE_MIN)), nowMs: NOW) != nil,
+          "a test never uses up a reading: the ring still gets it on its next request")
+
     section("relay: backoff for connect-then-drop loops")
     var b = Backoff(capMs: 8_000)
     expectEqual((0..<6).map { _ in b.next(random: 1.0) }, [1_000, 2_000, 4_000, 8_000, 8_000, 8_000], "doubles to the 8 s cap")

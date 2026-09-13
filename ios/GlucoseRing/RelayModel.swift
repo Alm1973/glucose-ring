@@ -10,6 +10,9 @@ final class RelayModel: ObservableObject {
 
     @Published private(set) var status = Relay.Status(ok: false, title: "Starting", detail: "")
     @Published private(set) var linkText = ""
+    @Published private(set) var test: Relay.Status?
+    @Published private(set) var testing = false
+    @Published private(set) var testedAt: Date?
 
     private let config = Config.load()
     private let ring = RingLink()
@@ -26,6 +29,29 @@ final class RelayModel: ObservableObject {
     }
 
     func findRing() { ring.findRing() }
+
+    /// One real, read-only Nightscout fetch on demand. It proves the token,
+    /// network and parsing on this phone before a ring exists. Nothing is
+    /// written to the ring, and it does not count as a ring request.
+    func testNightscout() {
+        guard !testing else { return }
+        if let problem = config.problem {
+            test = Relay.Status(ok: false, title: "Not configured", detail: problem)
+            testedAt = Date()
+            return
+        }
+        testing = true
+        nightscout.fetch { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.testing = false
+                self.testedAt = Date()
+                self.relay.onTestFetch(result)   // a revoked token is recorded; nothing else changes
+                self.test = Relay.testStatus(result, nowMs: Self.nowMs())
+                self.refresh()
+            }
+        }
+    }
 
     func refresh() {
         status = relay.status(nowMs: Self.nowMs(), configProblem: config.problem)

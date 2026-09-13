@@ -38,6 +38,23 @@ struct StatusView: View {
                     .foregroundStyle(.secondary)
                 Button("Find ring") { model.findRing() }
                     .buttonStyle(.borderedProminent)
+                Divider()
+                Button(model.testing ? "Testing..." : "Test Nightscout") { model.testNightscout() }
+                    .buttonStyle(.bordered)
+                    .disabled(model.testing)
+                if let result = model.test {
+                    Text(result.title)
+                        .font(.headline)
+                        .foregroundStyle(result.ok ? Color.green : Color.red)
+                    Text(result.detail)
+                        .font(.subheadline)
+                    if let at = model.testedAt {
+                        Text("Checked at \(at.formatted(date: .omitted, time: .shortened))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Divider()
                 Text("Leave this app in the app switcher. If you swipe it away, iOS stops waking it for the "
                      + "ring, and the ring buzzes MISS about 15 minutes later. This is a secondary alert: keep "
                      + "your CGM app's own alarms on.")

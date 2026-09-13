@@ -38,6 +38,70 @@ enum Relay {
         guard e.dateMs <= nowMs + futureToleranceMs, nowMs - e.dateMs <= staleMs else { return nil }
         return RingProtocol.formatReading(sgv: e.sgv, epochMs: e.dateMs, direction: e.direction)
     }
+
+    /// What one fetch says about the data, ring aside: nil for a current,
+    /// usable reading, otherwise the problem in plain words. The status screen
+    /// and the Test Nightscout button both use this, so they never disagree.
+    /// A 401/403 is reported by the callers, because the status keeps it sticky.
+    static func dataProblem(_ fetch: Fetch, nowMs: Int64) -> Status? {
+        switch fetch {
+        case .unreachable(let why):
+            return .init(ok: false, title: "Can't reach Nightscout",
+                         detail: "Can't reach Nightscout (\(why)). Tried again at the ring's next request.")
+        case .http(let code):
+            return .init(ok: false, title: "Nightscout error",
+                         detail: "Nightscout returned HTTP \(code). Tried again at the ring's next request.")
+        case .badBody(let why):
+            return .init(ok: false, title: "Unexpected reply", detail: "Nightscout's reply was not understood (\(why)).")
+        case .ok(nil):
+            return .init(ok: false, title: "No readings in Nightscout", detail: "Nightscout returned no glucose readings.")
+        case .ok(let e?):
+            let age = nowMs - e.dateMs
+            if e.dateMs > nowMs + futureToleranceMs {
+                return .init(ok: false, title: "Reading dated in the future", detail: "Check the phone's date and time.")
+            }
+            if age > staleMs {
+                return .init(ok: false, title: "No current glucose data",
+                             detail: "Newest reading (\(e.sgv)) is \(minutes(age)) min old. New CGM data is " +
+                                     "not reaching Nightscout; the ring will buzz STALE.")
+            }
+            if RingProtocol.formatReading(sgv: e.sgv, epochMs: e.dateMs, direction: e.direction) == nil {
+                return .init(ok: false, title: "Not a usable reading",
+                             detail: "Nightscout's newest value (\(e.sgv)) is not a glucose reading.")
+            }
+            return nil
+        }
+    }
+
+    static func tokenRejected(_ code: Int) -> Status {
+        .init(ok: false, title: "Token rejected",
+              detail: "Nightscout refused the token (HTTP \(code)): it is wrong or has been revoked. " +
+                      "This will not fix itself. Put a valid read-only token in Secrets.plist and " +
+                      "reinstall. Until then the ring will buzz STALE.")
+    }
+
+    /// The Test Nightscout button: one real, read-only fetch. Nothing is
+    /// written to the ring, and a test never counts as a ring request.
+    static func testStatus(_ fetch: Fetch, nowMs: Int64) -> Status {
+        if case .http(let code) = fetch, code == 401 || code == 403 { return tokenRejected(code) }
+        if let problem = dataProblem(fetch, nowMs: nowMs) { return problem }
+        guard case .ok(let e?) = fetch else {   // dataProblem covers every other case
+            return .init(ok: false, title: "Nightscout error", detail: "No reading.")
+        }
+        return .init(ok: true, title: "Nightscout works",
+                     detail: "Latest reading \(label(e)), \(ageText(nowMs - e.dateMs)) old, and the token is " +
+                             "accepted. Readings will reach the ring once it is connected.")
+    }
+
+    static func label(_ e: Entry) -> String {
+        [String(e.sgv), RingProtocol.sanitizeDirection(e.direction)].filter { !$0.isEmpty }.joined(separator: " ")
+    }
+
+    static func minutes(_ ms: Int64) -> Int64 { ms / 60_000 }
+
+    static func ageText(_ ms: Int64, capitalized: Bool = false) -> String {
+        ms < 60_000 ? (capitalized ? "Under a minute" : "under a minute") : "\(ms / 60_000) min"
+    }
 }
 
 struct RelayState {
@@ -67,11 +131,7 @@ struct RelayState {
     /// Record a fetch; returns the reading line to write back, if any.
     mutating func onFetch(_ f: Fetch, nowMs: Int64) -> String? {
         lastFetch = f
-        switch f {
-        case .http(let code) where code == 401 || code == 403: tokenRejectedCode = code
-        case .ok:                                              tokenRejectedCode = nil
-        default:                                               break   // neither sets nor clears it
-        }
+        noteToken(f)
         guard case .ok(let entry) = f, let e = entry, e.dateMs > sentOnLink,
               let line = Relay.lineToSend(e, nowMs: nowMs) else { return nil }
         sentOnLink = e.dateMs
@@ -79,68 +139,52 @@ struct RelayState {
         return line
     }
 
+    /// The Test Nightscout button. A 401/403 is as permanent as ever, so it is
+    /// recorded; nothing else changes. No line is sent and no poke is implied.
+    mutating func onTestFetch(_ f: Fetch) { noteToken(f) }
+
+    private mutating func noteToken(_ f: Fetch) {
+        switch f {
+        case .http(let code) where code == 401 || code == 403: tokenRejectedCode = code
+        case .ok:                                              tokenRejectedCode = nil
+        default:                                               break   // neither sets nor clears it
+        }
+    }
+
     func status(nowMs: Int64, configProblem: String?) -> Relay.Status {
         if let p = configProblem {
             return .init(ok: false, title: "Not configured", detail: p)
         }
-        if let code = tokenRejectedCode {
-            return .init(ok: false, title: "Token rejected",
-                         detail: "Nightscout refused the token (HTTP \(code)): it is wrong or has been revoked. " +
-                                 "This will not fix itself. Put a valid read-only token in Secrets.plist and " +
-                                 "reinstall. Until then the ring will buzz STALE.")
-        }
+        if let code = tokenRejectedCode { return Relay.tokenRejected(code) }
         guard let poke = lastPokeAtMs else {
             return .init(ok: false, title: "Waiting for the ring",
                          detail: "Once connected, the ring asks for a reading every ~5 minutes.")
         }
         if nowMs - poke > Relay.ringSilentMs {
             return .init(ok: false, title: "Ring not asking",
-                         detail: "No request from the ring for \(Self.minutes(nowMs - poke)) min. It may be out " +
+                         detail: "No request from the ring for \(Relay.minutes(nowMs - poke)) min. It may be out " +
                                  "of range, off, or disconnected; it will buzz MISS.")
         }
-        switch lastFetch {
-        case nil:
+        guard let fetch = lastFetch else {
             return .init(ok: false, title: "Waiting for Nightscout", detail: "Fetching.")
-        case .unreachable(let why)?:
-            return .init(ok: false, title: "Can't reach Nightscout",
-                         detail: "Can't reach Nightscout (\(why)). Tried again at the ring's next request.")
-        case .http(let code)?:
-            return .init(ok: false, title: "Nightscout error",
-                         detail: "Nightscout returned HTTP \(code). Tried again at the ring's next request.")
-        case .badBody(let why)?:
-            return .init(ok: false, title: "Unexpected reply", detail: "Nightscout's reply was not understood (\(why)).")
-        case .ok(nil)?:
-            return .init(ok: false, title: "No readings in Nightscout", detail: "Nightscout returned no glucose readings.")
-        case .ok(let e?)?:
-            let age = nowMs - e.dateMs
-            if e.dateMs > nowMs + Relay.futureToleranceMs {
-                return .init(ok: false, title: "Reading dated in the future", detail: "Check the phone's date and time.")
-            }
-            if age > Relay.staleMs {
-                return .init(ok: false, title: "No current glucose data",
-                             detail: "Newest reading (\(e.sgv)) is \(Self.minutes(age)) min old. New CGM data is " +
-                                     "not reaching Nightscout; the ring will buzz STALE.")
-            }
-            if RingProtocol.formatReading(sgv: e.sgv, epochMs: e.dateMs, direction: e.direction) == nil {
-                return .init(ok: false, title: "Not a usable reading",
-                             detail: "Nightscout's newest value (\(e.sgv)) is not a glucose reading.")
-            }
-            let label = [String(e.sgv), RingProtocol.sanitizeDirection(e.direction)]
-                .filter { !$0.isEmpty }.joined(separator: " ")
-            guard let ring = ringStatus else {
-                return .init(ok: false, title: "Sending \(label) to the ring",
-                             detail: "\(Self.ageText(age)) old. Waiting for the ring to confirm.")
-            }
-            if ring.fields["sgv"] == String(e.sgv), ring.fields["stale"] == "0" {
-                return .init(ok: true, title: "Relaying \(label)", detail: "\(Self.ageText(age)) old. The ring confirms it.")
-            }
-            return .init(ok: false, title: "Ring did not take the reading",
-                         detail: "The ring reports sgv=\(ring.fields["sgv"] ?? "?") stale=\(ring.fields["stale"] ?? "?").")
         }
+        if let problem = Relay.dataProblem(fetch, nowMs: nowMs) { return problem }
+        guard case .ok(let e?) = fetch else {   // dataProblem covers every other case
+            return .init(ok: false, title: "Nightscout error", detail: "No reading.")
+        }
+        let age = nowMs - e.dateMs
+        let label = Relay.label(e)
+        guard let ring = ringStatus else {
+            return .init(ok: false, title: "Sending \(label) to the ring",
+                         detail: "\(Relay.ageText(age, capitalized: true)) old. Waiting for the ring to confirm.")
+        }
+        if ring.fields["sgv"] == String(e.sgv), ring.fields["stale"] == "0" {
+            return .init(ok: true, title: "Relaying \(label)",
+                         detail: "\(Relay.ageText(age, capitalized: true)) old. The ring confirms it.")
+        }
+        return .init(ok: false, title: "Ring did not take the reading",
+                     detail: "The ring reports sgv=\(ring.fields["sgv"] ?? "?") stale=\(ring.fields["stale"] ?? "?").")
     }
-
-    private static func minutes(_ ms: Int64) -> Int64 { ms / 60_000 }
-    private static func ageText(_ ms: Int64) -> String { ms < 60_000 ? "Under a minute" : "\(ms / 60_000) min" }
 }
 
 /// Delay for connect-then-drop loops: 1 s doubling to a cap, with jitter

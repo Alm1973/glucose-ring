@@ -636,10 +636,51 @@ static void hostInit(void)
 
 /* ---- line handling ------------------------------------------------ */
 
+/*
+ * One protocol line out, chunked to the negotiated MTU.
+ *
+ * BLECharacteristic::notify() begins with `remaining = min16(len, _max_len)`,
+ * and BLEUart::begin() sets _max_len to the peripheral's max MTU -- 23 here,
+ * because we ask for BANDWIDTH_LOW. Anything past that is dropped, and the
+ * call still reports success, so nothing upstream can tell. A single write of
+ * a whole line was therefore silently cut at 23 bytes: "#STATUS sgv=142
+ * dir=Flat age_s=1 stale=0 alert=none up_s=..." reached the phone as
+ * "#STATUS sgv=142 dir=Fla", and the phone -- which needs `stale` before it
+ * will believe the ring took a reading -- could never see it. Every
+ * multi-field reply was affected: #STATUS, #BOOT, #VER, #BATT, #LINK. Only
+ * "#REQ" is short enough to have survived, which is why pokes always worked.
+ *
+ * So chunk, exactly as the phone chunks its own writes (RingProtocol.chunks).
+ */
+#define BLE_TX_TRIES      8    /* per chunk, while no notify buffer is free */
+#define BLE_TX_RETRY_MS   5
+
+static bool uartWriteAll(const uint8_t *p, size_t n)
+{
+  for (uint8_t t = 0; t < BLE_TX_TRIES; t++) {
+    if (bleuart.write(p, n) == n) return true;
+    delay(BLE_TX_RETRY_MS);   /* no free HVN packet: let a connection event drain */
+  }
+  return false;               /* link gone or wedged: the poke cadence is the retry */
+}
+
 static void sendLine(const char *s)
 {
-  bleuart.write((const uint8_t *)s, strlen(s));
-  bleuart.write((const uint8_t *)"\n", 1);
+  size_t max = 20;                                  /* ATT default payload */
+  BLEConnection *c = Bluefruit.Connection(Bluefruit.connHandle());
+  if (c) {
+    uint16_t mtu = c->getMtu();
+    if (mtu > 3) max = (size_t)(mtu - 3);
+  }
+
+  size_t len = strlen(s);
+  for (size_t off = 0; off < len; ) {
+    size_t n = len - off;
+    if (n > max) n = max;
+    if (!uartWriteAll((const uint8_t *)s + off, n)) return;
+    off += n;
+  }
+  uartWriteAll((const uint8_t *)"\n", 1);
 }
 
 static void handleReading(const char *line, uint64_t now)

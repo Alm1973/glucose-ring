@@ -190,8 +190,10 @@ the ring and drives the motor. **No BLE link between the two has been tested.**
 1. **iOS pairs when the ring sends its Security Request.** iOS has no app API
    to start bonding, and the NUS characteristics are open, so nothing else
    triggers pairing. The ring ignores unencrypted links. **If iOS does not
-   honour the request, the app never gets data.** This is the top risk; check
-   it with nRF Connect on the iPhone as soon as a ring exists.
+   honour the request, the app never gets data.** This was the top risk.
+   **RESOLVED 2026-09-23 (§15): iOS raised its pairing dialog on the first
+   connect, the bond completed, and it survived a firmware reflash — the
+   phone reconnects with no prompt.**
 2. iOS wakes the suspended app for a notification with roughly 10 s of
    execution; `beginBackgroundTask` extends that a little. From memory of
    Apple's documentation; not measured.
@@ -974,3 +976,84 @@ more to match the package's real orientation. **The MOSFET was undamaged.**
   calibration, idle current, high-Z divider) are untouched, and the README's
   later steps still describe them against `BAT+`; only §2 and step 3 have
   been updated to 3V3.
+
+---
+
+### 15. The relay works end to end (2026-09-23)
+
+`Relaying 128 Flat — 2 min old. The ring confirms it.`
+
+That string is the app's success state, and it requires the whole chain:
+Nightscout returned a current reading, the app wrote it to the ring, the ring
+accepted it, and the ring's own `#STATUS` reply confirmed it holds that exact
+`sgv` with `stale=0` ([Core/Relay.swift:181](ios/Core/Relay.swift)).
+
+#### Assumption 3.1 — pairing — RESOLVED
+
+The top risk in the whole design: iOS has no API to start bonding, so the
+ring sends a Security Request and iOS was *assumed* to answer with its system
+pairing dialog. **It does.** The dialog appeared on the first connect, the
+bond completed, and it **survived three firmware reflashes** — the phone now
+reconnects with no prompt at all. The bond lives in LittleFS on the ring and
+a DFU app update does not disturb it.
+
+#### A real firmware bug: every reply was truncated at 23 bytes
+
+The first end-to-end attempt showed `Ring did not take the reading`, with the
+detail `The ring reports sgv=142 stale=?`. The ring's serial said the opposite
+— `sgv 142 Flat`, accepted with no `drop:` — so the reading had landed and the
+*reply* was wrong.
+
+Cause, in the core rather than in our code:
+`BLECharacteristic::notify()` opens with `remaining = min16(len, _max_len)`,
+and `BLEUart::begin()` sets `_max_len` to the peripheral's max MTU — **23**,
+because the firmware asks for `BANDWIDTH_LOW`. Anything past 23 bytes is
+dropped, **and the call still returns success**, so nothing upstream can
+detect it. `sendLine()` wrote each whole line in one call, so
+
+```
+#STATUS sgv=142 dir=Flat age_s=1 stale=0 alert=none up_s=...
+```
+
+reached the phone as `#STATUS sgv=142 dir=Fla` — which parses cleanly, hence
+`stale=?` rather than a parse failure. The app was correct to refuse it.
+
+**Every multi-field reply was affected:** `#STATUS`, `#BOOT`, `#VER`,
+`#BATT`, `#LINK`. `#REQ` is four bytes, which is why pokes always worked and
+why readings relayed fine — the phone→ring direction was already chunked by
+`RingProtocol.chunks`.
+
+**Why no test caught it.** The wire cross-check (27,888 lines) validates the
+app's output against the firmware's parser — phone→ring only. The ring→phone
+direction had no chunking and no test, and nothing exercised a real link until
+today.
+
+**Fix** ([glucose-ring.ino:639](glucose-ring.ino)): `sendLine()` now splits on
+the connection's negotiated MTU − 3 and writes the pieces in sequence, with a
+bounded retry (8 × 5 ms) for when the softdevice has no free HVN packet — a
+condition the old code could not even observe. If the link is wedged it gives
+up; the 5-minute poke cadence is the retry, consistent with the rest of the
+protocol. Host tests remain **450/0**; flash 137,356 B (16%), RAM unchanged.
+
+#### Verified today, on hardware
+
+| | |
+|---|---|
+| Pairing from the ring's Security Request | **yes** — iOS dialog, bond persists across reflash |
+| `#REQ` poke → app answers | **yes** |
+| `!TIME`, reading written, `!GET STATUS` | **yes** |
+| Ring accepts and confirms the reading | **yes** — `Relaying 128 Flat` |
+| Nightscout fetch on the iPhone 18 Pro | **yes** — accurate readings |
+| All six buzz patterns, felt and distinguished | **yes** (§14) |
+
+#### Still untested
+
+- **Background operation.** Everything above was with the app in the
+  foreground. `#REQ` waking a *suspended* app, and state restoration after a
+  system kill, are still assumptions 3.2–3.4.
+- **The alarms in real operation.** MISS after a force-quit, STALE from a
+  Nightscout outage, and a threshold crossing have not been provoked.
+- **Battery.** No cell attached; checklist steps 7–12 untouched. The ring runs
+  on USB.
+- The free signing expires **2026-09-30**; after that the app stops launching
+  and the ring will buzz MISS.

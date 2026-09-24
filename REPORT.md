@@ -5,9 +5,13 @@ biggest live risk and wasn't in the risk sections. It is now resolved:
 everything is committed in a standalone repo at `~/projects/glucose-ring`
 (`4297cf0`, `c612140`, `d1e58ae`) and `~/.git` is gone.
 
-Hardware has not arrived. Firmware is verified by **compiling** and by
-**host-side tests**; the phone app by **compiling** and **JVM unit tests**.
-Nothing was uploaded to a board or installed on a phone.
+~~Hardware has not arrived.~~ **Out of date (2026-09-23):** the ring is
+assembled, the firmware is flashed to the XIAO, and all six buzz patterns
+were felt and told apart by hand. The iOS app is built, signed and installed
+on an iPhone. No BLE link between the two has been tested yet. Current state:
+[IOS_APP_REPORT.md](IOS_APP_REPORT.md) §14. What follows is the September
+snapshot, when firmware was verified only by **compiling** and **host-side
+tests**.
 
 ---
 

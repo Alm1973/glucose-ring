@@ -1,18 +1,20 @@
 # iOS relay — report
 
-**Status (2026-09-12): Phases 0–2 done and committed; Phase 3 written and
-tested as far as possible without Xcode.** Everything is on branch
-`ios-relay`: not merged into `main`, not pushed (there is no remote).
+**Status (2026-09-23): the app is built, signed and installed on an iPhone 18
+Pro (iOS 27.0); the ring firmware is flashed and the motor buzzes.**
+Everything is on branch `ios-relay`, pushed to the private GitHub remote.
+Section 14 is the current state — the table below is the September 12 snapshot.
 
 | Phase | Result | Commit |
 |---|---|---|
 | 0 Audit | Reported, stopped for approval | (this file, first version) |
 | 1 Remove Android | 22 files `git rm`'d; SDK, `~/.gradle`, `~/.android` removed; **2.14 GiB reclaimed** | `7cd58df` |
 | 2 Firmware: ring pokes | protocol 3, MISS alarm, trusted clock; **450/0 host tests** | `64731af` |
-| 3 iOS app | Swift core **112/0**, wire cross-check **27,888/27,888**, whole app typechecks (Catalyst); **not built for iOS** | this commit |
+| 3 iOS app | Swift core **112/0**, wire cross-check **27,888/27,888**, whole app typechecks (Catalyst); built, signed and installed on an iPhone 11 (§9–10) and an iPhone 18 Pro (§14) | this commit |
 
-**Nothing has run on the ring or on a phone.** The ring hardware's status is
-unknown, and Xcode is not installed.
+~~**Nothing has run on the ring or on a phone.**~~ Superseded: Xcode 27.0 is
+installed, the app runs on a phone, and as of 2026-09-23 the firmware runs on
+the ring and drives the motor. **No BLE link between the two has been tested.**
 
 ---
 
@@ -218,7 +220,8 @@ unknown, and Xcode is not installed.
     "gave up" pattern), extending your earlier cap decision to it.
     `!SET STALEREPEATS 0` disables the cap for both.
 13. MISS (2 × 1000 ms) can be told apart from low (3 × 400 ms) on a finger.
-    Ergonomics; untested.
+    Ergonomics. **RESOLVED 2026-09-23 (§14): tested on the assembled ring —
+    all six patterns felt distinct, MISS included.**
 14. All battery figures in section 6 are calculated, not measured.
 
 ## 4. Discrepancies
@@ -838,3 +841,136 @@ untested.
   confirmation;
 - the MISS and STALE alarms;
 - the firmware on the XIAO.
+
+---
+
+### 14. iPhone 18 Pro, and the ring's first power-up (2026-09-23)
+
+#### Phone: built and installed, never launched
+
+- **iPhone 18 Pro, iOS 27.0 (build 24A437)**, UDID registered with the free
+  Personal Team. Xcode 27.0's iOS 27.0 SDK covers it, so the "new phone runs
+  an iOS the toolchain doesn't know" risk did not materialise.
+- Built with **Xcode 27.0 (27A266a)**. `xcode-select -p` still points at
+  **Command Line Tools 14.3.1**; every build here ran with `DEVELOPER_DIR`
+  pointed at Xcode instead. Plain `xcodebuild` still fails on this machine.
+- **0 errors, 1 warning**, and the warning is Apple's own tooling:
+  `Metadata extraction skipped, no AppIntents.framework dependency found`.
+- Bundle ID `com.glucosering.relay` and team `TUQ2656V4Y` **unchanged** — no
+  signing workarounds were applied.
+- New provisioning profile issued 2026-09-23 20:37 UTC, **expires 2026-09-30
+  20:37 UTC**, 1 device. The previous profile had already expired on
+  2026-09-20, so the app on the iPhone 11 had stopped launching before this
+  session began. The 7-day clock in assumption 5 is now observed, not
+  inferred.
+- **Verified in the built `.app`, not the source:** `UIBackgroundModes =
+  ["bluetooth-central"]`, `CFBundleDisplayName = GRing`, `MinimumOSVersion =
+  26.0`, `NSBluetoothAlwaysUsageDescription` present; the NUS service UUID
+  `6E400001-…` and the state-restoration identifier
+  `com.glucosering.relay.central` are both present in
+  `GlucoseRing.debug.dylib`, where the Debug build puts the app code.
+  `Secrets.plist` is bundled.
+- **Not verified: the app has never run on this phone.** Launch is refused —
+  *"Unable to launch com.glucosering.relay because it has an invalid code
+  signature, inadequate entitlements or its profile has not been explicitly
+  trusted by the user"* — pending Settings → General → VPN & Device
+  Management → Trust. So on this phone the status UI, the Nightscout fetch
+  and the notification path are all still unverified.
+
+#### Ring: firmware flashed, hardware powered for the first time
+
+- **The ring hardware arrived and is assembled** (`REPORT.md` line 8 and the
+  README's "hardware has not arrived" notes were written before this).
+- Board: **Seeed XIAO nRF52840**. Its bootloader enumerates as VID `0x2886` /
+  PID `0x8045` with the USB product string "Seeed XIAO nRF52840 Sense"; the
+  label on the part reads `XIAO-nRF52840`, and the wearer chose
+  `Seeeduino:nrf52:xiaonRF52840`. The two variants' pin tables are identical
+  apart from whitespace, and `D10 → 47 → P1.15` in both.
+- **Upload succeeded on the first attempt**, serial DFU, no RESET double-tap
+  needed. RESET itself never registered a press all session.
+- **fw 3.0.0, proto 3.** Bring-up build (`-DTEST_MODE=1 -DDEBUG_SERIAL=1
+  -DWATCHDOG_ENABLE=0`): **flash 138,988 B (17% of 811,008), RAM 14,660 B (6%
+  of 237,568)**. Committed defaults build: **flash 137,292 B (16%), RAM
+  14,660 B (6%)**. Both compile with **zero warnings**.
+- **The placeholder-threshold `#warning` no longer fires.** It sits behind
+  `#if (DEFAULT_LOW_MG_DL == RC_UNSET) || (DEFAULT_HIGH_MG_DL == RC_UNSET)`,
+  and the thresholds are set (low 60, high 160, commit `15bac41`). Earlier
+  reports describing "one intentional `#warning`" are out of date.
+
+#### The motor did not run at first: Q1 was wired one leg round
+
+The firmware was never at fault. As built, **`D10` (through R1) landed on the
+drain, GND on the gate, and the motor on the source.** GND on the gate pins it
+at 0 V, so the MOSFET could never conduct.
+
+How it was isolated, in order:
+
+1. Serial proved the firmware ran the whole TEST_MODE cycle (the closing
+   `TEST_MODE: chg=… vbat=…` line prints only after all six patterns) — so
+   "firmware not running" was excluded.
+2. Grounding the motor's own leg by hand spun the motor — so the 3V3 feed,
+   the motor, its leads and the ground path were all excluded. That test also
+   bypasses the transistor, which is why it worked while the firmware's own
+   drive did not.
+3. A temporary diagnostic sketch (held `D10` high 5 s / low 5 s with the red
+   LED mirroring the gate; written to `/tmp`, **not committed**) gave steady
+   DC levels to measure against.
+4. The drain stayed at 3 V while driven → the MOSFET was not switching; the
+   wiring, not the part, turned out to be the cause.
+
+Fixed by moving all three wires, then swapping the two legs of the pair once
+more to match the package's real orientation. **The MOSFET was undamaged.**
+
+#### TEST_MODE result
+
+- **All six patterns ran and all felt distinct on a finger:** tick, low, high,
+  stale, miss, battery. The wearer's words: "all of them felt distinct".
+- **STALE (2 × 60 ms) was legible**, which was not a given — 60 ms is close to
+  a coin ERM's spin-up time.
+- **`chg=1` while USB is attached** — the first half of checklist step 6
+  (charge-detect polarity). The `chg=0`-when-unplugged half still needs a
+  cell and remains a hard gate.
+- **The `vbat` figures (3723 mV, 4114 mV) are meaningless.** No cell is
+  attached, and TEST_MODE calls `readVbatMv()` directly, bypassing the
+  skip-while-charging guard. Do not calibrate `VBAT_DIVIDER_COMP` from them.
+
+#### Assumptions resolved
+
+- **§3.13 — MISS (2 × 1000 ms) distinguishable from low (3 × 400 ms) on a
+  finger: RESOLVED.** Tested on the assembled ring; all six patterns read as
+  different alerts. This was the design's only untested ergonomic claim.
+- **New, and not previously listed as an assumption: motor current on the
+  regulated 3V3 rail does not brown out the MCU.** The serial cadence ran
+  unbroken and the USB CDC link never dropped through a manual motor hold and
+  through the full pattern cycle, MISS included — 2 s of full-drive motor.
+  C1 (100 µF) is sufficient. This is the risk the wearer accepted when
+  putting the motor on 3V3 rather than `BAT+`, and it holds.
+- Still open: §3.1 (iOS honouring the ring's Security Request — still the top
+  risk), §3.2–3.4, §3.11, §3.14.
+
+#### Corrections to what I said during this session
+
+1. I read an `OL` between `D10` and the motor's leg as normal gate isolation.
+   That assumed the `D10` wire ran to the gate. It did not, so that reading
+   was meaningful and I waved it off.
+2. I then blamed a cracked resistor on the strength of a measurement the
+   meter cannot make: its top resistance range is 2 kΩ, so a healthy 10 kΩ
+   pulldown always reads `OL` there.
+3. I described the motor on the 3V3 rail as a deviation from the design. The
+   wearer corrected it as deliberate — the motor is a 3 V part and `BAT+` is
+   an unregulated cell at up to 4.2 V. **README §2 and checklist steps 2–3
+   now document 3V3 with that reasoning.**
+
+#### Not verified, and what is left
+
+- **The app has never launched on the iPhone 18 Pro** (developer-certificate
+  Trust pending on the phone).
+- **No BLE between ring and phone at all:** no pairing, no `#REQ`, no
+  `!TIME`, no reading written, no `#STATUS` confirmation, no MISS or STALE
+  alarm in real operation.
+- **The board is running the bring-up build** — TEST_MODE on, watchdog off,
+  debug serial on. Checklist step 13 (rebuild with defaults) is not done.
+- **No battery.** Checklist steps 7–12 (cell, `VBAT_DIVIDER_COMP`
+  calibration, idle current, high-Z divider) are untouched, and the README's
+  later steps still describe them against `BAT+`; only §2 and step 3 have
+  been updated to 3V3.

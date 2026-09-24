@@ -49,9 +49,9 @@ touches the nRF52.
                     GND        ← pulldown holds the gate OFF from power-on
                                  until setup() runs. Do not omit this.
 
-   BAT+ (battery pad) ──┬── motor + ──┬── motor − ── AO3400 drain
-                        │             │
-                        └──|◀─────────┘   1N4148, cathode (band) to BAT+
+   3V3 (regulated) ──┬── motor + ──┬── motor − ── AO3400 drain
+                     │             │
+                     └──|◀─────────┘   1N4148, cathode (band) to 3V3
 
    AO3400 source ── GND
 ```
@@ -59,13 +59,13 @@ touches the nRF52.
 | Signal | Pin | Note |
 |---|---|---|
 | Motor gate | **D10** (P1.15) | Same board edge as GND and 3V3, so the motor harness never crosses the board. D10 is the default SPI MOSI, so taking it rules out the `SPI` object — nothing here needs it. |
-| Motor supply | `BAT+` pad | Straight off the cell, not 3V3. |
+| Motor supply | **`3V3`** | Regulated. The motor is a 3 V part; `BAT+` is unregulated cell voltage, up to 4.2 V at full charge — roughly 140 % of rated, past the ~3.6 V absolute max typical of these coin ERMs. Running it there over-speeds it and shortens its life. The cost of this choice is that the motor's ~85 mA passes through the XIAO's regulator on the same rail as the MCU; C1 (100 µF) is the part that answers it. |
 | Ground | `GND` | MOSFET source and motor return |
 | Battery sense | *internal* | P0.31 via onboard 1M/510k divider, gated by P0.14 |
 | Charge status | *internal* | P0.17 (`~CHG`), active low, from the BQ25100 |
 
-**Diode orientation matters.** Band (cathode) to `BAT+`. Backwards it is a
-dead short across your cell.
+**Diode orientation matters.** Band (cathode) to `3V3` — the motor's own
+supply rail. Backwards it is a dead short across that rail.
 
 ### Battery
 
@@ -331,9 +331,11 @@ to wearing it.**
 
 1. Continuity-check MOSFET source→GND, and confirm the 10k gate pulldown is
    present. With the ring unpowered, D10→GND should read ~10k.
-2. **Check the flyback diode orientation** — band to `BAT+`. Backwards is a
-   short across the cell.
-3. Confirm the motor is on `BAT+`, not `3V3`.
+2. **Check the flyback diode orientation** — band to `3V3`. Backwards is a
+   short across the regulated rail.
+3. Confirm the motor is on **`3V3`**, not `BAT+` — deliberate, see §2. On
+   `BAT+` a full cell over-drives a 3 V motor; on `3V3` the tradeoff is motor
+   current sharing the MCU's rail, which step 5 is what tests.
 
 **First power, USB only, no battery**
 
@@ -348,13 +350,22 @@ to wearing it.**
    precisely the P0.31 burnout the guard exists to prevent. A guard that
    reads backwards is worse than no guard, because you will trust it.
    If `chg` does not track USB, stop and fix the polarity before attaching a
-   cell.
+   cell. **Still required with the motor on 3V3** — this guard is about the
+   charger driving the BAT node, not about the motor. What it no longer has
+   to cover: with the motor off `BAT+`, a buzz can no longer sag that node
+   mid-sample and corrupt a reading. **`chg=1` on USB was confirmed
+   2026-09-23**; the `chg=0` half still needs a cell.
 
 **Battery**
 
 7. Attach the cell. Measure it with a multimeter.
 8. Read the reported mV on serial and **calibrate `VBAT_DIVIDER_COMP`** until
-   they agree. Do this before trusting the low-voltage cutoff.
+   they agree. Do this before trusting the low-voltage cutoff. The motor's
+   rail does not affect this: `readVbatMv()` uses `AR_INTERNAL_3_0`, the
+   chip's internal 3.0 V reference, not VDD, so a sagging 3V3 cannot skew the
+   number. Still calibrate with the motor idle. **TEST_MODE's `vbat=` line is
+   not a calibration source** — it calls the ADC directly and bypasses the
+   skip-while-charging guard, so on USB with no cell it prints nonsense.
 9. Unplug USB, confirm `chg=0` and that mV now tracks the cell.
 10. Verify battery sampling is skipped while charging: plug USB back in and
     confirm the log says so.
@@ -365,6 +376,13 @@ to wearing it.**
     connected. Compare against §11.
 12. Confirm idle current does **not** change between battery samples — that
     verifies the divider is really being released to high-Z.
+    **Measure a buzz separately from idle.** Idle is unaffected by the motor
+    rail, but with the motor on 3V3 its current now passes through the
+    regulator: the cell supplies the same ~85 mA while the LDO burns
+    (V_cell − 3.3) × 85 mA as heat — about 60 mW at a 4.0 V cell, so a buzz
+    costs roughly 20 % more energy than `3.3 V × 85 mA` suggests. On `BAT+`
+    the motor would instead have drawn *more* current at 4.2 V, so this is a
+    trade, not a pure cost.
 
 **BLE**
 
@@ -447,6 +465,12 @@ the ring already holds: about 5–9 extra connection events at MTU 23. That's
 calculated at roughly +0.1–0.3 µA average, under 1 % of the idle estimate
 below (IOS_APP_REPORT.md §6). It is unmeasured; confirm it at checklist
 step 11.
+
+**Buzz energy includes the regulator.** The motor runs from 3V3 (§2), so its
+~85 mA passes through the XIAO's LDO and the drop is burned as heat — budget
+a buzz at cell voltage × 85 mA, not 3.3 V × 85 mA. **Verified 2026-09-23:**
+motor current on the shared rail does not reset the MCU — the serial cadence
+ran unbroken through a full-drive MISS (2 × 1000 ms), so C1 holds.
 
 **On the 40 mAh cell: measure before you trust it.** A realistic idle figure
 for a XIAO nRF52840 with a live BLE connection is roughly 50–150 µA, which on

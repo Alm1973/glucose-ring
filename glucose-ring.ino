@@ -97,6 +97,14 @@ static_assert(DEFAULT_LOW_MG_DL == RC_UNSET || DEFAULT_HIGH_MG_DL == RC_UNSET ||
 #define MOTOR_PIN            D10
 #define BUZZ_MAX_ON_MS       2000    // hard cap on any single pulse
 
+/* While a glucose alert stands, one short tick a minute between readings, so
+ * it keeps nagging without the full pattern every time. The full pattern is
+ * reserved for something new: the alert starting, or a fresh reading that
+ * confirms it. 0 disables the reminder. Stale and miss are deliberately left
+ * alone -- they have their own repeat cap, and a ring ticking every minute in
+ * a drawer is what that cap exists to prevent. */
+#define ALERT_REMIND_MS      60000UL
+
 /*
  * Battery charge status. variant.h gives this pin no name, but
  * variants/Seeed_XIAO_nRF52840/variant.cpp:40 documents it:
@@ -208,7 +216,9 @@ static LvPoke     g_poke;
 static bool       g_linkWasReady = false;
 
 static LvAlert    g_alert        = LV_ALERT_NONE;
-static uint64_t   g_lastBuzzMs   = 0;
+static uint64_t   g_lastBuzzMs   = 0;   // last full alert pattern
+static uint64_t   g_lastAnyBuzzMs = 0;  // last buzz of any kind, ticks included
+static bool       g_newReading   = false;  // a reading arrived since the last alert pass
 static uint8_t    g_staleRepeats = 0;      // consecutive stale buzzes
 static bool       g_staleGaveUp  = false;  // capped out; silent until fresh data
 static uint64_t   g_lastVbatMs   = 0;
@@ -716,6 +726,7 @@ static void handleReading(const char *line, uint64_t now)
   g_lastDataMs  = now;
   lv_poke_align(&g_poke, &g_clock, now, r.epoch_ms);   // aim the next poke at the next reading
   DBG("sgv %ld %s\n", (long)r.sgv, r.direction);
+  g_newReading = true;   // a fresh reading re-states an alert: full pattern, not a tick
 }
 
 static void handleLine(char *line, uint64_t now)
@@ -824,6 +835,8 @@ static LvAlert evaluate(uint64_t now)
 static void serviceAlerts(uint64_t now)
 {
   LvAlert want  = evaluate(now);
+  bool    fresh_reading = g_newReading;   // read before clearing, or it never fires
+  g_newReading  = false;                  // consumed here, whatever the outcome
   bool    noData = (want == LV_ALERT_STALE || want == LV_ALERT_MISS);
 
   /* The repeat budget covers the two "no current data" alarms. It rearms on
@@ -841,12 +854,24 @@ static void serviceAlerts(uint64_t now)
      it, and an ignored alert is worse than a quiet one. */
   if (noData && g_staleGaveUp) { g_alert = want; return; }
 
+  bool glucose = (want == LV_ALERT_LOW || want == LV_ALERT_HIGH);
   bool changed = (want != g_alert);
+  bool fresh   = fresh_reading && glucose;  // a new reading that still crosses the threshold
   bool due     = (now - g_lastBuzzMs) >= ((uint64_t)g_cfg.repeat_minutes * 60000ULL);
-  if (!changed && !due) return;
 
-  g_alert      = want;
-  g_lastBuzzMs = now;
+  if (!changed && !fresh && !due) {
+    /* Nothing new to say. Keep reminding, quietly, once a minute. */
+    if (ALERT_REMIND_MS != 0 && glucose &&
+        (now - g_lastAnyBuzzMs) >= (uint64_t)ALERT_REMIND_MS) {
+      g_lastAnyBuzzMs = now;
+      buzz(BZ_TICK);
+    }
+    return;
+  }
+
+  g_alert         = want;
+  g_lastBuzzMs    = now;
+  g_lastAnyBuzzMs = now;
 
   if (changed) {
     char msg[64];

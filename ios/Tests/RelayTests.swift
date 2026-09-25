@@ -143,13 +143,21 @@ func relayTests() {
                 "3.942 V (3942 mV) - 62% - on battery", "a normal reading, raw mV kept for calibration")
     expectEqual(Relay.batteryText(["mv": "4102", "pct": "94", "chg": "1"]),
                 "4.102 V (4102 mV) - 94% - on charger", "charging")
-    check(Relay.batteryText(["pct": "62", "chg": "0"]).hasPrefix("mV ?"),
-          "a missing mV is never guessed")
+    expectEqual(Relay.batteryText(["pct": "0", "chg": "1"]), "not sampled while charging - on charger",
+                "no measurement on the charger: say so, never show 0%")
+    expectEqual(Relay.batteryText(["mv": "0", "pct": "0", "chg": "1"]), "not sampled while charging - on charger",
+                "0 mV is not a reading either")
+    expectEqual(Relay.batteryText(["pct": "62", "chg": "0"]), "no reading - on battery",
+                "a missing mV is never guessed")
+    check(!Relay.batteryText(["pct": "0", "chg": "1"]).contains("0%"),
+          "a percentage is never shown without a voltage behind it")
     check(Relay.batteryText(["mv": "3942", "pct": "62"]).hasSuffix("charge state ?"),
           "a missing chg is never guessed")
-    check(Relay.batteryText(["mv": "0", "pct": "0", "chg": "-1"]).hasPrefix("mV ?"),
-          "0 mV is not a reading")
+    expectEqual(Relay.batteryText(["mv": "0", "pct": "0", "chg": "-1"]), "no reading - charge state ?",
+                "0 mV with an unknown charge state")
     expectEqual(RingProtocol.getBatt, "!GET BATT\n", "the command the ring answers with #BATT")
+    expectEqual(RingProtocol.buzz("miss"), "!BUZZ miss\n", "buzz on demand: the heaviest pattern")
+    expectEqual(RingProtocol.buzz("low"), "!BUZZ low\n", "and the low pattern")
     check(RingProtocol.parseRingLine("#BATT mv=3942 pct=62 chg=0")?.fields["mv"] == "3942",
           "the #BATT reply parses")
 

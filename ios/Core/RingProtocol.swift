@@ -35,6 +35,10 @@ enum RingProtocol {
     static let version   = "!VER\n"
     static let getStatus = "!GET STATUS\n"
     static let getBatt   = "!GET BATT\n"
+    /// Ask the ring to run one alert pattern now. "miss" is the heaviest the
+    /// design ever drives -- 2 x 1000 ms at full power -- so it doubles as a
+    /// load test of the battery path.
+    static func buzz(_ pattern: String) -> String { "!BUZZ \(pattern)\n" }
     /// Sent first in every answer to #REQ: the ring's trusted clock and its
     /// proof that the phone is alive (PROTOCOL.md §9).
     static func time(_ epochMs: Int64) -> String { "!TIME \(epochMs)\n" }

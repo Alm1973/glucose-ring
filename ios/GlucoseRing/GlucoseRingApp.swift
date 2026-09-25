@@ -57,6 +57,27 @@ struct StatusView: View {
                 Divider()
                 Button("Read ring battery") { model.readBattery() }
                     .buttonStyle(.bordered)
+                HStack {
+                    Button("Buzz: low") { model.buzzTest("low") }
+                    Button("Buzz: MISS") { model.buzzTest("miss") }
+                }
+                .buttonStyle(.bordered)
+                Text("MISS is the heaviest buzz the ring ever runs. If the ring drops off when you press it, the battery connection cannot carry an alert.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if let reply = model.lastReply {
+                    Text("Ring said: \(reply)")
+                        .font(.caption.monospaced())
+                    if let at = model.lastReplyAt {
+                        Text("at \(at.formatted(date: .omitted, time: .standard))")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    Text("Ring has said nothing yet.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 if let batt = model.battery {
                     Text(batt)
                         .font(.subheadline.monospacedDigit())

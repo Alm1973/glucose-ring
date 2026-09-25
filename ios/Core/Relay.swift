@@ -194,20 +194,21 @@ struct RelayState {
 /// being guessed.
 extension Relay {
     static func batteryText(_ f: [String: String]) -> String {
-        let volts: String
-        if let mv = Int(f["mv"] ?? ""), mv > 0 {
-            volts = String(format: "%.3f V (%d mV)", Double(mv) / 1000.0, mv)
-        } else {
-            volts = "mV ?"
-        }
-        let pct = Int(f["pct"] ?? "").map { "\($0)%" } ?? "?%"
         let chg: String
         switch f["chg"] {
         case "1":  chg = "on charger"
         case "0":  chg = "on battery"
         default:   chg = "charge state ?"
         }
-        return "\(volts) - \(pct) - \(chg)"
+        // The ring skips its divider while the charger drives that node, so
+        // there is often no reading at all. A percentage computed from 0 mV
+        // would render as a flat battery, which is worse than saying nothing.
+        guard let mv = Int(f["mv"] ?? ""), mv > 0 else {
+            return f["chg"] == "1" ? "not sampled while charging - \(chg)"
+                                   : "no reading - \(chg)"
+        }
+        let pct = Int(f["pct"] ?? "").map { "\($0)%" } ?? "?%"
+        return String(format: "%.3f V (%d mV)", Double(mv) / 1000.0, mv) + " - \(pct) - \(chg)"
     }
 }
 

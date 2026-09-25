@@ -15,6 +15,10 @@ final class RelayModel: ObservableObject {
     @Published private(set) var testedAt: Date?
     @Published private(set) var battery: String?
     @Published private(set) var batteryAt: Date?
+    /// The last line the ring sent, whatever it was. A command that silently
+    /// does nothing is indistinguishable from a dead link without this.
+    @Published private(set) var lastReply: String?
+    @Published private(set) var lastReplyAt: Date?
 
     private let config = Config.load()
     private let ring = RingLink()
@@ -36,6 +40,11 @@ final class RelayModel: ObservableObject {
     /// it once a cell is attached: the serial log needs USB, and USB is the
     /// charger, so the firmware (correctly) skips sampling while it is in.
     func readBattery() { ring.write(RingProtocol.getBatt) }
+
+    /// Fire one alert pattern on demand. Proves the alert path end to end,
+    /// and -- on battery -- that the power path survives the ~85 mA a buzz
+    /// draws, which is when a marginal joint or a protection IC lets go.
+    func buzzTest(_ pattern: String) { ring.write(RingProtocol.buzz(pattern)) }
 
     /// One real, read-only Nightscout fetch on demand. It proves the token,
     /// network and parsing on this phone before a ring exists. Nothing is
@@ -71,6 +80,8 @@ final class RelayModel: ObservableObject {
     }
 
     private func onRingLine(_ line: String) {
+        lastReply = line
+        lastReplyAt = Date()
         guard let p = RingProtocol.parseRingLine(line) else { return }
         switch p.kind {
         case "REQ":    answerPoke()

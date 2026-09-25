@@ -187,6 +187,30 @@ struct RelayState {
     }
 }
 
+/// "#BATT mv=3942 pct=62 chg=0" -> "3.942 V (3942 mV) - 62% - on battery".
+/// The raw mV is shown alongside the volts: it is the number
+/// `VBAT_DIVIDER_COMP` is calibrated against, and what the low-voltage
+/// cutoff depends on. Anything missing or unparseable reads "?" rather than
+/// being guessed.
+extension Relay {
+    static func batteryText(_ f: [String: String]) -> String {
+        let volts: String
+        if let mv = Int(f["mv"] ?? ""), mv > 0 {
+            volts = String(format: "%.3f V (%d mV)", Double(mv) / 1000.0, mv)
+        } else {
+            volts = "mV ?"
+        }
+        let pct = Int(f["pct"] ?? "").map { "\($0)%" } ?? "?%"
+        let chg: String
+        switch f["chg"] {
+        case "1":  chg = "on charger"
+        case "0":  chg = "on battery"
+        default:   chg = "charge state ?"
+        }
+        return "\(volts) - \(pct) - \(chg)"
+    }
+}
+
 /// Delay for connect-then-drop loops: 1 s doubling to a cap, with jitter
 /// (50-100 % of the step). A plain disconnect reconnects at once instead.
 struct Backoff {

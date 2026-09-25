@@ -34,6 +34,7 @@ enum RingProtocol {
     // ---- phone -> ring ----
     static let version   = "!VER\n"
     static let getStatus = "!GET STATUS\n"
+    static let getBatt   = "!GET BATT\n"
     /// Sent first in every answer to #REQ: the ring's trusted clock and its
     /// proof that the phone is alive (PROTOCOL.md §9).
     static func time(_ epochMs: Int64) -> String { "!TIME \(epochMs)\n" }

@@ -13,6 +13,8 @@ final class RelayModel: ObservableObject {
     @Published private(set) var test: Relay.Status?
     @Published private(set) var testing = false
     @Published private(set) var testedAt: Date?
+    @Published private(set) var battery: String?
+    @Published private(set) var batteryAt: Date?
 
     private let config = Config.load()
     private let ring = RingLink()
@@ -29,6 +31,11 @@ final class RelayModel: ObservableObject {
     }
 
     func findRing() { ring.findRing() }
+
+    /// Ask the ring what it measures on its own divider. The only way to read
+    /// it once a cell is attached: the serial log needs USB, and USB is the
+    /// charger, so the firmware (correctly) skips sampling while it is in.
+    func readBattery() { ring.write(RingProtocol.getBatt) }
 
     /// One real, read-only Nightscout fetch on demand. It proves the token,
     /// network and parsing on this phone before a ring exists. Nothing is
@@ -68,6 +75,7 @@ final class RelayModel: ObservableObject {
         switch p.kind {
         case "REQ":    answerPoke()
         case "STATUS": relay.onRingStatus(p)
+        case "BATT":   battery = Relay.batteryText(p.fields); batteryAt = Date()
         default:       break
         }
         refresh()

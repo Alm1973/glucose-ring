@@ -55,6 +55,18 @@ struct StatusView: View {
                     }
                 }
                 Divider()
+                Button("Read ring battery") { model.readBattery() }
+                    .buttonStyle(.bordered)
+                if let batt = model.battery {
+                    Text(batt)
+                        .font(.subheadline.monospacedDigit())
+                    if let at = model.batteryAt {
+                        Text("Read at \(at.formatted(date: .omitted, time: .shortened))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Divider()
                 Text("Leave this app in the app switcher. If you swipe it away, iOS stops waking it for the "
                      + "ring, and the ring buzzes MISS about 15 minutes later. This is a secondary alert: keep "
                      + "your CGM app's own alarms on.")

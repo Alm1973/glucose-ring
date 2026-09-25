@@ -1057,3 +1057,88 @@ protocol. Host tests remain **450/0**; flash 137,356 B (16%), RAM unchanged.
   on USB.
 - The free signing expires **2026-09-30**; after that the app stops launching
   and the ring will buzz MISS.
+
+---
+
+### 16. Battery attached, background relay verified (2026-09-24)
+
+#### Cell
+
+A **100 mAh protected LiPo** (AKZYTUE 401230, 3.7 V, JST PH2.0 cut off and
+soldered to the `BAT` pads, 32 × 12 × 4 mm) replaced the 40 mAh cell that was
+originally planned. The 40 mAh part was out of spec in **both** directions
+against this board:
+
+- **Charging:** the XIAO's charge current is fixed at 50 mA in hardware. Into
+  40 mAh that is 1.25C, above the 0.5C maximum these cells specify. Into
+  100 mAh it is 0.5C — in spec, no external charger, no supervision.
+- **Discharging:** a buzz pulls ~85–100 mA from the cell (the motor is on the
+  3V3 rail, so the current passes through the regulator). That is ~2.1C on a
+  40 mAh cell, past the usual 1C limit, and ~0.85C on the 100 mAh — inside it.
+
+The discharge side was not in the original analysis and only surfaced when the
+listing's "non-power battery" note prompted the check.
+
+#### Checklist step 6 — the HARD GATE — passed in both directions
+
+`~CHG` polarity was an assumption (REPORT.md A3) and is now measured:
+
+| | Reading | Meaning |
+|---|---|---|
+| USB attached | `chg=1` | the guard sees the charger |
+| USB out, on cell | `chg=0` | the guard releases, and the ring samples |
+
+Both halves confirmed, so the divider is never sampled while the charger
+drives the BAT node — the P0.31 hazard the gate exists to prevent. Step 9 is
+covered by the same reading.
+
+#### A battery readout in the app
+
+The second half could not be read at all before: the serial log needs USB, and
+USB is the charger, so the firmware (correctly) skips sampling whenever it
+could have been observed over the cable. `!GET BATT` over BLE is the only path
+— and its `#BATT` reply is only readable because of the truncation fix in §15.
+
+So the app gained a **"Read ring battery"** button showing
+`3.838 V (3838 mV) - 57% - on battery`. Raw mV is kept alongside the volts
+because that is what `VBAT_DIVIDER_COMP` calibrates against.
+`Relay.batteryText` is pure and tested; Swift core tests **141/0**.
+
+#### Calibration: deliberately not done
+
+Checklist step 8 compares the ring's reported mV against a meter. The wearer's
+multimeter cannot resolve millivolts, so the comparison was not possible, and
+**the wearer chose to proceed on the nominal `1510/510` constant.**
+
+- The ring reported **3838 mV**, a plausible resting voltage for a part-charged
+  LiPo, and the meter agreed to its own resolution.
+- **The cutoff is therefore uncalibrated.** If the divider over-reports, the
+  3300 mV floor fires late; if it under-reports, the ring shuts down with
+  charge left.
+- **The mitigation is the cell's own protection board**, which backstops
+  over-discharge at roughly 2.5–3.0 V regardless of what the firmware thinks.
+- **A better calibration exists without a precise meter:** charge to full,
+  unplug, let it settle, and read. The BQ25100 terminates at a regulated
+  4.2 V, so a reading outside 4.15–4.20 V is divider error and gives the exact
+  ratio to scale by. Worth doing at the next full charge.
+
+#### Background relay — assumption 3.2 resolved
+
+With the app **backgrounded and the phone locked**, the relay kept running:
+the ring's `#REQ` woke the suspended app, which fetched and wrote back, for
+20 minutes with no MISS alarm. Three missed pokes would have buzzed inside
+that window, so this test cannot pass falsely.
+
+That is the premise of the whole design — iOS does not allow a timer-driven
+background poll, and the ring-driven `#REQ` is the workaround. It works.
+
+#### Still untested going into real use
+
+- **Force-quit → MISS** (acceptance test 4): not confirmed.
+- **State restoration after a system kill** (assumption 3.3).
+- **STALE from a Nightscout outage**, and a **real threshold crossing** —
+  no alert has fired from live data, only from TEST_MODE.
+- **Idle current** (checklist steps 11–12): no µA meter. Every battery-life
+  figure remains calculated, not measured (assumption 3.14).
+- **The signing expires 2026-09-30.** The app then stops launching and the
+  ring buzzes MISS until it is reinstalled.

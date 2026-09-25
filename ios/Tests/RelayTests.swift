@@ -138,6 +138,21 @@ func relayTests() {
     check(tb.onFetch(.ok(entry(age: ONE_MIN)), nowMs: NOW) != nil,
           "a test never uses up a reading: the ring still gets it on its next request")
 
+    section("relay: ring battery readout")
+    expectEqual(Relay.batteryText(["mv": "3942", "pct": "62", "chg": "0"]),
+                "3.942 V (3942 mV) - 62% - on battery", "a normal reading, raw mV kept for calibration")
+    expectEqual(Relay.batteryText(["mv": "4102", "pct": "94", "chg": "1"]),
+                "4.102 V (4102 mV) - 94% - on charger", "charging")
+    check(Relay.batteryText(["pct": "62", "chg": "0"]).hasPrefix("mV ?"),
+          "a missing mV is never guessed")
+    check(Relay.batteryText(["mv": "3942", "pct": "62"]).hasSuffix("charge state ?"),
+          "a missing chg is never guessed")
+    check(Relay.batteryText(["mv": "0", "pct": "0", "chg": "-1"]).hasPrefix("mV ?"),
+          "0 mV is not a reading")
+    expectEqual(RingProtocol.getBatt, "!GET BATT\n", "the command the ring answers with #BATT")
+    check(RingProtocol.parseRingLine("#BATT mv=3942 pct=62 chg=0")?.fields["mv"] == "3942",
+          "the #BATT reply parses")
+
     section("relay: backoff for connect-then-drop loops")
     var b = Backoff(capMs: 8_000)
     expectEqual((0..<6).map { _ in b.next(random: 1.0) }, [1_000, 2_000, 4_000, 8_000, 8_000, 8_000], "doubles to the 8 s cap")

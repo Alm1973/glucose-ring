@@ -91,7 +91,7 @@ part("R1", "Device", "R", "10k", 130, 90, {"1": "MOTOR_GATE", "2": "GND"}, fp="R
 part("R2", "Device", "R", "1k", 110, 60, {"1": "MOTOR_PWM", "2": "MOTOR_GATE"}, fp="Resistor_SMD:R_0402_1005Metric")
 part("C1", "Device", "C", "100uF", 235, 45, {"1": "V_MOTOR", "2": "GND"}, fp="Capacitor_SMD:C_1206_3216Metric")
 # --- motor rail LDO, enable gated by the MCU
-part("U3", "Regulator_Linear", "AP2112K-3.3", "AP2112K-3.0 (3.0V, EN)", 110, 135, {
+part("U3", "Regulator_Linear", "AP2112K-3.3", "TPS7A0230PDBVR 3.0V", 110, 135, {
     "1": "VBAT", "2": "GND", "3": "MOTOR_EN", "5": "V_MOTOR"},
      fp="Package_TO_SOT_SMD:SOT-23-5")
 part("C6", "Device", "C", "1uF", 155, 145, {"1": "V_MOTOR", "2": "GND"}, fp="Capacitor_SMD:C_0402_1005Metric")

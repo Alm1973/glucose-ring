@@ -13,7 +13,7 @@ would be a plausible-looking error that survives review.
 |---|---|---|---|
 | U1 | Raytac MDBT50Q-1MV2 | module, castellated | nRF52840 + chip antenna |
 | U2 | MCP73831T-2ACI/OT | SOT-23-5 | Li-ion charger, 4.2 V |
-| U3 | TPS7A0230 (or XC6220) | SOT-23-5 | 3.0 V LDO for the motor rail, **EN pin required** |
+| U3 | **TPS7A0230PDBVR** | SOT-23-5 | 3.0 V, 200 mA, 25 nA Iq. EN has an internal pulldown, so the rail is off until firmware enables it. |
 | U4 | DW01A | SOT-23-6 | cell protection controller |
 | Q1 | FS8205A | SOT-23-6 | dual N-FET, **common drain** (D1/D2 shared), protection switch |
 | Q2 | AO3400A (or DMG2302U) | SOT-23 | motor low-side switch |
@@ -22,7 +22,7 @@ would be a plausible-looking error that survives review.
 | D2 | BAT54W | SOD-323 | reverse-polarity guard on the charge contact |
 | R1 | 10 k, 0402 | — | **gate pulldown — mandatory** |
 | R2 | 1 k, 0402 | — | gate series, optional |
-| R3 | 66.5 k, 0402 | — | MCP73831 PROG: sets 15 mA |
+| R3 | 66.5 k 1%, 0402 | — | MCP73831 PROG. I = 1000/R(kΩ): 15 mA typ, 12.5–16.5 mA across the datasheet band. |
 | R4 | **1 k**, 0402 | — | DW01A VCC feed (R1). The datasheet sets a 470 R minimum; 330 R was below it. |
 | R5 | **2 k**, 0402 | — | DW01A CS to pack negative (R2). The datasheet states R1 and R2 cannot be omitted. |
 | C1 | 100 uF X5R 1206 | — | bulk on the motor rail |
@@ -77,8 +77,10 @@ the bootloader.
 | `CHG_STAT` | U2 STAT (open drain) ; U1 **P0.17** |
 | `PROG` | U2 PROG ; R3 to `GND` |
 
-`R3` = 66.5 k gives **15 mA**, the MCP73831's floor. Size the cell at 30 mAh
-or more so this stays at or under 0.5C. If a smaller cell is wanted, use the
+`R3` = 66.5 k gives **15 mA typical**, the MCP73831's floor (programmable
+range 15–500 mA, R_PROG 2–67 kΩ). The datasheet's band at 67 kΩ is
+12.5 / 15 / 16.5 mA, so size the cell for the **16.5 mA worst case** — on
+30 mAh that is 0.55C. Anything above 67 kΩ falls into the shutdown zone. If a smaller cell is wanted, use the
 BQ25100 instead, which reaches 10 mA -- at the cost of a DSBGA package.
 
 `CHG_STAT` is read with the MCU's internal pull-up, exactly as the XIAO's

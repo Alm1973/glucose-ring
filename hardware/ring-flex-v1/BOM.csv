@@ -1,0 +1,27 @@
+ref,qty,part,package,value,function,notes
+U1,1,Raytac MDBT50Q-1MV2,module 10.2x15.6x2.2mm,,nRF52840 + chip antenna,"castellated, hand-solderable, pre-certified"
+U2,1,MCP73831T-2ACI/OT,SOT-23-5,4.2V,Li-ion charger,"charge current set by R3; floor is 15 mA"
+U3,1,TPS7A0230 or XC6220,SOT-23-5,3.0V,motor rail LDO,"EN pin REQUIRED - gated by MCU to kill idle draw"
+U4,1,DW01A,SOT-23-6,,cell protection controller,over-charge / over-discharge / over-current
+Q1,1,FS8205A,SOT-23-6,,protection switch,dual N-FET for U4
+Q2,1,AO3400A or DMG2302U,SOT-23,,motor low-side switch,"logic level, Vgs(th) < 1.5 V, >=200 mA"
+M1,1,coin ERM 10x2.1mm,,3V ~1.1G,haptic actuator,"chosen over 10x3.4mm: 1.3mm thinner, same drive circuit"
+D1,1,BAT54W,SOD-323,,motor flyback,cathode to V_MOTOR
+D2,1,BAT54W,SOD-323,,reverse-polarity guard,on the charge contact
+R1,1,resistor,0402,10k,gate pulldown,MANDATORY - floating gate runs the motor
+R2,1,resistor,0402,1k,gate series,optional - tames the gate edge
+R3,1,resistor,0402,66.5k,charger PROG,sets 15 mA
+R4,1,resistor,0402,330R,DW01A supply,per application circuit
+C1,1,ceramic X5R,1206,100uF,motor rail bulk,"carries the ~85 mA buzz; ceramic is thinner than tantalum"
+C2,1,ceramic X5R,0805,10uF,VBAT bulk,
+C3,1,ceramic,0603,4.7uF,charger output,
+C4,1,ceramic,0402,1uF,charger input,
+C5,1,ceramic,0402,0.1uF,DW01A,
+C6,1,ceramic,0402,1uF,LDO output,
+BT1,1,LiPo cell ~30mAh,16x8x2.5mm,3.7V,battery,"bare cell - protection is on-board; sets band thickness"
+J1,1,gold pad,,,charge contact +,for a pogo-pin dock
+J2,1,gold pad,,,charge contact -,
+TP1,1,test pad,,,SWDIO,
+TP2,1,test pad,,,SWCLK,
+TP3,1,test pad,,,VBAT,
+TP4,1,test pad,,,GND,

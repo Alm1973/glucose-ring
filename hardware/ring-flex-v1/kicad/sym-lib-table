@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name "ring-flex-v1")(type "KiCad")(uri "${KIPRJMOD}/ring-flex-v1.kicad_sym")(options "")(descr "project symbols"))
+)

@@ -15,7 +15,7 @@ would be a plausible-looking error that survives review.
 | U2 | MCP73831T-2ACI/OT | SOT-23-5 | Li-ion charger, 4.2 V |
 | U3 | **TPS7A0230PDBVR** | SOT-23-5 | 3.0 V, 200 mA, 25 nA Iq. EN has an internal pulldown, so the rail is off until firmware enables it. |
 | U4 | DW01A | SOT-23-6 | cell protection controller |
-| Q1 | FS8205A | SOT-23-6 | dual N-FET, **common drain** (D1/D2 shared), protection switch |
+| Q1 | FS8205A | SOT-23-6 | dual N-FET, **common drain**. Pin-1 dot beside S1: 1=S1 2=D1/D2 3=S2 4=G2 5=D1/D2 6=G1. |
 | Q2 | AO3400A (or DMG2302U) | SOT-23 | motor low-side switch |
 | M1 | coin ERM, 10 x 2.1 mm, ~1.1 G | — | haptic actuator |
 | D1 | BAT54W | SOD-323 | motor flyback |
@@ -44,8 +44,8 @@ would be a plausible-looking error that survives review.
 | Net | Connects |
 |---|---|
 | `CELL+` | BT1 + ; U4 VCC via R4 ; `VBAT` |
-| `CELL-` | BT1 - ; Q1A **source** ; U4 GND |
-| `Q1_MID` | Q1A **drain** ; Q1B **drain** -- the FS8205A's shared D1/D2 |
+| `CELL-` | BT1 - ; Q1 pin 1 (S1) ; U4 GND |
+| `Q1_MID` | Q1 pins 2 and 5 — the FS8205A's shared D1/D2 |
 | `DW_CS` | U4 CS ; R5 to `GND` |
 | `VBAT` | `CELL+` ; U1 VDD ; U2 VBAT ; U3 VIN ; C2 ; C3 |
 | `GND` | Q1 source ; U1 GND ; U2 VSS ; U3 GND ; U4 GND ; Q2 source ; C2,C3,C4,C5,C6,C1 ; J2 ; TP4 |

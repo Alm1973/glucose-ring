@@ -121,8 +121,15 @@ part("R4", "Device", "R", "1k", 95, 180, {"1": "VBAT", "2": "DW_VCC"}, fp="Resis
 part("R5", "Device", "R", "2k", 150, 230, {"1": "DW_CS", "2": "GND"},
      fp="Resistor_SMD:R_0402_1005Metric")
 part("C5", "Device", "C", "0.1uF", 95, 230, {"1": "DW_VCC", "2": "GND"}, fp="Capacitor_SMD:C_0402_1005Metric")
-part("Q1A", "Device", "Q_NMOS", "FS8205A Q1 (discharge)", 180, 200, {"G": "DW_OD", "S": "CELL_N", "D": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
-part("Q1B", "Device", "Q_NMOS", "FS8205A Q2 (charge)", 220, 200, {"G": "DW_OC", "S": "GND", "D": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
+# One physical part, not two. Two Q_NMOS symbols would have put two
+# SOT-23-6 footprints on the board for a single FS8205A.
+part("Q1", "ring-flex-v1", "FS8205A", "FS8205A", 190, 200, {
+    "1": "CELL_N",   # S1, cell negative -- the pin-1 dot sits beside it
+    "6": "DW_OD",    # G1, discharge control
+    "3": "GND",      # S2, pack negative
+    "4": "DW_OC",    # G2, charge control
+    "2": "Q1_MID", "5": "Q1_MID"},
+     fp="Package_TO_SOT_SMD:SOT-23-6")
 part("C2", "Device", "C", "10uF", 255, 205, {"1": "VBAT", "2": "GND"}, fp="Capacitor_SMD:C_0805_2012Metric")
 # --- contacts and test points
 part("J1", "Connector", "TestPoint", "charge pad +", 15, 90, {"1": "VCHG"},

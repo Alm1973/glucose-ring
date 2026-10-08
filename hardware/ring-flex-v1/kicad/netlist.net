@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/shauryakhidake/projects/glucose-ring/hardware/ring-flex-v1/kicad/ring-flex-v1.kicad_sch")
-		(date "2026-10-07T20:30:03")
+		(date "2026-10-07T20:32:18")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -89,7 +89,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e6882a1d-96a4-45c2-b4f7-53734ce25968")
+			(tstamps "fc925af5-7eec-4a19-b8f1-fb23ce21ca2c")
 			(units
 				(unit
 					(name "A")
@@ -143,7 +143,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "7623b47f-a89d-452d-8b61-6552a51a5476")
+			(tstamps "d88c90f2-d8eb-40aa-a506-dd5ac919c88d")
 			(units
 				(unit
 					(name "A")
@@ -197,7 +197,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "15f45710-cadd-4dcb-8bb0-429888089745")
+			(tstamps "c38d3c9e-3400-4a05-99fd-ab8f30c070f2")
 			(units
 				(unit
 					(name "A")
@@ -251,7 +251,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "6f3c3d40-c70b-4121-80be-a690cc0225e0")
+			(tstamps "bf5d50ae-619a-4604-a5d0-e159e722ce2a")
 			(units
 				(unit
 					(name "A")
@@ -305,7 +305,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "15f8369c-a8f8-4342-a029-04e497ce9d7e")
+			(tstamps "639a648c-36aa-4a2e-ad19-7a6d11d89fa0")
 			(units
 				(unit
 					(name "A")
@@ -359,7 +359,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c637e6dc-8817-4b98-81dd-2a837163d2ab")
+			(tstamps "798287fc-1e1e-49b2-b37f-9d3323953c52")
 			(units
 				(unit
 					(name "A")
@@ -413,7 +413,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "ae918eab-b7d7-48fa-b269-23efba3129b0")
+			(tstamps "7f3c7b90-8a3b-4795-b795-1d2e7194b12b")
 			(units
 				(unit
 					(name "A")
@@ -467,7 +467,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e6b594f9-f705-4af9-931b-309aa5a27b7f")
+			(tstamps "904c6b74-6499-4778-88c5-dae429ee2c10")
 			(units
 				(unit
 					(name "A")
@@ -521,7 +521,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8ee7965c-3b2f-4f49-8b68-ae75ca113277")
+			(tstamps "469b1d4f-6df3-4923-874f-c61d0aa2f419")
 			(units
 				(unit
 					(name "A")
@@ -575,7 +575,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "366fe18c-e31e-4fcf-8db5-5ead4f50060c")
+			(tstamps "d6ab349e-67b9-4e92-887d-8250a24bc26c")
 			(units
 				(unit
 					(name "A")
@@ -629,7 +629,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3e0f05f6-3e25-46de-b4da-acb8f1201112")
+			(tstamps "5cc21c70-ea11-4bb5-8372-7b70bec92b1b")
 			(units
 				(unit
 					(name "A")
@@ -680,7 +680,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "14913788-8494-4eaa-8ec7-bcfe1482d36d")
+			(tstamps "1c98252f-cbcb-4ec7-8014-dc1731a23c73")
 			(units
 				(unit
 					(name "A")
@@ -731,7 +731,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c48f45e5-c74e-4900-908e-7cad07e307d2")
+			(tstamps "f4db2729-db70-404a-96fa-098b95b93f8e")
 			(units
 				(unit
 					(name "A")
@@ -812,7 +812,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2d7e3483-785b-4cbb-9870-0c83608befd7")
+			(tstamps "e5ebe6f7-faf8-4098-b698-d212e70ef89c")
 			(units
 				(unit
 					(name "A")
@@ -828,8 +828,8 @@
 			)
 		)
 		(comp
-			(ref "Q1A")
-			(value "FS8205A Q1 (discharge)")
+			(ref "Q1")
+			(value "FS8205A")
 			(footprint "Package_TO_SOT_SMD:SOT-23-6")
 			(fields
 				(field
@@ -842,9 +842,9 @@
 				)
 			)
 			(libsource
-				(lib "Device")
-				(part "Q_NMOS")
-				(description "N-MOSFET transistor")
+				(lib "ring-flex-v1")
+				(part "FS8205A")
+				(description "Dual N-channel MOSFET, common drain. Pin 1 dot is beside S1: 1=S1 2=D1/D2 3=S2 4=G2 5=D1/D2 6=G1.")
 			)
 			(property
 				(name "Sheetname")
@@ -854,80 +854,32 @@
 				(name "Sheetfile")
 				(value "ring-flex-v1.kicad_sch")
 			)
-			(property
-				(name "ki_keywords")
-				(value "NMOS N-MOS")
-			)
 			(sheetpath
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8b718985-b4d0-47b8-a43f-3c55a7a6f1d2")
+			(tstamps "c1cf3fb2-6191-4120-9631-9b979f1f010f")
 			(units
 				(unit
 					(name "A")
 					(pins
 						(pin
-							(num "G")
+							(num "1")
 						)
 						(pin
-							(num "D")
+							(num "6")
 						)
 						(pin
-							(num "S")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "Q1B")
-			(value "FS8205A Q2 (charge)")
-			(footprint "Package_TO_SOT_SMD:SOT-23-6")
-			(fields
-				(field
-					(name "Footprint") "Package_TO_SOT_SMD:SOT-23-6")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Device")
-				(part "Q_NMOS")
-				(description "N-MOSFET transistor")
-			)
-			(property
-				(name "Sheetname")
-				(value "ring-flex-v1")
-			)
-			(property
-				(name "Sheetfile")
-				(value "ring-flex-v1.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "NMOS N-MOS")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "e2436bd0-18db-488b-814d-b45991328281")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "G")
+							(num "3")
 						)
 						(pin
-							(num "D")
+							(num "4")
 						)
 						(pin
-							(num "S")
+							(num "2")
+						)
+						(pin
+							(num "5")
 						)
 					)
 				)
@@ -968,7 +920,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e4dac2cd-5526-4f47-8f4e-ea1fb0bd08f9")
+			(tstamps "1e079f53-de5b-459f-b21a-077c9118662a")
 			(units
 				(unit
 					(name "A")
@@ -1025,7 +977,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "848e163b-add3-40e9-8b13-238d853352e0")
+			(tstamps "1781b07e-a30c-4283-9fec-d57f91ba32aa")
 			(units
 				(unit
 					(name "A")
@@ -1079,7 +1031,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f2d2ea98-06d0-4726-97d0-64cea455a041")
+			(tstamps "6f6f2619-b7a4-4454-96a8-1cb3e823e866")
 			(units
 				(unit
 					(name "A")
@@ -1133,7 +1085,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c9e711ab-64a8-4bdf-94b7-61018da90b8a")
+			(tstamps "8ee5f3a7-4ef0-4c19-9fa1-8f53c9cb5850")
 			(units
 				(unit
 					(name "A")
@@ -1187,7 +1139,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "69173b7c-416c-493f-9cc0-9ff5d4ee3a16")
+			(tstamps "b33ce87d-5052-4472-8e90-ddff9050cb64")
 			(units
 				(unit
 					(name "A")
@@ -1241,7 +1193,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2d3760d3-14b3-4a53-ad4b-20d5f04ea808")
+			(tstamps "9bc31360-3362-4205-9c47-1a66febbbcd2")
 			(units
 				(unit
 					(name "A")
@@ -1295,7 +1247,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "60ee2ccb-1095-4125-858c-2a57ae7bba86")
+			(tstamps "160f3649-5113-45f8-b084-98ef985716bd")
 			(units
 				(unit
 					(name "A")
@@ -1349,7 +1301,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "763e5e27-d0e5-401f-a86e-3f95fecbf126")
+			(tstamps "2bcc1786-53fb-4f90-8bb6-8bfb0b39854c")
 			(units
 				(unit
 					(name "A")
@@ -1403,7 +1355,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a516777e-4a74-47e7-99d7-b8197bda9834")
+			(tstamps "50332d80-28c7-4da7-a100-7709c92831dd")
 			(units
 				(unit
 					(name "A")
@@ -1454,7 +1406,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f09ea21b-4148-4afe-bdac-06eaa82c1225")
+			(tstamps "3d7c7e58-29d2-4f91-a0c2-83420c2e7388")
 			(units
 				(unit
 					(name "A")
@@ -1505,7 +1457,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "667ac661-dc7c-4c02-a4a4-c52a85f97974")
+			(tstamps "747e8acf-7ebe-47f2-869d-c8cc71d759c5")
 			(units
 				(unit
 					(name "A")
@@ -1556,7 +1508,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "1089430a-cb32-4720-9a4e-5bbf77797b58")
+			(tstamps "4a10ff46-4922-43dd-9066-8d7fe221d5b4")
 			(units
 				(unit
 					(name "A")
@@ -1599,7 +1551,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a71c8d9a-ab62-444b-a850-f24eb1ed2a16")
+			(tstamps "0f16e5ee-c5c2-4987-9780-b14d17ae7a52")
 			(units
 				(unit
 					(name "A")
@@ -1683,7 +1635,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3e75df3e-2347-4318-ac74-7be5cda53cdc")
+			(tstamps "a124c5a7-923d-4f7e-a554-4db6d4a765e0")
 			(units
 				(unit
 					(name "A")
@@ -1746,7 +1698,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "0f5bd1bf-32af-4317-a0a2-f3bd33fc0217")
+			(tstamps "b56ab978-eb9f-40f6-ad29-e2a52874e9c1")
 			(units
 				(unit
 					(name "A")
@@ -1809,7 +1761,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f101e863-c9f9-476c-ac40-659e03dab167")
+			(tstamps "d7758d1f-a348-40c3-8ce7-db2060648363")
 			(units
 				(unit
 					(name "A")
@@ -2313,6 +2265,56 @@
 		)
 		(libpart
 			(lib "ring-flex-v1")
+			(part "FS8205A")
+			(description "Dual N-channel MOSFET, common drain. Pin 1 dot is beside S1: 1=S1 2=D1/D2 3=S2 4=G2 5=D1/D2 6=G1.")
+			(fields
+				(field
+					(name "Reference") "Q")
+				(field
+					(name "Value") "FS8205A")
+				(field
+					(name "Footprint") "Package_TO_SOT_SMD:SOT-23-6")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Dual N-channel MOSFET, common drain. Pin 1 dot is beside S1: 1=S1 2=D1/D2 3=S2 4=G2 5=D1/D2 6=G1.")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "S1")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "D1/D2")
+					(type "passive")
+				)
+				(pin
+					(num "3")
+					(name "S2")
+					(type "passive")
+				)
+				(pin
+					(num "4")
+					(name "G2")
+					(type "passive")
+				)
+				(pin
+					(num "5")
+					(name "D1/D2")
+					(type "passive")
+				)
+				(pin
+					(num "6")
+					(name "G1")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "ring-flex-v1")
 			(part "MDBT50Q-1MV2")
 			(description "nRF52840 module. Pin numbers are from the Raytac approval sheet section 2.5. Supply VDDH (30) above 3.6 V; VDD (28) is the REG0 output and needs decoupling only.")
 			(docs "https://www.raytac.com/download/index.php?index_id=43")
@@ -2430,9 +2432,9 @@
 				(pintype "passive")
 			)
 			(node
-				(ref "Q1A")
-				(pin "S")
-				(pinfunction "S_S")
+				(ref "Q1")
+				(pin "1")
+				(pinfunction "S1_1")
 				(pintype "passive")
 			)
 			(node
@@ -2480,10 +2482,10 @@
 			(name "/DW_OC")
 			(class "Default")
 			(node
-				(ref "Q1B")
-				(pin "G")
-				(pinfunction "G_G")
-				(pintype "input")
+				(ref "Q1")
+				(pin "4")
+				(pinfunction "G2_4")
+				(pintype "passive")
 			)
 			(node
 				(ref "U4")
@@ -2497,10 +2499,10 @@
 			(name "/DW_OD")
 			(class "Default")
 			(node
-				(ref "Q1A")
-				(pin "G")
-				(pinfunction "G_G")
-				(pintype "input")
+				(ref "Q1")
+				(pin "6")
+				(pinfunction "G1_6")
+				(pintype "passive")
 			)
 			(node
 				(ref "U4")
@@ -2606,9 +2608,9 @@
 				(pintype "passive")
 			)
 			(node
-				(ref "Q1B")
-				(pin "S")
-				(pinfunction "S_S")
+				(ref "Q1")
+				(pin "3")
+				(pinfunction "S2_3")
 				(pintype "passive")
 			)
 			(node
@@ -2805,15 +2807,15 @@
 			(name "/Q1_MID")
 			(class "Default")
 			(node
-				(ref "Q1A")
-				(pin "D")
-				(pinfunction "D_D")
+				(ref "Q1")
+				(pin "2")
+				(pinfunction "D1/D2_2")
 				(pintype "passive")
 			)
 			(node
-				(ref "Q1B")
-				(pin "D")
-				(pinfunction "D_D")
+				(ref "Q1")
+				(pin "5")
+				(pinfunction "D1/D2_5")
 				(pintype "passive")
 			)
 		)

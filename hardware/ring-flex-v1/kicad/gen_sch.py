@@ -79,9 +79,15 @@ def part(ref, lib, sym, value, x, y, nets, fp=""):
 
 # --- MCU
 part("U1", "ring-flex-v1", "MDBT50Q-1MV2", "MDBT50Q-1MV2", 60, 60, {
-    "P1": "VBAT", "P2": "GND", "P3": "MOTOR_PWM", "P4": "MOTOR_EN",
-    "P5": "CHG_STAT", "P6": "SWDIO", "P7": "SWCLK"},
+    # Above 3.6 V the datasheet (section 8) says supply VDDH, not VDD. A full
+    # LiPo is 4.2 V, so the cell goes to pin 30 and pin 28 is REG0's output.
+    "30": "VBAT", "28": "MCU_VDD",
+    "1": "GND", "2": "GND", "15": "GND", "33": "GND", "55": "GND",
+    "8": "MOTOR_PWM", "6": "MOTOR_EN", "41": "CHG_STAT",
+    "51": "SWDIO", "53": "SWCLK"},
      fp="ring-flex-v1:MDBT50Q-1MV2")
+part("C7", "Device", "C", "1uF", 25, 60, {"1": "MCU_VDD", "2": "GND"},
+     fp="Capacitor_SMD:C_0402_1005Metric")
 # --- motor stage
 part("Q2", "Device", "Q_NMOS", "AO3400A", 160, 60, {"G": "MOTOR_GATE", "D": "MOTOR_SW", "S": "GND"}, fp="Package_TO_SOT_SMD:SOT-23")
 part("M1", "Motor", "Motor_DC", "NFP-C1020 10x2.0mm ERM", 160, 30, {"1": "V_MOTOR", "2": "MOTOR_SW"},

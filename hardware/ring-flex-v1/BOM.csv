@@ -29,3 +29,4 @@ TP1,1,test pad,,,SWDIO,
 TP2,1,test pad,,,SWCLK,
 TP3,1,test pad,,,VBAT,
 TP4,1,test pad,,,GND,
+C7,1,ceramic,0402,1uF,MCU VDD decoupling,"REG0 output on pin 28 - decoupling only, not a supply input"

@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/shauryakhidake/projects/glucose-ring/hardware/ring-flex-v1/kicad/ring-flex-v1.kicad_sch")
-		(date "2026-10-07T20:23:24")
+		(date "2026-10-07T20:30:03")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -89,7 +89,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "9d0ff3fe-1ed7-4968-860d-ca903f2105ce")
+			(tstamps "e6882a1d-96a4-45c2-b4f7-53734ce25968")
 			(units
 				(unit
 					(name "A")
@@ -143,7 +143,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "dee26a7f-efeb-44e0-be86-bb2e8530d7e2")
+			(tstamps "7623b47f-a89d-452d-8b61-6552a51a5476")
 			(units
 				(unit
 					(name "A")
@@ -197,7 +197,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "737f9833-5214-4183-9ba3-da439793588f")
+			(tstamps "15f45710-cadd-4dcb-8bb0-429888089745")
 			(units
 				(unit
 					(name "A")
@@ -251,7 +251,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3c560c2d-9bf7-42b7-bd40-57624160ee78")
+			(tstamps "6f3c3d40-c70b-4121-80be-a690cc0225e0")
 			(units
 				(unit
 					(name "A")
@@ -305,7 +305,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2f6a9d1f-1fc6-480f-b810-01b6a78bb9f5")
+			(tstamps "15f8369c-a8f8-4342-a029-04e497ce9d7e")
 			(units
 				(unit
 					(name "A")
@@ -359,7 +359,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "bebde3de-ef0a-4df5-a7eb-c2b6a01be4fb")
+			(tstamps "c637e6dc-8817-4b98-81dd-2a837163d2ab")
 			(units
 				(unit
 					(name "A")
@@ -413,7 +413,61 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4c43de72-dcca-4d46-8c8d-9bfaa6d20b7b")
+			(tstamps "ae918eab-b7d7-48fa-b269-23efba3129b0")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C7")
+			(value "1uF")
+			(footprint "Capacitor_SMD:C_0402_1005Metric")
+			(fields
+				(field
+					(name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "C")
+				(description "Unpolarized capacitor")
+			)
+			(property
+				(name "Sheetname")
+				(value "ring-flex-v1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "ring-flex-v1.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "cap capacitor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "C_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "e6b594f9-f705-4af9-931b-309aa5a27b7f")
 			(units
 				(unit
 					(name "A")
@@ -467,7 +521,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c5d2b332-40c9-4d21-8caa-e73df9457b1c")
+			(tstamps "8ee7965c-3b2f-4f49-8b68-ae75ca113277")
 			(units
 				(unit
 					(name "A")
@@ -521,7 +575,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e336e9f4-4a1e-42cd-9de2-65f0be4bb8f5")
+			(tstamps "366fe18c-e31e-4fcf-8db5-5ead4f50060c")
 			(units
 				(unit
 					(name "A")
@@ -575,7 +629,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "38787292-22f6-477a-9f7e-de37e42c1e5e")
+			(tstamps "3e0f05f6-3e25-46de-b4da-acb8f1201112")
 			(units
 				(unit
 					(name "A")
@@ -626,7 +680,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "7182b034-2c10-4e49-976f-6e8437f45ef9")
+			(tstamps "14913788-8494-4eaa-8ec7-bcfe1482d36d")
 			(units
 				(unit
 					(name "A")
@@ -677,7 +731,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8cf94a36-1abf-4e81-8d48-01033140ef03")
+			(tstamps "c48f45e5-c74e-4900-908e-7cad07e307d2")
 			(units
 				(unit
 					(name "A")
@@ -758,7 +812,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "fb140184-e68e-401a-9a35-26a59e20c5a2")
+			(tstamps "2d7e3483-785b-4cbb-9870-0c83608befd7")
 			(units
 				(unit
 					(name "A")
@@ -808,7 +862,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f1d05459-e305-4027-a504-d9453dc09c50")
+			(tstamps "8b718985-b4d0-47b8-a43f-3c55a7a6f1d2")
 			(units
 				(unit
 					(name "A")
@@ -861,7 +915,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8752c364-f464-47ec-a302-b1fe2da7ecea")
+			(tstamps "e2436bd0-18db-488b-814d-b45991328281")
 			(units
 				(unit
 					(name "A")
@@ -914,7 +968,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8d1afc84-c97e-465f-b9d8-ddf1faceb8da")
+			(tstamps "e4dac2cd-5526-4f47-8f4e-ea1fb0bd08f9")
 			(units
 				(unit
 					(name "A")
@@ -971,7 +1025,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "dc27136d-cac4-4d55-8f99-2748c94f1e4b")
+			(tstamps "848e163b-add3-40e9-8b13-238d853352e0")
 			(units
 				(unit
 					(name "A")
@@ -1025,7 +1079,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "83b99cef-8db7-44e7-a178-c71286238a66")
+			(tstamps "f2d2ea98-06d0-4726-97d0-64cea455a041")
 			(units
 				(unit
 					(name "A")
@@ -1079,7 +1133,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e3f9181c-7b44-4fa7-88d9-c0f2c30579f2")
+			(tstamps "c9e711ab-64a8-4bdf-94b7-61018da90b8a")
 			(units
 				(unit
 					(name "A")
@@ -1133,7 +1187,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4c6b2c73-b8bf-44f8-acd6-47d134705573")
+			(tstamps "69173b7c-416c-493f-9cc0-9ff5d4ee3a16")
 			(units
 				(unit
 					(name "A")
@@ -1187,7 +1241,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2de8dc75-1ef7-4145-a7cd-f389cfcc4af6")
+			(tstamps "2d3760d3-14b3-4a53-ad4b-20d5f04ea808")
 			(units
 				(unit
 					(name "A")
@@ -1241,7 +1295,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "0584ad51-6d4a-40d3-8ea6-9389c9185924")
+			(tstamps "60ee2ccb-1095-4125-858c-2a57ae7bba86")
 			(units
 				(unit
 					(name "A")
@@ -1295,7 +1349,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a7e11aab-06a5-47ef-abb9-1c712060707e")
+			(tstamps "763e5e27-d0e5-401f-a86e-3f95fecbf126")
 			(units
 				(unit
 					(name "A")
@@ -1349,7 +1403,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d81cea8d-3922-4f67-9a5c-2d5a2d82b6b3")
+			(tstamps "a516777e-4a74-47e7-99d7-b8197bda9834")
 			(units
 				(unit
 					(name "A")
@@ -1400,7 +1454,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "82075c47-5a2c-4d57-b4a3-8209e7ac1f5b")
+			(tstamps "f09ea21b-4148-4afe-bdac-06eaa82c1225")
 			(units
 				(unit
 					(name "A")
@@ -1451,7 +1505,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "65c61d26-2ee4-425d-ae3c-d5c9da218ca6")
+			(tstamps "667ac661-dc7c-4c02-a4a4-c52a85f97974")
 			(units
 				(unit
 					(name "A")
@@ -1502,7 +1556,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "03ac6d6d-835b-42a8-abbc-d34efd5a7b2f")
+			(tstamps "1089430a-cb32-4720-9a4e-5bbf77797b58")
 			(units
 				(unit
 					(name "A")
@@ -1531,7 +1585,7 @@
 			(libsource
 				(lib "ring-flex-v1")
 				(part "MDBT50Q-1MV2")
-				(description "nRF52840 module, castellated. PIN NUMBERS ARE PLACEHOLDERS - set from the Raytac datasheet before layout.")
+				(description "nRF52840 module. Pin numbers are from the Raytac approval sheet section 2.5. Supply VDDH (30) above 3.6 V; VDD (28) is the REG0 output and needs decoupling only.")
 			)
 			(property
 				(name "Sheetname")
@@ -1545,31 +1599,46 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "09f984e2-5e03-4c7c-bfec-e669a3d8485b")
+			(tstamps "a71c8d9a-ab62-444b-a850-f24eb1ed2a16")
 			(units
 				(unit
 					(name "A")
 					(pins
 						(pin
-							(num "P1")
+							(num "30")
 						)
 						(pin
-							(num "P2")
+							(num "28")
 						)
 						(pin
-							(num "P3")
+							(num "1")
 						)
 						(pin
-							(num "P4")
+							(num "2")
 						)
 						(pin
-							(num "P5")
+							(num "15")
 						)
 						(pin
-							(num "P6")
+							(num "33")
 						)
 						(pin
-							(num "P7")
+							(num "55")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "41")
+						)
+						(pin
+							(num "51")
+						)
+						(pin
+							(num "53")
 						)
 					)
 				)
@@ -1614,7 +1683,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "7b3ccbf2-3f48-45bc-83d0-d5bd7ca770fb")
+			(tstamps "3e75df3e-2347-4318-ac74-7be5cda53cdc")
 			(units
 				(unit
 					(name "A")
@@ -1677,7 +1746,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3a0012e7-0513-4742-9166-2945d56142c9")
+			(tstamps "0f5bd1bf-32af-4317-a0a2-f3bd33fc0217")
 			(units
 				(unit
 					(name "A")
@@ -1740,7 +1809,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c94c2253-f1e7-4e45-852d-697dd6ff59c5")
+			(tstamps "f101e863-c9f9-476c-ac40-659e03dab167")
 			(units
 				(unit
 					(name "A")
@@ -2245,56 +2314,80 @@
 		(libpart
 			(lib "ring-flex-v1")
 			(part "MDBT50Q-1MV2")
-			(description "nRF52840 module, castellated. PIN NUMBERS ARE PLACEHOLDERS - set from the Raytac datasheet before layout.")
-			(docs "https://www.raytac.com/product/ins.php?index_id=81")
+			(description "nRF52840 module. Pin numbers are from the Raytac approval sheet section 2.5. Supply VDDH (30) above 3.6 V; VDD (28) is the REG0 output and needs decoupling only.")
+			(docs "https://www.raytac.com/download/index.php?index_id=43")
 			(fields
 				(field
 					(name "Reference") "U")
 				(field
 					(name "Value") "MDBT50Q-1MV2")
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "ring-flex-v1:MDBT50Q-1MV2")
 				(field
-					(name "Datasheet") "https://www.raytac.com/product/ins.php?index_id=81")
+					(name "Datasheet") "https://www.raytac.com/download/index.php?index_id=43")
 				(field
-					(name "Description") "nRF52840 module, castellated. PIN NUMBERS ARE PLACEHOLDERS - set from the Raytac datasheet before layout.")
+					(name "Description") "nRF52840 module. Pin numbers are from the Raytac approval sheet section 2.5. Supply VDDH (30) above 3.6 V; VDD (28) is the REG0 output and needs decoupling only.")
 			)
 			(pins
 				(pin
-					(num "P1")
-					(name "VDD")
-					(type "power_in")
-				)
-				(pin
-					(num "P2")
+					(num "1")
 					(name "GND")
 					(type "power_in")
 				)
 				(pin
-					(num "P3")
-					(name "P1.15")
-					(type "bidirectional")
+					(num "2")
+					(name "GND")
+					(type "power_in")
 				)
 				(pin
-					(num "P4")
+					(num "6")
 					(name "P1.13")
 					(type "bidirectional")
 				)
 				(pin
-					(num "P5")
+					(num "8")
+					(name "P1.15")
+					(type "bidirectional")
+				)
+				(pin
+					(num "15")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "28")
+					(name "VDD")
+					(type "passive")
+				)
+				(pin
+					(num "30")
+					(name "VDDH")
+					(type "power_in")
+				)
+				(pin
+					(num "33")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "41")
 					(name "P0.17")
 					(type "bidirectional")
 				)
 				(pin
-					(num "P6")
+					(num "51")
 					(name "SWDIO")
 					(type "bidirectional")
 				)
 				(pin
-					(num "P7")
-					(name "SWCLK")
+					(num "53")
+					(name "SWDCLK")
 					(type "bidirectional")
+				)
+				(pin
+					(num "55")
+					(name "GND")
+					(type "power_in")
 				)
 			)
 		)
@@ -2355,8 +2448,8 @@
 			(class "Default")
 			(node
 				(ref "U1")
-				(pin "P5")
-				(pinfunction "P0.17_P5")
+				(pin "41")
+				(pinfunction "P0.17_41")
 				(pintype "bidirectional")
 			)
 			(node
@@ -2472,6 +2565,11 @@
 				(pintype "passive")
 			)
 			(node
+				(ref "C7")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
 				(ref "J2")
 				(pin "1")
 				(pinfunction "1_1")
@@ -2552,8 +2650,32 @@
 			)
 			(node
 				(ref "U1")
-				(pin "P2")
-				(pinfunction "GND_P2")
+				(pin "1")
+				(pinfunction "GND_1")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U1")
+				(pin "15")
+				(pinfunction "GND_15")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U1")
+				(pin "2")
+				(pinfunction "GND_2")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U1")
+				(pin "33")
+				(pinfunction "GND_33")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U1")
+				(pin "55")
+				(pinfunction "GND_55")
 				(pintype "power_in")
 			)
 			(node
@@ -2571,12 +2693,28 @@
 		)
 		(net
 			(code "8")
+			(name "/MCU_VDD")
+			(class "Default")
+			(node
+				(ref "C7")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "28")
+				(pinfunction "VDD_28")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "9")
 			(name "/MOTOR_EN")
 			(class "Default")
 			(node
 				(ref "U1")
-				(pin "P4")
-				(pinfunction "P1.13_P4")
+				(pin "6")
+				(pinfunction "P1.13_6")
 				(pintype "bidirectional")
 			)
 			(node
@@ -2587,7 +2725,7 @@
 			)
 		)
 		(net
-			(code "9")
+			(code "10")
 			(name "/MOTOR_GATE")
 			(class "Default")
 			(node
@@ -2608,7 +2746,7 @@
 			)
 		)
 		(net
-			(code "10")
+			(code "11")
 			(name "/MOTOR_PWM")
 			(class "Default")
 			(node
@@ -2618,13 +2756,13 @@
 			)
 			(node
 				(ref "U1")
-				(pin "P3")
-				(pinfunction "P1.15_P3")
+				(pin "8")
+				(pinfunction "P1.15_8")
 				(pintype "bidirectional")
 			)
 		)
 		(net
-			(code "11")
+			(code "12")
 			(name "/MOTOR_SW")
 			(class "Default")
 			(node
@@ -2647,7 +2785,7 @@
 			)
 		)
 		(net
-			(code "12")
+			(code "13")
 			(name "/PROG")
 			(class "Default")
 			(node
@@ -2663,7 +2801,7 @@
 			)
 		)
 		(net
-			(code "13")
+			(code "14")
 			(name "/Q1_MID")
 			(class "Default")
 			(node
@@ -2680,7 +2818,7 @@
 			)
 		)
 		(net
-			(code "14")
+			(code "15")
 			(name "/SWCLK")
 			(class "Default")
 			(node
@@ -2691,13 +2829,13 @@
 			)
 			(node
 				(ref "U1")
-				(pin "P7")
-				(pinfunction "SWCLK_P7")
+				(pin "53")
+				(pinfunction "SWDCLK_53")
 				(pintype "bidirectional")
 			)
 		)
 		(net
-			(code "15")
+			(code "16")
 			(name "/SWDIO")
 			(class "Default")
 			(node
@@ -2708,13 +2846,13 @@
 			)
 			(node
 				(ref "U1")
-				(pin "P6")
-				(pinfunction "SWDIO_P6")
+				(pin "51")
+				(pinfunction "SWDIO_51")
 				(pintype "bidirectional")
 			)
 		)
 		(net
-			(code "16")
+			(code "17")
 			(name "/USB_CC1")
 			(class "Default")
 			(node
@@ -2730,7 +2868,7 @@
 			)
 		)
 		(net
-			(code "17")
+			(code "18")
 			(name "/USB_CC2")
 			(class "Default")
 			(node
@@ -2746,7 +2884,7 @@
 			)
 		)
 		(net
-			(code "18")
+			(code "19")
 			(name "/VBAT")
 			(class "Default")
 			(node
@@ -2778,8 +2916,8 @@
 			)
 			(node
 				(ref "U1")
-				(pin "P1")
-				(pinfunction "VDD_P1")
+				(pin "30")
+				(pinfunction "VDDH_30")
 				(pintype "power_in")
 			)
 			(node
@@ -2796,7 +2934,7 @@
 			)
 		)
 		(net
-			(code "19")
+			(code "20")
 			(name "/VCHG")
 			(class "Default")
 			(node
@@ -2837,7 +2975,7 @@
 			)
 		)
 		(net
-			(code "20")
+			(code "21")
 			(name "/VCHG_IN")
 			(class "Default")
 			(node
@@ -2859,7 +2997,7 @@
 			)
 		)
 		(net
-			(code "21")
+			(code "22")
 			(name "/V_MOTOR")
 			(class "Default")
 			(node
@@ -2892,7 +3030,7 @@
 			)
 		)
 		(net
-			(code "22")
+			(code "23")
 			(name "unconnected-(U3-NC-Pad4)")
 			(class "Default")
 			(node
@@ -2903,7 +3041,7 @@
 			)
 		)
 		(net
-			(code "23")
+			(code "24")
 			(name "unconnected-(U4-TD-Pad4)")
 			(class "Default")
 			(node

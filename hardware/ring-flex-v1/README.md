@@ -126,9 +126,30 @@ current format, and checked against the approval sheet:
 Everything checkable agrees; the 0.2 mm on field height is within how a
 dimension is read off a drawing.
 
-**Still to confirm before fab, and only you can:** that pin 1 sits where this
-footprint puts it. I verified geometry, not the pin table. Compare against
-Raytac's own footprint from their support page.
+**Geometry verified exactly.** Section 2.5's dimensioned pad layout gives
+pad X positions 0.45-10.05 mm and Y 0.6-11.5 mm; this footprint's pads span
+exactly those ranges. Not close -- identical.
+
+**Pin numbers are now real**, read from the approval sheet's pin table:
+GND 1/2/15/33/55, P1.13 = 6, P1.15 = 8, P0.17 = 41, VDD = 28, VDDH = 30,
+SWDIO = 51, SWDCLK = 53. The placeholders are gone.
+
+## Supply: VDDH, not VDD
+
+Section 8: *"Recommend using when the highest input voltage is equal or
+greater than 3.6V. Supply power from VCC2 (VDDH)."* A full LiPo is 4.2 V and
+the nRF52840's VDD tops out at 3.6 V, so **the cell feeds pin 30 (VDDH)**.
+Pin 28 (VDD) is REG0's output and takes a decoupling cap only.
+
+**REGOUT0 must be programmed.** VDD defaults to 1.8 V on a fresh part, and
+every GPIO follows it. At 1.8 V the motor gate would sit near the AO3400's
+threshold and the drive would be marginal or dead. Set REGOUT0 to 3.0 or
+3.3 V in UICR before trusting any output. The Adafruit bootloader normally
+does this, but verify rather than assume.
+
+**REG0 mode:** LDO for v1, no inductor. DC/DC would want L4 = 10 uH 0603,
+IDC >= 80 mA, and is worth revisiting only if radio-burst efficiency
+matters.
 
 ## Open questions
 

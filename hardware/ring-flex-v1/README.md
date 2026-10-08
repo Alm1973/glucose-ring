@@ -50,8 +50,8 @@ pin, the pulsed-sampling logic, and a calibration that was never closed.
 ## Band layout, 65 mm
 
 ```
- [ module + power  ~22 mm ] -4- [ cell ~16 mm ] -4- [ motor ~11 mm ] -4-
-                                                          ~61 mm, 4 mm slack
+ [ A: module 15.5 ]-3.5-[ B: power 12 ]-3.5-[ C: cell 16 ]-3.5-[ D: motor 11 ]
+ 0              15.5      19      31       34.5      50.5     54        65
 ```
 
 - **Antenna at the outside of the ring**, furthest from the finger. Skin is
@@ -98,17 +98,18 @@ Confirmed against Raytac's approval sheet for the MDBT50Q-1MV2:
 | Antenna keep-out | **12.4 x 3.8 mm of "no ground pad"** beyond the antenna end |
 | Extra | a 1.6 x 1.2 mm top-layer no-ground-pad area, 2.95 mm in from the left edge |
 
-**The 3.8 mm keep-out changes the band budget.** The module plus its keep-out
-is 19.3 mm of the 65 mm, which leaves island A no room for the power section
--- that needs its own island. Revised allocation:
+**The keep-out costs nothing if the module sits flush at the end.** Put U1
+hard against x=0 with its antenna facing the board edge, and the 12.4 x 3.8 mm
+"no ground pad" area falls off the board -- there is no host copper there
+because there is no board there. That is what makes the budget close:
 
 ```
- [keep-out 3.8][module 15.5][power 8][cell 16][motor 11] = 54.3 mm
- + 4 bends at ~2.5 mm = 64.3 mm of 65
+ [module 15.5][power 12][cell 16][motor 11] = 54.5 mm
+ + 3 bends at 3.5 mm = 65.0 mm exactly
 ```
 
-Tight but it closes. The keep-out is 12.4 mm wide against a 10 mm band, so
-it spans the full width -- no copper at all in those 3.8 mm, either layer.
+The first 3.8 mm of board under the module's antenna end is still marked as
+a no-copper region on User.1, because the module overhangs it.
 
 **The footprint is not reconstructed here.** The approval sheet gives pad
 size and the keep-out but not per-pad pitch, and rebuilding 61 pad positions

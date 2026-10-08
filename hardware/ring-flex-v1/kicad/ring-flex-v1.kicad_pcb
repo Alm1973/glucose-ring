@@ -126,7 +126,7 @@
 			(type solid)
 		)
 		(layer "Edge.Cuts")
-		(uuid "a7feda04-31f0-4718-a392-d4273a472a95")
+		(uuid "5b569b81-5135-4e79-bc24-9e5a8d069562")
 	)
 	(gr_line
 		(start 115.000 60.000)
@@ -136,7 +136,7 @@
 			(type solid)
 		)
 		(layer "Edge.Cuts")
-		(uuid "45774dd9-c584-499c-a3fc-0dd078090022")
+		(uuid "7d44e016-ba36-431c-9efc-622803f8e405")
 	)
 	(gr_line
 		(start 115.000 70.000)
@@ -146,7 +146,7 @@
 			(type solid)
 		)
 		(layer "Edge.Cuts")
-		(uuid "b6919442-5399-432d-824b-a82589e510f2")
+		(uuid "931d2457-43b1-4828-ab1f-ed4838cbad56")
 	)
 	(gr_line
 		(start 50.000 70.000)
@@ -156,7 +156,7 @@
 			(type solid)
 		)
 		(layer "Edge.Cuts")
-		(uuid "471a90b9-3de7-46cb-ae5c-dac0c027c203")
+		(uuid "4259a763-8b0a-4fe4-8e91-a39e33db54fd")
 	)
 	(gr_line
 		(start 50.000 60.000)
@@ -166,147 +166,147 @@
 			(type solid)
 		)
 		(layer "Dwgs.User")
-		(uuid "3a5ef776-ddf7-4d5b-8d59-6312e667a4d0")
+		(uuid "638a82fb-7124-40da-83f5-597489cbff73")
 	)
-	(gr_text "ISLAND A: module + power  (stiffener)"
-		(at 50.500 72.000 0)
+	(gr_text "A: MODULE U1  (antenna at x=0, flush to the edge)"
+		(at 50.400 72.200 0)
 		(layer "Cmts.User")
-		(uuid "1a1571fb-605a-4be7-94e0-8e8171ca2105")
+		(uuid "c4a8ebe7-17b5-4d6c-95c5-3ed1f774ed91")
 		(effects
 			(font
-				(size 0.80 0.80)
+				(size 0.70 0.70)
 				(thickness 0.15)
 			)
 			(justify left)
 		)
 	)
 	(gr_line
-		(start 72.000 60.000)
-		(end 72.000 70.000)
+		(start 65.500 60.000)
+		(end 65.500 70.000)
 		(stroke
 			(width 0.080)
 			(type solid)
 		)
 		(layer "Dwgs.User")
-		(uuid "a63a214a-83b1-4ddc-9789-f49278ee6970")
+		(uuid "7514ac4e-1cd5-4f60-a844-e73380e772ff")
 	)
-	(gr_text "BEND"
-		(at 72.500 72.000 0)
+	(gr_text "bend"
+		(at 65.900 72.200 0)
 		(layer "Cmts.User")
-		(uuid "d2775b9e-1348-437c-82b9-e77030d32184")
+		(uuid "ad730df9-9650-455d-adfd-634501cab32b")
 		(effects
 			(font
-				(size 0.80 0.80)
+				(size 0.70 0.70)
 				(thickness 0.15)
 			)
 			(justify left)
 		)
 	)
 	(gr_line
-		(start 76.000 60.000)
-		(end 76.000 70.000)
+		(start 69.000 60.000)
+		(end 69.000 70.000)
 		(stroke
 			(width 0.080)
 			(type solid)
 		)
 		(layer "Dwgs.User")
-		(uuid "deedc777-6e3f-40b2-a9c6-e7f7b7c32463")
+		(uuid "eb70c5e6-319d-4e49-90a4-309ee1765594")
 	)
-	(gr_text "ISLAND B: cell  (stiffener)"
-		(at 76.500 72.000 0)
+	(gr_text "B: POWER  U2 U3 U4 Q1 R3 R4 R5 C2..C6"
+		(at 69.400 72.200 0)
 		(layer "Cmts.User")
-		(uuid "5341e130-47a7-409b-81ed-d4835dd95b33")
+		(uuid "7911fe28-3015-47cd-820b-c0059476a86e")
 		(effects
 			(font
-				(size 0.80 0.80)
+				(size 0.70 0.70)
 				(thickness 0.15)
 			)
 			(justify left)
 		)
 	)
 	(gr_line
-		(start 92.000 60.000)
-		(end 92.000 70.000)
+		(start 81.000 60.000)
+		(end 81.000 70.000)
 		(stroke
 			(width 0.080)
 			(type solid)
 		)
 		(layer "Dwgs.User")
-		(uuid "bcb1b0e5-9543-4030-8b62-348497ea1254")
+		(uuid "d0a0dd15-72a9-46bd-b14a-cd866ae08b8f")
 	)
-	(gr_text "BEND"
-		(at 92.500 72.000 0)
+	(gr_text "bend"
+		(at 81.400 72.200 0)
 		(layer "Cmts.User")
-		(uuid "e79634d8-b4c6-4cc0-8b69-ccb0b1b2e912")
+		(uuid "127fadb7-bc44-44ab-adb2-e4b4599279e3")
 		(effects
 			(font
-				(size 0.80 0.80)
+				(size 0.70 0.70)
 				(thickness 0.15)
 			)
 			(justify left)
 		)
 	)
 	(gr_line
-		(start 96.000 60.000)
-		(end 96.000 70.000)
+		(start 84.500 60.000)
+		(end 84.500 70.000)
 		(stroke
 			(width 0.080)
 			(type solid)
 		)
 		(layer "Dwgs.User")
-		(uuid "d568658a-1d10-4239-82aa-2844f2f2bd3d")
+		(uuid "2daa2d1d-76b9-453a-9285-4c479b4b34cf")
 	)
-	(gr_text "ISLAND C: motor  (stiffener)"
-		(at 96.500 72.000 0)
+	(gr_text "C: CELL BT1  16 x 8 mm"
+		(at 84.900 72.200 0)
 		(layer "Cmts.User")
-		(uuid "248a71a5-af09-4677-b574-5fd714110007")
+		(uuid "5a2f426e-c57e-4409-9816-0378c682c328")
 		(effects
 			(font
-				(size 0.80 0.80)
+				(size 0.70 0.70)
 				(thickness 0.15)
 			)
 			(justify left)
 		)
 	)
 	(gr_line
-		(start 107.000 60.000)
-		(end 107.000 70.000)
+		(start 100.500 60.000)
+		(end 100.500 70.000)
 		(stroke
 			(width 0.080)
 			(type solid)
 		)
 		(layer "Dwgs.User")
-		(uuid "ecbd5510-71fe-488e-9eb0-6bd8475600fc")
+		(uuid "7034948c-8e5a-48f6-9faf-c29e99701324")
 	)
-	(gr_text "BEND"
-		(at 107.500 72.000 0)
+	(gr_text "bend"
+		(at 100.900 72.200 0)
 		(layer "Cmts.User")
-		(uuid "3ea6a0b5-9ab1-48f1-b06a-e0508f811168")
+		(uuid "bba7c761-a40d-4c5b-a456-101074a1b62f")
 		(effects
 			(font
-				(size 0.80 0.80)
+				(size 0.70 0.70)
 				(thickness 0.15)
 			)
 			(justify left)
 		)
 	)
 	(gr_line
-		(start 111.000 60.000)
-		(end 111.000 70.000)
+		(start 104.000 60.000)
+		(end 104.000 70.000)
 		(stroke
 			(width 0.080)
 			(type solid)
 		)
 		(layer "Dwgs.User")
-		(uuid "4c510c1d-4ddd-4b4c-823d-7078ff00e30a")
+		(uuid "54108453-5f77-46b7-a28f-315b07188241")
 	)
-	(gr_text "charge contacts"
-		(at 111.500 72.000 0)
+	(gr_text "D: MOTOR M1 + Q2 R1 R2 D1 C1, charge pads J1 J2"
+		(at 104.400 72.200 0)
 		(layer "Cmts.User")
-		(uuid "e10a2295-3549-4c1f-8fc5-789680c125bc")
+		(uuid "57579d35-1ec3-460d-b532-701bc5ebf08e")
 		(effects
 			(font
-				(size 0.80 0.80)
+				(size 0.70 0.70)
 				(thickness 0.15)
 			)
 			(justify left)
@@ -320,42 +320,42 @@
 			(type solid)
 		)
 		(layer "Dwgs.User")
-		(uuid "bdd56d2c-bbbd-4db5-8fcd-88f9d28407a8")
+		(uuid "cad72dff-ab2c-4218-8d83-472e56b67c68")
 	)
 	(gr_line
 		(start 50.000 60.000)
-		(end 60.000 60.000)
+		(end 53.800 60.000)
 		(stroke
 			(width 0.150)
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "84f1da2d-5324-42b1-8c56-cf912191fcdc")
+		(uuid "2f9f7988-240b-43ec-a553-dcaeb5ede229")
 	)
 	(gr_line
-		(start 60.000 60.000)
-		(end 60.000 70.000)
+		(start 53.800 60.000)
+		(end 53.800 70.000)
 		(stroke
 			(width 0.150)
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "cdc9aef0-b31a-4133-aac5-03083f9c742f")
+		(uuid "7e3d4d73-be16-4534-9010-3cc87eee61f2")
 	)
 	(gr_line
-		(start 60.000 70.000)
+		(start 53.800 70.000)
 		(end 50.000 70.000)
 		(stroke
 			(width 0.150)
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "8703d35e-fdc4-4c94-9240-cbfad3bb2a9f")
+		(uuid "ef4f8178-ed94-42ff-a235-ba97e598f5f2")
 	)
-	(gr_text "ANTENNA KEEP-OUT: no copper, no cell, no motor"
-		(at 50.500 75.000 0)
+	(gr_text "ring-flex-v1   65.0 x 10.0 mm   2-layer polyimide   closed ring, index finger, 65 mm"
+		(at 50.000 52.000 0)
 		(layer "Cmts.User")
-		(uuid "be1a86c0-8d7f-4a0d-9c4a-9c54b692f66b")
+		(uuid "cd1b98e0-287f-4231-81e3-833a08b0ad4d")
 		(effects
 			(font
 				(size 0.90 0.90)
@@ -364,22 +364,46 @@
 			(justify left)
 		)
 	)
-	(gr_text "ring-flex-v1  65.0 x 10.0 mm  2-layer polyimide  closed ring, index finger"
-		(at 50.000 56.000 0)
+	(gr_text "BEND ZONES: no vias, no pads, no component edges. Hatched pour only, traces perpendicular and curved."
+		(at 50.000 54.000 0)
 		(layer "Cmts.User")
-		(uuid "a085c752-6592-41a5-820a-07d58176fee3")
+		(uuid "7e21285c-c036-4586-b7ab-1403a5aaef06")
 		(effects
 			(font
-				(size 1.10 1.10)
+				(size 0.90 0.90)
 				(thickness 0.15)
 			)
 			(justify left)
 		)
 	)
-	(gr_text "BEND ZONES: no vias, no pads, no component edges. Hatched pour only."
+	(gr_text "ANTENNA (User.1): no copper either layer. Datasheet keep-out is 12.4 x 3.8 mm; the board ends there."
+		(at 50.000 56.000 0)
+		(layer "Cmts.User")
+		(uuid "e6a0a57f-9d65-4f06-8a60-944c3604dace")
+		(effects
+			(font
+				(size 0.90 0.90)
+				(thickness 0.15)
+			)
+			(justify left)
+		)
+	)
+	(gr_text "STIFFENERS under islands A, B, C and D. Static bend radius >= 6x stack thickness."
 		(at 50.000 58.000 0)
 		(layer "Cmts.User")
-		(uuid "7c36c3db-58ae-45b0-bfcc-bfa6df8935ec")
+		(uuid "c8a324e4-2dcc-4dfd-9fad-64a321bb3102")
+		(effects
+			(font
+				(size 0.90 0.90)
+				(thickness 0.15)
+			)
+			(justify left)
+		)
+	)
+	(gr_text "Press F8 to bring footprints in from the schematic, then place them on the islands."
+		(at 50.000 60.000 0)
+		(layer "Cmts.User")
+		(uuid "0fb0877e-623d-4a79-9608-9267a52db62f")
 		(effects
 			(font
 				(size 0.90 0.90)

@@ -15,7 +15,7 @@ would be a plausible-looking error that survives review.
 | U2 | MCP73831T-2ACI/OT | SOT-23-5 | Li-ion charger, 4.2 V |
 | U3 | TPS7A0230 (or XC6220) | SOT-23-5 | 3.0 V LDO for the motor rail, **EN pin required** |
 | U4 | DW01A | SOT-23-6 | cell protection controller |
-| Q1 | FS8205A | SOT-23-6 | dual N-FET, protection switch |
+| Q1 | FS8205A | SOT-23-6 | dual N-FET, **common drain** (D1/D2 shared), protection switch |
 | Q2 | AO3400A (or DMG2302U) | SOT-23 | motor low-side switch |
 | M1 | coin ERM, 10 x 2.1 mm, ~1.1 G | — | haptic actuator |
 | D1 | BAT54W | SOD-323 | motor flyback |
@@ -23,7 +23,8 @@ would be a plausible-looking error that survives review.
 | R1 | 10 k, 0402 | — | **gate pulldown — mandatory** |
 | R2 | 1 k, 0402 | — | gate series, optional |
 | R3 | 66.5 k, 0402 | — | MCP73831 PROG: sets 15 mA |
-| R4 | 330 R, 0402 | — | DW01A supply, per app circuit |
+| R4 | **1 k**, 0402 | — | DW01A VCC feed (R1). The datasheet sets a 470 R minimum; 330 R was below it. |
+| R5 | **2 k**, 0402 | — | DW01A CS to pack negative (R2). The datasheet states R1 and R2 cannot be omitted. |
 | C1 | 100 uF X5R 1206 | — | bulk on the motor rail |
 | C2 | 10 uF X5R 0805 | — | VBAT bulk |
 | C3 | 4.7 uF 0603 | — | charger output |
@@ -40,8 +41,10 @@ would be a plausible-looking error that survives review.
 
 | Net | Connects |
 |---|---|
-| `CELL+` | BT1 + ; U4 VDD via R4 ; `VBAT` |
-| `CELL-` | BT1 - ; Q1 drain pair (protection switch) |
+| `CELL+` | BT1 + ; U4 VCC via R4 ; `VBAT` |
+| `CELL-` | BT1 - ; Q1A **source** ; U4 GND |
+| `Q1_MID` | Q1A **drain** ; Q1B **drain** -- the FS8205A's shared D1/D2 |
+| `DW_CS` | U4 CS ; R5 to `GND` |
 | `VBAT` | `CELL+` ; U1 VDD ; U2 VBAT ; U3 VIN ; C2 ; C3 |
 | `GND` | Q1 source ; U1 GND ; U2 VSS ; U3 GND ; U4 GND ; Q2 source ; C2,C3,C4,C5,C6,C1 ; J2 ; TP4 |
 | `V_MOTOR` | U3 VOUT ; M1 + ; D1 cathode ; C1 ; C6 |

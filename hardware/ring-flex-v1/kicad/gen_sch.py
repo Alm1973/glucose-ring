@@ -108,12 +108,14 @@ part("D2", "Device", "D_Schottky", "BAT54W", 15, 110, {"1": "VCHG_IN", "2": "VCH
 part("BT1", "Device", "Battery_Cell", "LiPo ~30mAh 16x8x2.5", 55, 205, {"1": "VBAT", "2": "CELL_N"},
      fp="ring-flex-v1:Battery_LiPo_16x8_WirePads")
 part("U4", "Battery_Management", "DW01A", "DW01A", 125, 205, {
-    "5": "DW_VCC", "6": "CELL_N", "1": "DW_OD", "3": "DW_OC", "2": "GND", "4": None},
+    "5": "DW_VCC", "6": "CELL_N", "1": "DW_OD", "3": "DW_OC", "2": "DW_CS", "4": None},
      fp="Package_TO_SOT_SMD:SOT-23-6")
-part("R4", "Device", "R", "330R", 95, 180, {"1": "VBAT", "2": "DW_VCC"}, fp="Resistor_SMD:R_0402_1005Metric")
+part("R4", "Device", "R", "1k", 95, 180, {"1": "VBAT", "2": "DW_VCC"}, fp="Resistor_SMD:R_0402_1005Metric")
+part("R5", "Device", "R", "2k", 150, 230, {"1": "DW_CS", "2": "GND"},
+     fp="Resistor_SMD:R_0402_1005Metric")
 part("C5", "Device", "C", "0.1uF", 95, 230, {"1": "DW_VCC", "2": "GND"}, fp="Capacitor_SMD:C_0402_1005Metric")
-part("Q1A", "Device", "Q_NMOS", "FS8205A (half)", 180, 200, {"G": "DW_OD", "D": "CELL_N", "S": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
-part("Q1B", "Device", "Q_NMOS", "FS8205A (half)", 220, 200, {"G": "DW_OC", "D": "GND", "S": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
+part("Q1A", "Device", "Q_NMOS", "FS8205A Q1 (discharge)", 180, 200, {"G": "DW_OD", "S": "CELL_N", "D": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
+part("Q1B", "Device", "Q_NMOS", "FS8205A Q2 (charge)", 220, 200, {"G": "DW_OC", "S": "GND", "D": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
 part("C2", "Device", "C", "10uF", 255, 205, {"1": "VBAT", "2": "GND"}, fp="Capacitor_SMD:C_0805_2012Metric")
 # --- contacts and test points
 part("J1", "Connector", "TestPoint", "charge pad +", 15, 90, {"1": "VCHG"}, fp="TestPoint:TestPoint_Pad_D1.0mm")

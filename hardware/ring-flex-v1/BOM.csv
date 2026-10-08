@@ -3,7 +3,7 @@ U1,1,Raytac MDBT50Q-1MV2,module 10.2x15.6x2.2mm,,nRF52840 + chip antenna,"castel
 U2,1,MCP73831T-2ACI/OT,SOT-23-5,4.2V,Li-ion charger,"charge current set by R3; floor is 15 mA"
 U3,1,TPS7A0230 or XC6220,SOT-23-5,3.0V,motor rail LDO,"EN pin REQUIRED - gated by MCU to kill idle draw"
 U4,1,DW01A,SOT-23-6,,cell protection controller,over-charge / over-discharge / over-current
-Q1,1,FS8205A,SOT-23-6,,protection switch,dual N-FET for U4
+Q1,1,FS8205A,SOT-23-6,20V 6A,protection switch,"dual N-FET, COMMON DRAIN (D1/D2 shared). S1 to cell negative, S2 to pack negative."
 Q2,1,AO3400A or DMG2302U,SOT-23,,motor low-side switch,"logic level, Vgs(th) < 1.5 V, >=200 mA"
 M1,1,NFP-C1020 (NFP-FLAT-C1020L),10.0x2.0mm coin,3.0V 80mA max,haptic actuator,"flying leads. Vendor quotes BOTH 0.80G and 1.10G on the same page - treat as unreliable and compare against the current 10x3.4mm by hand. 11000rpm = ~183Hz, same as the current motor, so no frequency gain. 2.0mm EXCLUDES the adhesive foam."
 D1,1,BAT54W,SOD-323,,motor flyback,cathode to V_MOTOR
@@ -11,7 +11,8 @@ D2,1,BAT54W,SOD-323,,reverse-polarity guard,on the charge contact
 R1,1,resistor,0402,10k,gate pulldown,MANDATORY - floating gate runs the motor
 R2,1,resistor,0402,1k,gate series,optional - tames the gate edge
 R3,1,resistor,0402,66.5k,charger PROG,sets 15 mA
-R4,1,resistor,0402,330R,DW01A supply,per application circuit
+R4,1,resistor,0402,1k,DW01A supply (R1),"datasheet requires >=470R; 330R was below the minimum"
+R5,1,resistor,0402,2k,DW01A current sense (R2),"CS to pack negative. Datasheet: R1 and R2 cannot be omitted. Range 1-3k."
 C1,1,ceramic X5R,1206,100uF,motor rail bulk,"carries the ~85 mA buzz; ceramic is thinner than tantalum"
 C2,1,ceramic X5R,0805,10uF,VBAT bulk,
 C3,1,ceramic,0603,4.7uF,charger output,

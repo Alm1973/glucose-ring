@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/shauryakhidake/projects/glucose-ring/hardware/ring-flex-v1/kicad/ring-flex-v1.kicad_sch")
-		(date "2026-10-07T20:04:42")
+		(date "2026-10-07T20:09:03")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -89,7 +89,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f24ad2d3-bde5-4356-bbe5-37416a902328")
+			(tstamps "9a836b32-3b1b-457b-9caa-d7d5335e525d")
 			(units
 				(unit
 					(name "A")
@@ -143,7 +143,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d35d1723-7a19-4b06-845d-06a24e327e42")
+			(tstamps "f92a83f8-9f2d-4faa-8c2a-d09304acd752")
 			(units
 				(unit
 					(name "A")
@@ -197,7 +197,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d13e958f-675f-44fc-a1b7-f54db560c301")
+			(tstamps "85168098-1755-4292-b2dd-d1210ab855f2")
 			(units
 				(unit
 					(name "A")
@@ -251,7 +251,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f042c176-0bb4-4c90-b950-ec079ab8c2a1")
+			(tstamps "001c42aa-5a7b-4aa9-9dec-7229524aa850")
 			(units
 				(unit
 					(name "A")
@@ -305,7 +305,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "df47c5a8-0fdc-4584-aa00-61ba207712fe")
+			(tstamps "a3947376-bee9-4df3-9b92-3cace47fdf5d")
 			(units
 				(unit
 					(name "A")
@@ -359,7 +359,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "bd0a0d10-d6b5-45cb-8e50-b72b2adc8983")
+			(tstamps "6118bb05-a807-4326-8606-c66aa5e2afdb")
 			(units
 				(unit
 					(name "A")
@@ -413,7 +413,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "fa1a4040-9fac-4af3-897e-5c574a33a6fd")
+			(tstamps "d26e2711-24c1-4000-be71-0dd107a021f5")
 			(units
 				(unit
 					(name "A")
@@ -467,7 +467,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "39e7444b-2f1e-4b5f-b858-d5afd032fbd0")
+			(tstamps "95f8fd0c-ea0b-407f-ad3a-fa5c7d6d07a8")
 			(units
 				(unit
 					(name "A")
@@ -521,7 +521,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c2e2b00e-635b-453a-9d57-7bad5253deca")
+			(tstamps "0bf7f6eb-9cb5-4098-aa30-acdd63348374")
 			(units
 				(unit
 					(name "A")
@@ -575,7 +575,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "1b188265-d3a4-4008-b41e-6c0a283f1c01")
+			(tstamps "8b2b0e80-6a2c-42b4-8c19-b116c0177cb0")
 			(units
 				(unit
 					(name "A")
@@ -626,7 +626,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "285c22b5-db1f-458b-8faa-a2386a19d271")
+			(tstamps "4182f5fd-b213-4bb9-b79c-ba12d58c8f6b")
 			(units
 				(unit
 					(name "A")
@@ -677,7 +677,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "01f88315-76d4-4bb4-8561-7ba706eac909")
+			(tstamps "18b7c994-1881-4484-871b-ac30c263da92")
 			(units
 				(unit
 					(name "A")
@@ -694,7 +694,7 @@
 		)
 		(comp
 			(ref "Q1A")
-			(value "FS8205A (half)")
+			(value "FS8205A Q1 (discharge)")
 			(footprint "Package_TO_SOT_SMD:SOT-23-6")
 			(fields
 				(field
@@ -727,7 +727,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4bd006dc-32ef-498c-967e-b96b1ffe7e6f")
+			(tstamps "24cfd38f-47bd-4025-89d6-a40df817df60")
 			(units
 				(unit
 					(name "A")
@@ -747,7 +747,7 @@
 		)
 		(comp
 			(ref "Q1B")
-			(value "FS8205A (half)")
+			(value "FS8205A Q2 (charge)")
 			(footprint "Package_TO_SOT_SMD:SOT-23-6")
 			(fields
 				(field
@@ -780,7 +780,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "5da09a93-a1d9-47ab-82cd-e113d5702ea2")
+			(tstamps "a52fe758-6bec-4488-a88b-f69eeb04de19")
 			(units
 				(unit
 					(name "A")
@@ -833,7 +833,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "90d4fe8d-2606-4835-bdb9-0aceab22d6d5")
+			(tstamps "2f21a414-41bb-42a0-9739-a8ee4c901cf3")
 			(units
 				(unit
 					(name "A")
@@ -890,7 +890,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c58203d9-8218-4467-bd89-7f3de8cfb500")
+			(tstamps "d6415f55-2b92-4844-ad79-55a18647906d")
 			(units
 				(unit
 					(name "A")
@@ -944,7 +944,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "db5c5d01-d957-4d31-9c7d-fb70e216b225")
+			(tstamps "d03a6891-f165-4896-b184-8881a11a4d07")
 			(units
 				(unit
 					(name "A")
@@ -998,7 +998,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d936fc3c-9da0-4895-8cb5-6254ab87053d")
+			(tstamps "0481accf-1f62-4f72-8bc6-df203e14942a")
 			(units
 				(unit
 					(name "A")
@@ -1015,7 +1015,7 @@
 		)
 		(comp
 			(ref "R4")
-			(value "330R")
+			(value "1k")
 			(footprint "Resistor_SMD:R_0402_1005Metric")
 			(fields
 				(field
@@ -1052,7 +1052,61 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "6ec53e5b-482b-44e0-807e-e8403e69ef55")
+			(tstamps "02c7ac1d-2f33-4693-9540-855ccdeb741b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R5")
+			(value "2k")
+			(footprint "Resistor_SMD:R_0402_1005Metric")
+			(fields
+				(field
+					(name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "R")
+				(description "Resistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "ring-flex-v1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "ring-flex-v1.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "74e00d1d-8216-4340-b219-4a87317d8a52")
 			(units
 				(unit
 					(name "A")
@@ -1106,7 +1160,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "15ffba8e-8784-4061-98c7-621682ce2ff4")
+			(tstamps "37bb023c-54ad-48d3-9a61-845bbd57fd28")
 			(units
 				(unit
 					(name "A")
@@ -1157,7 +1211,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "dc23ff23-ee33-45ca-9f83-8e78bcdfb7fd")
+			(tstamps "ec8fad64-408b-45d7-8e0d-7b69d1e26a1f")
 			(units
 				(unit
 					(name "A")
@@ -1208,7 +1262,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "820ecb7d-5f53-464d-8250-cf78b235184d")
+			(tstamps "a4fa5547-bbd8-4383-88e5-c009cce49529")
 			(units
 				(unit
 					(name "A")
@@ -1259,7 +1313,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "60bd9a89-81db-496b-81c7-8429c59adb5e")
+			(tstamps "a6a24610-2461-4f3e-8b7b-257d556a005a")
 			(units
 				(unit
 					(name "A")
@@ -1302,7 +1356,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "1be4ff77-6ad1-468e-a44c-48067fce2cab")
+			(tstamps "6b375640-1ae0-451f-b2b0-5f0c679b055d")
 			(units
 				(unit
 					(name "A")
@@ -1371,7 +1425,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "da341939-e9ef-4868-8afb-b512bee09afa")
+			(tstamps "7eb00c47-2ed1-4270-9629-ae404bdaf8ab")
 			(units
 				(unit
 					(name "A")
@@ -1434,7 +1488,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e42c4434-8922-4407-9222-b3c700f8f4ad")
+			(tstamps "1925b6ff-7c12-480c-9959-b08235f4d91e")
 			(units
 				(unit
 					(name "A")
@@ -1497,7 +1551,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cf827eff-19ee-4b1a-9ea2-e6f918c0c79f")
+			(tstamps "b7b6879f-7bda-4827-9eae-c3f42845ea62")
 			(units
 				(unit
 					(name "A")
@@ -2016,8 +2070,8 @@
 			)
 			(node
 				(ref "Q1A")
-				(pin "D")
-				(pinfunction "D_D")
+				(pin "S")
+				(pinfunction "S_S")
 				(pintype "passive")
 			)
 			(node
@@ -2046,6 +2100,22 @@
 		)
 		(net
 			(code "3")
+			(name "/DW_CS")
+			(class "Default")
+			(node
+				(ref "R5")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "U4")
+				(pin "2")
+				(pinfunction "CS_2")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "4")
 			(name "/DW_OC")
 			(class "Default")
 			(node
@@ -2062,7 +2132,7 @@
 			)
 		)
 		(net
-			(code "4")
+			(code "5")
 			(name "/DW_OD")
 			(class "Default")
 			(node
@@ -2079,7 +2149,7 @@
 			)
 		)
 		(net
-			(code "5")
+			(code "6")
 			(name "/DW_VCC")
 			(class "Default")
 			(node
@@ -2100,7 +2170,7 @@
 			)
 		)
 		(net
-			(code "6")
+			(code "7")
 			(name "/GND")
 			(class "Default")
 			(node
@@ -2141,8 +2211,8 @@
 			)
 			(node
 				(ref "Q1B")
-				(pin "D")
-				(pinfunction "D_D")
+				(pin "S")
+				(pinfunction "S_S")
 				(pintype "passive")
 			)
 			(node
@@ -2158,6 +2228,11 @@
 			)
 			(node
 				(ref "R3")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R5")
 				(pin "2")
 				(pintype "passive")
 			)
@@ -2185,15 +2260,9 @@
 				(pinfunction "GND_2")
 				(pintype "power_in")
 			)
-			(node
-				(ref "U4")
-				(pin "2")
-				(pinfunction "CS_2")
-				(pintype "input")
-			)
 		)
 		(net
-			(code "7")
+			(code "8")
 			(name "/MOTOR_EN")
 			(class "Default")
 			(node
@@ -2210,7 +2279,7 @@
 			)
 		)
 		(net
-			(code "8")
+			(code "9")
 			(name "/MOTOR_GATE")
 			(class "Default")
 			(node
@@ -2231,7 +2300,7 @@
 			)
 		)
 		(net
-			(code "9")
+			(code "10")
 			(name "/MOTOR_PWM")
 			(class "Default")
 			(node
@@ -2247,7 +2316,7 @@
 			)
 		)
 		(net
-			(code "10")
+			(code "11")
 			(name "/MOTOR_SW")
 			(class "Default")
 			(node
@@ -2270,7 +2339,7 @@
 			)
 		)
 		(net
-			(code "11")
+			(code "12")
 			(name "/PROG")
 			(class "Default")
 			(node
@@ -2286,24 +2355,24 @@
 			)
 		)
 		(net
-			(code "12")
+			(code "13")
 			(name "/Q1_MID")
 			(class "Default")
 			(node
 				(ref "Q1A")
-				(pin "S")
-				(pinfunction "S_S")
+				(pin "D")
+				(pinfunction "D_D")
 				(pintype "passive")
 			)
 			(node
 				(ref "Q1B")
-				(pin "S")
-				(pinfunction "S_S")
+				(pin "D")
+				(pinfunction "D_D")
 				(pintype "passive")
 			)
 		)
 		(net
-			(code "13")
+			(code "14")
 			(name "/SWCLK")
 			(class "Default")
 			(node
@@ -2320,7 +2389,7 @@
 			)
 		)
 		(net
-			(code "14")
+			(code "15")
 			(name "/SWDIO")
 			(class "Default")
 			(node
@@ -2337,7 +2406,7 @@
 			)
 		)
 		(net
-			(code "15")
+			(code "16")
 			(name "/VBAT")
 			(class "Default")
 			(node
@@ -2387,7 +2456,7 @@
 			)
 		)
 		(net
-			(code "16")
+			(code "17")
 			(name "/VCHG")
 			(class "Default")
 			(node
@@ -2404,7 +2473,7 @@
 			)
 		)
 		(net
-			(code "17")
+			(code "18")
 			(name "/VCHG_IN")
 			(class "Default")
 			(node
@@ -2426,7 +2495,7 @@
 			)
 		)
 		(net
-			(code "18")
+			(code "19")
 			(name "/V_MOTOR")
 			(class "Default")
 			(node
@@ -2459,7 +2528,7 @@
 			)
 		)
 		(net
-			(code "19")
+			(code "20")
 			(name "unconnected-(U3-NC-Pad4)")
 			(class "Default")
 			(node
@@ -2470,7 +2539,7 @@
 			)
 		)
 		(net
-			(code "20")
+			(code "21")
 			(name "unconnected-(U4-TD-Pad4)")
 			(class "Default")
 			(node

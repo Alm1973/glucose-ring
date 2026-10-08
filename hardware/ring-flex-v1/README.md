@@ -87,6 +87,35 @@ Pin assignments were chosen to keep the diff small: the motor stays on
 Everything else ports untouched: the protocol, the liveness logic, the alert
 patterns, the MTU chunking fix, the 450 host tests.
 
+## From the datasheet (Version H, read 2026-10-07)
+
+Confirmed against Raytac's approval sheet for the MDBT50Q-1MV2:
+
+| | |
+|---|---|
+| Body | **15.5 x 10.5 x 2.05 mm** |
+| Pads | **61, each 0.6 x 0.4 mm** |
+| Antenna keep-out | **12.4 x 3.8 mm of "no ground pad"** beyond the antenna end |
+| Extra | a 1.6 x 1.2 mm top-layer no-ground-pad area, 2.95 mm in from the left edge |
+
+**The 3.8 mm keep-out changes the band budget.** The module plus its keep-out
+is 19.3 mm of the 65 mm, which leaves island A no room for the power section
+-- that needs its own island. Revised allocation:
+
+```
+ [keep-out 3.8][module 15.5][power 8][cell 16][motor 11] = 54.3 mm
+ + 4 bends at ~2.5 mm = 64.3 mm of 65
+```
+
+Tight but it closes. The keep-out is 12.4 mm wide against a 10 mm band, so
+it spans the full width -- no copper at all in those 3.8 mm, either layer.
+
+**The footprint is not reconstructed here.** The approval sheet gives pad
+size and the keep-out but not per-pad pitch, and rebuilding 61 pad positions
+off a drawing is exactly the sort of plausible-looking error that reaches
+copper. Use Raytac's own footprint from their support page, or SnapMagic's,
+and check it against the four numbers above before committing to fab.
+
 ## Open questions
 
 - **Cell sourcing.** 16 x 8 x 2.5 mm at ~30 mAh with UN38.3 paperwork. Cheap

@@ -94,7 +94,30 @@ static_assert(DEFAULT_LOW_MG_DL == RC_UNSET || DEFAULT_HIGH_MG_DL == RC_UNSET ||
  * HardwarePWM::_set_psel writes straight into PSEL.OUT, so PWM intensity
  * works on this pin. P1.15 is neither an NFC pin (P0.09/P0.10) nor RESET.
  */
-#define MOTOR_PIN            D10
+/*
+ * Board selector. BOARD_XIAO is the hand-wired proof of concept that is in
+ * service today; BOARD_RING_FLEX_V1 is the custom flex PCB
+ * (hardware/ring-flex-v1). The default must stay BOARD_XIAO so a plain
+ * `arduino-cli compile` still builds the firmware the live ring runs.
+ *
+ *   arduino-cli compile --build-property "compiler.cpp.extra_flags=-DBOARD=2"
+ */
+#define BOARD_XIAO           1
+#define BOARD_RING_FLEX_V1   2
+#ifndef BOARD
+  #define BOARD              BOARD_XIAO
+#endif
+
+#if BOARD == BOARD_XIAO
+  #define MOTOR_PIN          D10
+#else
+  /* Same P1.15, chosen deliberately so this define does not have to change. */
+  #define MOTOR_PIN          D10
+  /* The motor rail's LDO enable. The regulator is off except during a buzz,
+     so it draws nothing the rest of the time -- which matters on a 30 mAh
+     cell in a way it never did on the XIAO's always-on 3V3. */
+  #define MOTOR_RAIL_EN      D9
+#endif
 #define BUZZ_MAX_ON_MS       2000    // hard cap on any single pulse
 
 /* While a glucose alert stands, one short tick a minute between readings, so
@@ -292,6 +315,27 @@ static void motorHardOff(void)
   digitalWrite(MOTOR_PIN, LOW);
 }
 
+/*
+ * The flex board regulates the motor rail separately and gates it with a
+ * GPIO. Raise it before a pattern, drop it after. On the XIAO the motor sits
+ * on the always-on 3V3 rail, so both calls compile away to nothing.
+ */
+static void motorRailOn(void)
+{
+#if BOARD == BOARD_RING_FLEX_V1
+  pinMode(MOTOR_RAIL_EN, OUTPUT);
+  digitalWrite(MOTOR_RAIL_EN, HIGH);
+  delay(1);                     /* LDO start-up before the first pulse */
+#endif
+}
+
+static void motorRailOff(void)
+{
+#if BOARD == BOARD_RING_FLEX_V1
+  digitalWrite(MOTOR_RAIL_EN, LOW);
+#endif
+}
+
 static void motorPwmRelease(void)
 {
   if (s_pwm) {
@@ -320,6 +364,7 @@ static bool motorPwmAcquire(void)
 
 static void runPattern(const RcPulse *p, uint8_t n, uint8_t intensity)
 {
+  motorRailOn();
   if (intensity > 100) intensity = 100;
   uint32_t duty = (255UL * intensity) / 100UL;
   if (duty == 0) duty = 1;
@@ -348,6 +393,7 @@ static void runPattern(const RcPulse *p, uint8_t n, uint8_t intensity)
   }
 
   motorPwmRelease();
+  motorRailOff();
 }
 
 static void buzz(BuzzId id)
@@ -400,6 +446,12 @@ static int chargerActive(void)
   bool charging = (digitalRead(PIN_CHG_STATUS) == LOW);
   pinMode(PIN_CHG_STATUS, INPUT);         // release: no standing pull-up current
 
+#if BOARD == BOARD_RING_FLEX_V1
+  /* No USB connector on this board, so sd_power_usbregstatus_get() would
+     always read 0 and the VBUS term is dead weight. ~CHG alone is the
+     answer, and charging is detected through the pogo contacts. */
+  return charging ? 1 : 0;
+#else
   uint32_t usb = 0;
   uint8_t sd_on = 0;
   sd_softdevice_is_enabled(&sd_on);
@@ -411,6 +463,7 @@ static int chargerActive(void)
   bool vbus = (usb & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0;
 
   return (charging || vbus) ? 1 : 0;
+#endif
 }
 
 /* ---- battery ------------------------------------------------------ */
@@ -435,6 +488,49 @@ static uint8_t vbatPercent(uint16_t mv)
   return 100;
 }
 
+#if BOARD == BOARD_RING_FLEX_V1
+/*
+ * The MCU runs straight from the cell on this board, so the SAADC's own VDD
+ * input is the battery voltage -- no divider, no enable pin, nothing to
+ * calibrate. Gain 1/6 against the internal 0.6 V reference puts full scale
+ * at 3.6 V, which covers a LiPo once the charger has stopped.
+ *
+ * UNVERIFIED: written against the nRF52840 SAADC registers and compiled, but
+ * never run on hardware. Check it against a meter at first bring-up before
+ * trusting the low-voltage cutoff.
+ */
+static uint16_t readVbatMv(void)
+{
+  static volatile int16_t sample;
+
+  NRF_SAADC->ENABLE          = SAADC_ENABLE_ENABLE_Enabled;
+  NRF_SAADC->RESOLUTION      = SAADC_RESOLUTION_VAL_12bit;
+  NRF_SAADC->CH[0].CONFIG    =
+      (SAADC_CH_CONFIG_GAIN_Gain1_6    << SAADC_CH_CONFIG_GAIN_Pos)   |
+      (SAADC_CH_CONFIG_REFSEL_Internal << SAADC_CH_CONFIG_REFSEL_Pos) |
+      (SAADC_CH_CONFIG_TACQ_10us       << SAADC_CH_CONFIG_TACQ_Pos)   |
+      (SAADC_CH_CONFIG_MODE_SE         << SAADC_CH_CONFIG_MODE_Pos)   |
+      (SAADC_CH_CONFIG_RESP_Bypass     << SAADC_CH_CONFIG_RESP_Pos)   |
+      (SAADC_CH_CONFIG_RESN_Bypass     << SAADC_CH_CONFIG_RESN_Pos)   |
+      (SAADC_CH_CONFIG_BURST_Disabled  << SAADC_CH_CONFIG_BURST_Pos);
+  NRF_SAADC->CH[0].PSELP     = SAADC_CH_PSELP_PSELP_VDD;
+  NRF_SAADC->CH[0].PSELN     = SAADC_CH_PSELN_PSELN_NC;
+  NRF_SAADC->RESULT.PTR      = (uint32_t)&sample;
+  NRF_SAADC->RESULT.MAXCNT   = 1;
+
+  NRF_SAADC->EVENTS_STARTED = 0; NRF_SAADC->TASKS_START  = 1;
+  while (!NRF_SAADC->EVENTS_STARTED) { }
+  NRF_SAADC->EVENTS_END     = 0; NRF_SAADC->TASKS_SAMPLE = 1;
+  while (!NRF_SAADC->EVENTS_END) { }
+  NRF_SAADC->EVENTS_STOPPED = 0; NRF_SAADC->TASKS_STOP   = 1;
+  while (!NRF_SAADC->EVENTS_STOPPED) { }
+  NRF_SAADC->ENABLE = SAADC_ENABLE_ENABLE_Disabled;
+
+  int16_t raw = sample;
+  if (raw < 0) raw = 0;                  /* a negative code is noise at 0 V */
+  return (uint16_t)(((uint32_t)raw * 3600UL) / 4096UL);
+}
+#else
 static uint16_t readVbatMv(void)
 {
   pinMode(VBAT_ENABLE, OUTPUT);
@@ -456,6 +552,7 @@ static uint16_t readVbatMv(void)
   float raw = acc / 16.0f;
   return (uint16_t)(raw * VBAT_MV_PER_LSB * VBAT_DIVIDER_COMP);
 }
+#endif  /* BOARD */
 
 static void powerOffForever(void)
 {

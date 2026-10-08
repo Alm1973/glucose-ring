@@ -111,11 +111,24 @@ because there is no board there. That is what makes the budget close:
 The first 3.8 mm of board under the module's antenna end is still marked as
 a no-copper region on User.1, because the module overhangs it.
 
-**The footprint is not reconstructed here.** The approval sheet gives pad
-size and the keep-out but not per-pad pitch, and rebuilding 61 pad positions
-off a drawing is exactly the sort of plausible-looking error that reaches
-copper. Use Raytac's own footprint from their support page, or SnapMagic's,
-and check it against the four numbers above before committing to fab.
+**The footprint is adopted, not reconstructed.** I did not rebuild 61 pad
+positions off a drawing. The one in `ring-flex-v1.pretty` comes from the
+public library at github.com/famichu/kicad_libs_MDBT50, upgraded to the
+current format, and checked against the approval sheet:
+
+| Check | Datasheet | Footprint |
+|---|---|---|
+| Pad count | 61 | 61 |
+| Pad size | 0.6 x 0.4 mm | all 0.6 x 0.4 (36 landscape, 25 rotated) |
+| Numbering | 1-61 | contiguous 1-61 |
+| Pad field height | ~11.7 mm | 10.90 centre-to-centre, ~11.5 outer |
+
+Everything checkable agrees; the 0.2 mm on field height is within how a
+dimension is read off a drawing.
+
+**Still to confirm before fab, and only you can:** that pin 1 sits where this
+footprint puts it. I verified geometry, not the pin table. Compare against
+Raytac's own footprint from their support page.
 
 ## Open questions
 

@@ -1,5 +1,5 @@
 ref,qty,part,package,value,function,notes
-U1,1,Raytac MDBT50Q-1MV2,module 10.2x15.6x2.2mm,,nRF52840 + chip antenna,"castellated, hand-solderable, pre-certified"
+U1,1,Raytac MDBT50Q-1MV2,module 15.5x10.5x2.05mm,,nRF52840 + chip antenna,"castellated, hand-solderable, pre-certified. 61 pads 0.6x0.4mm. Footprint adopted from github.com/famichu/kicad_libs_MDBT50 and checked against the approval sheet; CONFIRM PIN 1 ORIENTATION before fab."
 U2,1,MCP73831T-2ACI/OT,SOT-23-5,4.2V,Li-ion charger,"charge current set by R3; floor is 15 mA"
 U3,1,TPS7A0230PDBVR,SOT-23-5,3.0V 200mA,motor rail LDO,"25nA Iq. EN has an INTERNAL PULLDOWN so the rail is off at power-on until firmware drives it - same fail-safe as R1 on the motor gate. Dropout 270mV max at 200mA, so 3.0V holds well below the 3300mV cutoff. Confirm the orderable P-suffix part on TI."
 U4,1,DW01A,SOT-23-6,,cell protection controller,over-charge / over-discharge / over-current

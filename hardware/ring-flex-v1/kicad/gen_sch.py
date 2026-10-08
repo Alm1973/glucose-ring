@@ -80,7 +80,8 @@ def part(ref, lib, sym, value, x, y, nets, fp=""):
 # --- MCU
 part("U1", "ring-flex-v1", "MDBT50Q-1MV2", "MDBT50Q-1MV2", 60, 60, {
     "P1": "VBAT", "P2": "GND", "P3": "MOTOR_PWM", "P4": "MOTOR_EN",
-    "P5": "CHG_STAT", "P6": "SWDIO", "P7": "SWCLK"})
+    "P5": "CHG_STAT", "P6": "SWDIO", "P7": "SWCLK"},
+     fp="ring-flex-v1:MDBT50Q-1MV2")
 # --- motor stage
 part("Q2", "Device", "Q_NMOS", "AO3400A", 160, 60, {"G": "MOTOR_GATE", "D": "MOTOR_SW", "S": "GND"}, fp="Package_TO_SOT_SMD:SOT-23")
 part("M1", "Motor", "Motor_DC", "NFP-C1020 10x2.0mm ERM", 160, 30, {"1": "V_MOTOR", "2": "MOTOR_SW"},

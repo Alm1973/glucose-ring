@@ -1,99 +1,12 @@
-ERC report (2026-10-07T19:25:26, Encoding UTF8)
+ERC report (2026-10-07T19:41:13, Encoding UTF8)
 Report includes: Errors, Warnings, Exclusions
 
 ***** Sheet /
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Connector'
-    ; warning
-    @(15.24 mm, 90.17 mm): Symbol J1 [TestPoint]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(15.24 mm, 110.49 mm): Symbol D2 [D_Schottky]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(15.24 mm, 134.62 mm): Symbol C4 [C]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(30.48 mm, 165.10 mm): Symbol R3 [R]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Connector'
-    ; warning
-    @(35.56 mm, 90.17 mm): Symbol J2 [TestPoint]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Battery_Management'
-    ; warning
-    @(54.61 mm, 134.62 mm): Symbol U2 [MCP73831-2-OT]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(54.61 mm, 204.47 mm): Symbol BT1 [Battery_Cell]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(85.09 mm, 165.10 mm): Symbol C3 [C]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(95.25 mm, 180.34 mm): Symbol R4 [R]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(95.25 mm, 229.87 mm): Symbol C5 [C]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(110.49 mm, 59.69 mm): Symbol R2 [R]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Regulator_Linear'
+[lib_symbol_mismatch]: Symbol 'AP2112K-3.3' doesn't match copy in library 'Regulator_Linear'
     ; warning
     @(110.49 mm, 134.62 mm): Symbol U3 [AP2112K-3.3]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Battery_Management'
-    ; warning
-    @(124.46 mm, 204.47 mm): Symbol U4 [DW01A]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(129.54 mm, 90.17 mm): Symbol R1 [R]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(154.94 mm, 144.78 mm): Symbol C6 [C]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Motor'
-    ; warning
-    @(160.02 mm, 30.48 mm): Symbol M1 [Motor_DC]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(160.02 mm, 59.69 mm): Symbol Q2 [Q_NMOS]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(180.34 mm, 199.39 mm): Symbol Q1A [Q_NMOS]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(199.39 mm, 44.45 mm): Symbol D1 [D_Schottky]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(219.71 mm, 199.39 mm): Symbol Q1B [Q_NMOS]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(234.95 mm, 44.45 mm): Symbol C1 [C]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Connector'
-    ; warning
-    @(234.95 mm, 105.41 mm): Symbol TP1 [TestPoint]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Connector'
-    ; warning
-    @(250.19 mm, 105.41 mm): Symbol TP2 [TestPoint]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Device'
-    ; warning
-    @(255.27 mm, 204.47 mm): Symbol C2 [C]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Connector'
-    ; warning
-    @(265.43 mm, 105.41 mm): Symbol TP3 [TestPoint]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'power'
-    ; warning
-    @(270.51 mm, 154.94 mm): Symbol #FLG01 [PWR_FLAG]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'Connector'
-    ; warning
-    @(279.40 mm, 105.41 mm): Symbol TP4 [TestPoint]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'power'
-    ; warning
-    @(284.48 mm, 154.94 mm): Symbol #FLG02 [PWR_FLAG]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'power'
-    ; warning
-    @(299.72 mm, 154.94 mm): Symbol #FLG03 [PWR_FLAG]
-[lib_symbol_issues]: The current configuration does not include the symbol library 'power'
-    ; warning
-    @(314.96 mm, 154.94 mm): Symbol #FLG04 [PWR_FLAG]
 
- ** ERC messages: 30  Errors 0  Warnings 30
+ ** ERC messages: 1  Errors 0  Warnings 1
 
  ** Ignored checks:
     - Global label only appears once in the schematic

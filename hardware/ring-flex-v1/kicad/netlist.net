@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/shauryakhidake/projects/glucose-ring/hardware/ring-flex-v1/kicad/ring-flex-v1.kicad_sch")
-		(date "2026-10-07T19:25:26")
+		(date "2026-10-07T19:41:14")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -89,7 +89,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "79b5ead9-19ed-499a-827d-4b31c90e52de")
+			(tstamps "b76d36d2-6bd4-4b77-bcec-9a9df048655a")
 			(units
 				(unit
 					(name "A")
@@ -107,10 +107,10 @@
 		(comp
 			(ref "C1")
 			(value "100uF")
+			(footprint "Capacitor_SMD:C_1206_3216Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Capacitor_SMD:C_1206_3216Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -143,7 +143,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d71527a4-bf17-4b57-bf7f-40c204a652b7")
+			(tstamps "56a5828a-ba5e-4794-9876-c1d866d7d232")
 			(units
 				(unit
 					(name "A")
@@ -161,10 +161,10 @@
 		(comp
 			(ref "C2")
 			(value "10uF")
+			(footprint "Capacitor_SMD:C_0805_2012Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Capacitor_SMD:C_0805_2012Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -197,7 +197,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "da853b21-6fd6-46f8-90da-17428dbe54c2")
+			(tstamps "28d49722-83f2-46e4-bdb2-eefd7a438788")
 			(units
 				(unit
 					(name "A")
@@ -215,10 +215,10 @@
 		(comp
 			(ref "C3")
 			(value "4.7uF")
+			(footprint "Capacitor_SMD:C_0603_1608Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Capacitor_SMD:C_0603_1608Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -251,7 +251,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "1681f936-09dd-460b-a9c6-b39e5c844a85")
+			(tstamps "3211a323-3ed2-45b5-8cd0-5c477163d9ad")
 			(units
 				(unit
 					(name "A")
@@ -269,10 +269,10 @@
 		(comp
 			(ref "C4")
 			(value "1uF")
+			(footprint "Capacitor_SMD:C_0402_1005Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -305,7 +305,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "0cc9e03a-811e-4443-9c73-2c369ec4b413")
+			(tstamps "33d4bec7-3188-465f-80a4-7e13e3635a54")
 			(units
 				(unit
 					(name "A")
@@ -323,10 +323,10 @@
 		(comp
 			(ref "C5")
 			(value "0.1uF")
+			(footprint "Capacitor_SMD:C_0402_1005Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -359,7 +359,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4f1bfe6a-dae5-4060-9c2b-8cfffec7f824")
+			(tstamps "5ccb3892-219c-4ee1-ad77-b71272decb4c")
 			(units
 				(unit
 					(name "A")
@@ -377,10 +377,10 @@
 		(comp
 			(ref "C6")
 			(value "1uF")
+			(footprint "Capacitor_SMD:C_0402_1005Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -413,7 +413,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "6281febe-4d3d-4e51-b7d9-9440b2a1b1af")
+			(tstamps "b5cca99f-8d35-4e4a-bf31-6cccba4f641f")
 			(units
 				(unit
 					(name "A")
@@ -431,10 +431,10 @@
 		(comp
 			(ref "D1")
 			(value "BAT54W")
+			(footprint "Diode_SMD:D_SOD-323")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Diode_SMD:D_SOD-323")
 				(field
 					(name "Datasheet")
 				)
@@ -467,7 +467,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e7612036-2612-4b9e-9b61-37122009fa1f")
+			(tstamps "1df857f7-54fc-41f0-8ded-d466c3e28378")
 			(units
 				(unit
 					(name "A")
@@ -485,10 +485,10 @@
 		(comp
 			(ref "D2")
 			(value "BAT54W")
+			(footprint "Diode_SMD:D_SOD-323")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Diode_SMD:D_SOD-323")
 				(field
 					(name "Datasheet")
 				)
@@ -521,7 +521,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8cb8796d-b8e6-4647-aaa8-9a309d91fa90")
+			(tstamps "0a868f1e-8a6b-454e-8751-336d6d0294ce")
 			(units
 				(unit
 					(name "A")
@@ -539,10 +539,10 @@
 		(comp
 			(ref "J1")
 			(value "charge pad +")
+			(footprint "TestPoint:TestPoint_Pad_D1.0mm")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "TestPoint:TestPoint_Pad_D1.0mm")
 				(field
 					(name "Datasheet")
 				)
@@ -575,7 +575,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "47876b6b-a3d2-46ab-90b1-7f1bbf5e1546")
+			(tstamps "16c8e733-a8d1-45b4-81e5-46778f455b62")
 			(units
 				(unit
 					(name "A")
@@ -590,10 +590,10 @@
 		(comp
 			(ref "J2")
 			(value "charge pad -")
+			(footprint "TestPoint:TestPoint_Pad_D1.0mm")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "TestPoint:TestPoint_Pad_D1.0mm")
 				(field
 					(name "Datasheet")
 				)
@@ -626,7 +626,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2a056766-a19d-4f1b-98a4-05524b24e035")
+			(tstamps "1fbf5986-f1a3-48be-ba1f-3cef1409d7b9")
 			(units
 				(unit
 					(name "A")
@@ -677,7 +677,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3a324240-83c3-4db4-bf51-170e6151a390")
+			(tstamps "f96d0cac-229c-4a00-9933-78fbff0ddc74")
 			(units
 				(unit
 					(name "A")
@@ -695,10 +695,10 @@
 		(comp
 			(ref "Q1A")
 			(value "FS8205A (half)")
+			(footprint "Package_TO_SOT_SMD:SOT-23-6")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Package_TO_SOT_SMD:SOT-23-6")
 				(field
 					(name "Datasheet")
 				)
@@ -727,7 +727,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d661e274-3173-4527-a7bb-a9fe4a4d3901")
+			(tstamps "b18026b6-ae7b-45b2-aa5b-1ee260d8b84f")
 			(units
 				(unit
 					(name "A")
@@ -748,10 +748,10 @@
 		(comp
 			(ref "Q1B")
 			(value "FS8205A (half)")
+			(footprint "Package_TO_SOT_SMD:SOT-23-6")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Package_TO_SOT_SMD:SOT-23-6")
 				(field
 					(name "Datasheet")
 				)
@@ -780,7 +780,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "30151805-ecf3-4a0e-b5f7-649d490daf3c")
+			(tstamps "cc1e6262-b847-4f1c-9b93-2be8a96c6e8c")
 			(units
 				(unit
 					(name "A")
@@ -801,10 +801,10 @@
 		(comp
 			(ref "Q2")
 			(value "AO3400A")
+			(footprint "Package_TO_SOT_SMD:SOT-23")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Package_TO_SOT_SMD:SOT-23")
 				(field
 					(name "Datasheet")
 				)
@@ -833,7 +833,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "361541e6-6aab-4d8c-9345-72420066d60f")
+			(tstamps "183e8799-78c9-4f0b-9277-45d5e5ac9a95")
 			(units
 				(unit
 					(name "A")
@@ -854,10 +854,10 @@
 		(comp
 			(ref "R1")
 			(value "10k")
+			(footprint "Resistor_SMD:R_0402_1005Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Resistor_SMD:R_0402_1005Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -890,7 +890,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "fcd08066-e4f3-4356-862d-03dd552c2391")
+			(tstamps "ca785af9-36a0-4ccb-9a7d-1e916c8fda1e")
 			(units
 				(unit
 					(name "A")
@@ -908,10 +908,10 @@
 		(comp
 			(ref "R2")
 			(value "1k")
+			(footprint "Resistor_SMD:R_0402_1005Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Resistor_SMD:R_0402_1005Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -944,7 +944,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2a8852e6-0a58-4845-bc20-b8a68db3416c")
+			(tstamps "82ad00a3-09da-49d3-b329-cbd7549e977b")
 			(units
 				(unit
 					(name "A")
@@ -962,10 +962,10 @@
 		(comp
 			(ref "R3")
 			(value "66.5k")
+			(footprint "Resistor_SMD:R_0402_1005Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Resistor_SMD:R_0402_1005Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -998,7 +998,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a674114a-1ff3-4a10-9cd9-0f0b23686409")
+			(tstamps "7bbe40be-0472-449e-86a3-ec2f13134e7a")
 			(units
 				(unit
 					(name "A")
@@ -1016,10 +1016,10 @@
 		(comp
 			(ref "R4")
 			(value "330R")
+			(footprint "Resistor_SMD:R_0402_1005Metric")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Resistor_SMD:R_0402_1005Metric")
 				(field
 					(name "Datasheet")
 				)
@@ -1052,7 +1052,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b145df7f-2035-47e1-aebc-024937a8b868")
+			(tstamps "16912d0f-9d66-43ea-919d-253789216c24")
 			(units
 				(unit
 					(name "A")
@@ -1070,10 +1070,10 @@
 		(comp
 			(ref "TP1")
 			(value "SWDIO")
+			(footprint "TestPoint:TestPoint_Pad_D1.0mm")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "TestPoint:TestPoint_Pad_D1.0mm")
 				(field
 					(name "Datasheet")
 				)
@@ -1106,7 +1106,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "968816e4-0324-40f1-9bce-2dc7d54f6bf5")
+			(tstamps "17754ff0-10e1-42b3-8be6-43a835c6e74b")
 			(units
 				(unit
 					(name "A")
@@ -1121,10 +1121,10 @@
 		(comp
 			(ref "TP2")
 			(value "SWCLK")
+			(footprint "TestPoint:TestPoint_Pad_D1.0mm")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "TestPoint:TestPoint_Pad_D1.0mm")
 				(field
 					(name "Datasheet")
 				)
@@ -1157,7 +1157,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "17f8c6cc-7c51-4035-87b8-7d132505621e")
+			(tstamps "d1eec62a-017a-4331-b241-308f4a0b6061")
 			(units
 				(unit
 					(name "A")
@@ -1172,10 +1172,10 @@
 		(comp
 			(ref "TP3")
 			(value "VBAT")
+			(footprint "TestPoint:TestPoint_Pad_D1.0mm")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "TestPoint:TestPoint_Pad_D1.0mm")
 				(field
 					(name "Datasheet")
 				)
@@ -1208,7 +1208,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "5626ee28-aad0-4830-afc4-38581841261a")
+			(tstamps "07db4c38-d5f5-4697-adaa-47fbe3d6735b")
 			(units
 				(unit
 					(name "A")
@@ -1223,10 +1223,10 @@
 		(comp
 			(ref "TP4")
 			(value "GND")
+			(footprint "TestPoint:TestPoint_Pad_D1.0mm")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "TestPoint:TestPoint_Pad_D1.0mm")
 				(field
 					(name "Datasheet")
 				)
@@ -1259,7 +1259,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c407ee7e-71b8-4c6f-903a-bc1bb34110bd")
+			(tstamps "5eb7f3fc-638a-4a5b-ad00-6ba884c52048")
 			(units
 				(unit
 					(name "A")
@@ -1302,7 +1302,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2d90fc4f-bd97-4a06-957a-1ea70479c85e")
+			(tstamps "2026b20d-b9e5-4ed1-95c3-ed65599063ce")
 			(units
 				(unit
 					(name "A")
@@ -1335,10 +1335,10 @@
 		(comp
 			(ref "U2")
 			(value "MCP73831-2")
+			(footprint "Package_TO_SOT_SMD:SOT-23-5")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Package_TO_SOT_SMD:SOT-23-5")
 				(field
 					(name "Datasheet")
 				)
@@ -1371,7 +1371,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a7f79b30-9c08-481c-a925-7b7335cb7994")
+			(tstamps "b2737808-4afc-4eec-bb48-a282c2a7a3e8")
 			(units
 				(unit
 					(name "A")
@@ -1398,10 +1398,10 @@
 		(comp
 			(ref "U3")
 			(value "AP2112K-3.0 (3.0V, EN)")
+			(footprint "Package_TO_SOT_SMD:SOT-23-5")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Package_TO_SOT_SMD:SOT-23-5")
 				(field
 					(name "Datasheet")
 				)
@@ -1434,7 +1434,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cc81de34-b49a-48df-b06b-c2a84e245ae3")
+			(tstamps "5c405f66-5422-4c80-9e95-12d7ce7e07f6")
 			(units
 				(unit
 					(name "A")
@@ -1461,10 +1461,10 @@
 		(comp
 			(ref "U4")
 			(value "DW01A")
+			(footprint "Package_TO_SOT_SMD:SOT-23-6")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "Package_TO_SOT_SMD:SOT-23-6")
 				(field
 					(name "Datasheet")
 				)
@@ -1497,7 +1497,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a3148eb3-098a-4b8b-a799-0514284688cf")
+			(tstamps "11885fc3-65b2-41ba-9e43-275e8aefcb38")
 			(units
 				(unit
 					(name "A")
@@ -1978,6 +1978,26 @@
 		)
 	)
 	(libraries
+		(library
+			(logical "Battery_Management")
+			(uri "${KICAD10_SYMBOL_DIR}/Battery_Management.kicad_sym")
+		)
+		(library
+			(logical "Connector")
+			(uri "${KICAD10_SYMBOL_DIR}/Connector.kicad_sym")
+		)
+		(library
+			(logical "Device")
+			(uri "${KICAD10_SYMBOL_DIR}/Device.kicad_sym")
+		)
+		(library
+			(logical "Motor")
+			(uri "${KICAD10_SYMBOL_DIR}/Motor.kicad_sym")
+		)
+		(library
+			(logical "Regulator_Linear")
+			(uri "${KICAD10_SYMBOL_DIR}/Regulator_Linear.kicad_sym")
+		)
 		(library
 			(logical "ring-flex-v1")
 			(uri "${KIPRJMOD}/ring-flex-v1.kicad_sym")

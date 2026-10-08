@@ -82,39 +82,43 @@ part("U1", "ring-flex-v1", "MDBT50Q-1MV2", "MDBT50Q-1MV2", 60, 60, {
     "P1": "VBAT", "P2": "GND", "P3": "MOTOR_PWM", "P4": "MOTOR_EN",
     "P5": "CHG_STAT", "P6": "SWDIO", "P7": "SWCLK"})
 # --- motor stage
-part("Q2", "Device", "Q_NMOS", "AO3400A", 160, 60, {"G": "MOTOR_GATE", "D": "MOTOR_SW", "S": "GND"})
+part("Q2", "Device", "Q_NMOS", "AO3400A", 160, 60, {"G": "MOTOR_GATE", "D": "MOTOR_SW", "S": "GND"}, fp="Package_TO_SOT_SMD:SOT-23")
 part("M1", "Motor", "Motor_DC", "coin ERM 10x2.1mm", 160, 30, {"1": "V_MOTOR", "2": "MOTOR_SW"})
 # D1 flyback: cathode (pin 1 = K) to the supply, anode to the switched node
-part("D1", "Device", "D_Schottky", "BAT54W", 200, 45, {"1": "V_MOTOR", "2": "MOTOR_SW"})
-part("R1", "Device", "R", "10k", 130, 90, {"1": "MOTOR_GATE", "2": "GND"})
-part("R2", "Device", "R", "1k", 110, 60, {"1": "MOTOR_PWM", "2": "MOTOR_GATE"})
-part("C1", "Device", "C", "100uF", 235, 45, {"1": "V_MOTOR", "2": "GND"})
+part("D1", "Device", "D_Schottky", "BAT54W", 200, 45, {"1": "V_MOTOR", "2": "MOTOR_SW"}, fp="Diode_SMD:D_SOD-323")
+part("R1", "Device", "R", "10k", 130, 90, {"1": "MOTOR_GATE", "2": "GND"}, fp="Resistor_SMD:R_0402_1005Metric")
+part("R2", "Device", "R", "1k", 110, 60, {"1": "MOTOR_PWM", "2": "MOTOR_GATE"}, fp="Resistor_SMD:R_0402_1005Metric")
+part("C1", "Device", "C", "100uF", 235, 45, {"1": "V_MOTOR", "2": "GND"}, fp="Capacitor_SMD:C_1206_3216Metric")
 # --- motor rail LDO, enable gated by the MCU
 part("U3", "Regulator_Linear", "AP2112K-3.3", "AP2112K-3.0 (3.0V, EN)", 110, 135, {
-    "1": "VBAT", "2": "GND", "3": "MOTOR_EN", "5": "V_MOTOR"})
-part("C6", "Device", "C", "1uF", 155, 145, {"1": "V_MOTOR", "2": "GND"})
+    "1": "VBAT", "2": "GND", "3": "MOTOR_EN", "5": "V_MOTOR"},
+     fp="Package_TO_SOT_SMD:SOT-23-5")
+part("C6", "Device", "C", "1uF", 155, 145, {"1": "V_MOTOR", "2": "GND"}, fp="Capacitor_SMD:C_0402_1005Metric")
 # --- charger
 part("U2", "Battery_Management", "MCP73831-2-OT", "MCP73831-2", 55, 135, {
-    "1": "CHG_STAT", "2": "GND", "3": "VBAT", "4": "VCHG_IN", "5": "PROG"})
-part("R3", "Device", "R", "66.5k", 30, 165, {"1": "PROG", "2": "GND"})
-part("C4", "Device", "C", "1uF", 15, 135, {"1": "VCHG_IN", "2": "GND"})
-part("C3", "Device", "C", "4.7uF", 85, 165, {"1": "VBAT", "2": "GND"})
+    "1": "CHG_STAT", "2": "GND", "3": "VBAT", "4": "VCHG_IN", "5": "PROG"},
+     fp="Package_TO_SOT_SMD:SOT-23-5")
+part("R3", "Device", "R", "66.5k", 30, 165, {"1": "PROG", "2": "GND"}, fp="Resistor_SMD:R_0402_1005Metric")
+part("C4", "Device", "C", "1uF", 15, 135, {"1": "VCHG_IN", "2": "GND"}, fp="Capacitor_SMD:C_0402_1005Metric")
+part("C3", "Device", "C", "4.7uF", 85, 165, {"1": "VBAT", "2": "GND"}, fp="Capacitor_SMD:C_0603_1608Metric")
 # D2 reverse-polarity guard: anode on the contact, cathode feeding the charger
-part("D2", "Device", "D_Schottky", "BAT54W", 15, 110, {"1": "VCHG_IN", "2": "VCHG"})
+part("D2", "Device", "D_Schottky", "BAT54W", 15, 110, {"1": "VCHG_IN", "2": "VCHG"}, fp="Diode_SMD:D_SOD-323")
 # --- cell and protection (DW01A + FS8205A back-to-back FETs, common source)
 part("BT1", "Device", "Battery_Cell", "LiPo ~30mAh", 55, 205, {"1": "VBAT", "2": "CELL_N"})
 part("U4", "Battery_Management", "DW01A", "DW01A", 125, 205, {
-    "5": "DW_VCC", "6": "CELL_N", "1": "DW_OD", "3": "DW_OC", "2": "GND", "4": None})
-part("R4", "Device", "R", "330R", 95, 180, {"1": "VBAT", "2": "DW_VCC"})
-part("C5", "Device", "C", "0.1uF", 95, 230, {"1": "DW_VCC", "2": "GND"})
-part("Q1A", "Device", "Q_NMOS", "FS8205A (half)", 180, 200, {"G": "DW_OD", "D": "CELL_N", "S": "Q1_MID"})
-part("Q1B", "Device", "Q_NMOS", "FS8205A (half)", 220, 200, {"G": "DW_OC", "D": "GND", "S": "Q1_MID"})
-part("C2", "Device", "C", "10uF", 255, 205, {"1": "VBAT", "2": "GND"})
+    "5": "DW_VCC", "6": "CELL_N", "1": "DW_OD", "3": "DW_OC", "2": "GND", "4": None},
+     fp="Package_TO_SOT_SMD:SOT-23-6")
+part("R4", "Device", "R", "330R", 95, 180, {"1": "VBAT", "2": "DW_VCC"}, fp="Resistor_SMD:R_0402_1005Metric")
+part("C5", "Device", "C", "0.1uF", 95, 230, {"1": "DW_VCC", "2": "GND"}, fp="Capacitor_SMD:C_0402_1005Metric")
+part("Q1A", "Device", "Q_NMOS", "FS8205A (half)", 180, 200, {"G": "DW_OD", "D": "CELL_N", "S": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
+part("Q1B", "Device", "Q_NMOS", "FS8205A (half)", 220, 200, {"G": "DW_OC", "D": "GND", "S": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
+part("C2", "Device", "C", "10uF", 255, 205, {"1": "VBAT", "2": "GND"}, fp="Capacitor_SMD:C_0805_2012Metric")
 # --- contacts and test points
-part("J1", "Connector", "TestPoint", "charge pad +", 15, 90, {"1": "VCHG"})
-part("J2", "Connector", "TestPoint", "charge pad -", 35, 90, {"1": "GND"})
+part("J1", "Connector", "TestPoint", "charge pad +", 15, 90, {"1": "VCHG"}, fp="TestPoint:TestPoint_Pad_D1.0mm")
+part("J2", "Connector", "TestPoint", "charge pad -", 35, 90, {"1": "GND"}, fp="TestPoint:TestPoint_Pad_D1.0mm")
 for i, (ref, net) in enumerate([("TP1","SWDIO"),("TP2","SWCLK"),("TP3","VBAT"),("TP4","GND")]):
-    part(ref, "Connector", "TestPoint", net, 235 + i*15, 105, {"1": net})
+    part(ref, "Connector", "TestPoint", net, 235 + i*15, 105, {"1": net},
+         fp="TestPoint:TestPoint_Pad_D1.0mm")
 # --- power flags so ERC sees the rails as driven
 # VBAT and V_MOTOR are already driven (charger VBAT pin, LDO VOUT), so a flag
 # there would be two power outputs on one net. DW_VCC arrives through R4 and

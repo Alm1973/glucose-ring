@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/shauryakhidake/projects/glucose-ring/hardware/ring-flex-v1/kicad/ring-flex-v1.kicad_sch")
-		(date "2026-10-07T20:09:03")
+		(date "2026-10-07T20:16:36")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -89,7 +89,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "9a836b32-3b1b-457b-9caa-d7d5335e525d")
+			(tstamps "e817692b-7884-4594-b2cf-278d33d6c4e3")
 			(units
 				(unit
 					(name "A")
@@ -143,7 +143,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f92a83f8-9f2d-4faa-8c2a-d09304acd752")
+			(tstamps "88da8879-3b2e-41fa-bf65-8bc5cd59fc13")
 			(units
 				(unit
 					(name "A")
@@ -197,7 +197,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "85168098-1755-4292-b2dd-d1210ab855f2")
+			(tstamps "85ad9158-40f4-4923-aaa2-5c40f6a327e4")
 			(units
 				(unit
 					(name "A")
@@ -251,7 +251,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "001c42aa-5a7b-4aa9-9dec-7229524aa850")
+			(tstamps "e22e69d5-4c89-4bee-b515-751d8ca8d236")
 			(units
 				(unit
 					(name "A")
@@ -305,7 +305,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a3947376-bee9-4df3-9b92-3cace47fdf5d")
+			(tstamps "65212f68-f58b-4c2a-aa17-2c0f71600aae")
 			(units
 				(unit
 					(name "A")
@@ -359,7 +359,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "6118bb05-a807-4326-8606-c66aa5e2afdb")
+			(tstamps "43984db7-ce14-401e-ab57-406590f7a862")
 			(units
 				(unit
 					(name "A")
@@ -413,7 +413,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d26e2711-24c1-4000-be71-0dd107a021f5")
+			(tstamps "35b383ac-8384-40e7-b6ae-51a86a2c5d2a")
 			(units
 				(unit
 					(name "A")
@@ -467,7 +467,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "95f8fd0c-ea0b-407f-ad3a-fa5c7d6d07a8")
+			(tstamps "2881ffe1-fdc1-4510-84f0-347329b93123")
 			(units
 				(unit
 					(name "A")
@@ -521,7 +521,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "0bf7f6eb-9cb5-4098-aa30-acdd63348374")
+			(tstamps "27ab5732-4ab4-43a2-a4d3-ac3b34fd6e2e")
 			(units
 				(unit
 					(name "A")
@@ -539,10 +539,10 @@
 		(comp
 			(ref "J1")
 			(value "charge pad +")
-			(footprint "TestPoint:TestPoint_Pad_D1.0mm")
+			(footprint "ring-flex-v1:ChargePad_2x2mm")
 			(fields
 				(field
-					(name "Footprint") "TestPoint:TestPoint_Pad_D1.0mm")
+					(name "Footprint") "ring-flex-v1:ChargePad_2x2mm")
 				(field
 					(name "Datasheet")
 				)
@@ -575,7 +575,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8b2b0e80-6a2c-42b4-8c19-b116c0177cb0")
+			(tstamps "50235070-ecc5-45a2-8321-07b7f349bac8")
 			(units
 				(unit
 					(name "A")
@@ -590,10 +590,10 @@
 		(comp
 			(ref "J2")
 			(value "charge pad -")
-			(footprint "TestPoint:TestPoint_Pad_D1.0mm")
+			(footprint "ring-flex-v1:ChargePad_2x2mm")
 			(fields
 				(field
-					(name "Footprint") "TestPoint:TestPoint_Pad_D1.0mm")
+					(name "Footprint") "ring-flex-v1:ChargePad_2x2mm")
 				(field
 					(name "Datasheet")
 				)
@@ -626,13 +626,94 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4182f5fd-b213-4bb9-b79c-ba12d58c8f6b")
+			(tstamps "c107394e-cf27-4fc2-8d65-b583b458fa1b")
 			(units
 				(unit
 					(name "A")
 					(pins
 						(pin
 							(num "1")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "J3")
+			(value "USB-C (DNP)")
+			(footprint "Connector_USB:USB_C_Receptacle_HCTL_HC-TYPE-C-16P-01A")
+			(fields
+				(field
+					(name "Footprint") "Connector_USB:USB_C_Receptacle_HCTL_HC-TYPE-C-16P-01A")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Connector")
+				(part "USB_C_Receptacle_PowerOnly_24P")
+				(description "USB Power-Only 24P Type-C Receptacle connector")
+			)
+			(property
+				(name "Sheetname")
+				(value "ring-flex-v1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "ring-flex-v1.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "usb universal serial bus type-C power-only charging-only 24P 24C")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "USB*C*Receptacle*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "83def9b3-66c1-42bc-9de1-130336be3975")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "SH")
+						)
+						(pin
+							(num "A1")
+						)
+						(pin
+							(num "A12")
+						)
+						(pin
+							(num "B1")
+						)
+						(pin
+							(num "B12")
+						)
+						(pin
+							(num "A4")
+						)
+						(pin
+							(num "A9")
+						)
+						(pin
+							(num "B4")
+						)
+						(pin
+							(num "B9")
+						)
+						(pin
+							(num "A5")
+						)
+						(pin
+							(num "B5")
 						)
 					)
 				)
@@ -677,7 +758,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "18b7c994-1881-4484-871b-ac30c263da92")
+			(tstamps "0f6d998d-e6a1-44ec-b473-faf7dcd5397d")
 			(units
 				(unit
 					(name "A")
@@ -727,7 +808,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "24cfd38f-47bd-4025-89d6-a40df817df60")
+			(tstamps "d9207b7f-291d-466a-9d66-9ed1ffd5d264")
 			(units
 				(unit
 					(name "A")
@@ -780,7 +861,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a52fe758-6bec-4488-a88b-f69eeb04de19")
+			(tstamps "7683998e-a865-4a1c-b0a1-3d5c0b0a04ef")
 			(units
 				(unit
 					(name "A")
@@ -833,7 +914,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2f21a414-41bb-42a0-9739-a8ee4c901cf3")
+			(tstamps "ed049af4-1ffb-497a-bae7-1c9333d992c7")
 			(units
 				(unit
 					(name "A")
@@ -890,7 +971,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d6415f55-2b92-4844-ad79-55a18647906d")
+			(tstamps "eb0da7b8-af05-41bd-a1c8-95987aa325ff")
 			(units
 				(unit
 					(name "A")
@@ -944,7 +1025,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d03a6891-f165-4896-b184-8881a11a4d07")
+			(tstamps "ca8d56eb-8eed-40d5-823e-959871e9ee9f")
 			(units
 				(unit
 					(name "A")
@@ -998,7 +1079,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "0481accf-1f62-4f72-8bc6-df203e14942a")
+			(tstamps "1a642e1f-f4f1-4446-a4c8-f80f60984a99")
 			(units
 				(unit
 					(name "A")
@@ -1052,7 +1133,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "02c7ac1d-2f33-4693-9540-855ccdeb741b")
+			(tstamps "00cb6222-ede1-4350-9bb2-57a98076f9c0")
 			(units
 				(unit
 					(name "A")
@@ -1106,7 +1187,115 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "74e00d1d-8216-4340-b219-4a87317d8a52")
+			(tstamps "aeba2860-378b-455b-9ab6-65b5022e1598")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R6")
+			(value "5.1k")
+			(footprint "Resistor_SMD:R_0402_1005Metric")
+			(fields
+				(field
+					(name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "R")
+				(description "Resistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "ring-flex-v1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "ring-flex-v1.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "9ff446d4-7129-4c1e-b524-527e46a672f7")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R7")
+			(value "5.1k")
+			(footprint "Resistor_SMD:R_0402_1005Metric")
+			(fields
+				(field
+					(name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "R")
+				(description "Resistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "ring-flex-v1")
+			)
+			(property
+				(name "Sheetfile")
+				(value "ring-flex-v1.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "eade3e17-eee6-47ff-9b7a-2f039c1d6717")
 			(units
 				(unit
 					(name "A")
@@ -1160,7 +1349,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "37bb023c-54ad-48d3-9a61-845bbd57fd28")
+			(tstamps "9e821762-4d27-49aa-a59a-2cf150152d17")
 			(units
 				(unit
 					(name "A")
@@ -1211,7 +1400,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "ec8fad64-408b-45d7-8e0d-7b69d1e26a1f")
+			(tstamps "870bc148-4c62-437d-982c-1a6996f42489")
 			(units
 				(unit
 					(name "A")
@@ -1262,7 +1451,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a4fa5547-bbd8-4383-88e5-c009cce49529")
+			(tstamps "97b95c4b-68fd-452d-bf46-7f613f8e20a8")
 			(units
 				(unit
 					(name "A")
@@ -1313,7 +1502,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a6a24610-2461-4f3e-8b7b-257d556a005a")
+			(tstamps "45631fcf-f9a0-46ee-b057-9fa63c1550c6")
 			(units
 				(unit
 					(name "A")
@@ -1356,7 +1545,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "6b375640-1ae0-451f-b2b0-5f0c679b055d")
+			(tstamps "ac2b76b7-fd6e-4868-9903-59f9a03da1b6")
 			(units
 				(unit
 					(name "A")
@@ -1425,7 +1614,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "7eb00c47-2ed1-4270-9629-ae404bdaf8ab")
+			(tstamps "34b3a4da-3c63-4a61-9e7f-8f52b1e6cc2f")
 			(units
 				(unit
 					(name "A")
@@ -1451,7 +1640,7 @@
 		)
 		(comp
 			(ref "U3")
-			(value "AP2112K-3.0 (3.0V, EN)")
+			(value "TPS7A0230PDBVR 3.0V")
 			(footprint "Package_TO_SOT_SMD:SOT-23-5")
 			(fields
 				(field
@@ -1488,7 +1677,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "1925b6ff-7c12-480c-9959-b08235f4d91e")
+			(tstamps "b8d963cf-088d-4a1d-9337-c946ea85624b")
 			(units
 				(unit
 					(name "A")
@@ -1551,7 +1740,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b7b6879f-7bda-4827-9eae-c3f42845ea62")
+			(tstamps "ddfc5458-f91c-4c7e-9259-376a0949a6dd")
 			(units
 				(unit
 					(name "A")
@@ -1709,6 +1898,85 @@
 				(pin
 					(num "1")
 					(name "1")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "Connector")
+			(part "USB_C_Receptacle_PowerOnly_24P")
+			(description "USB Power-Only 24P Type-C Receptacle connector")
+			(docs "https://www.usb.org/sites/default/files/documents/usb_type-c.zip")
+			(footprints
+				(fp "USB*C*Receptacle*")
+			)
+			(fields
+				(field
+					(name "Reference") "J")
+				(field
+					(name "Value") "USB_C_Receptacle_PowerOnly_24P")
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet") "https://www.usb.org/sites/default/files/documents/usb_type-c.zip")
+				(field
+					(name "Description") "USB Power-Only 24P Type-C Receptacle connector")
+			)
+			(pins
+				(pin
+					(num "A1")
+					(name "GND")
+					(type "passive")
+				)
+				(pin
+					(num "A4")
+					(name "VBUS")
+					(type "passive")
+				)
+				(pin
+					(num "A5")
+					(name "CC1")
+					(type "bidirectional")
+				)
+				(pin
+					(num "A9")
+					(name "VBUS")
+					(type "power_in")
+				)
+				(pin
+					(num "A12")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "B1")
+					(name "GND")
+					(type "passive")
+				)
+				(pin
+					(num "B4")
+					(name "VBUS")
+					(type "passive")
+				)
+				(pin
+					(num "B5")
+					(name "CC2")
+					(type "bidirectional")
+				)
+				(pin
+					(num "B9")
+					(name "VBUS")
+					(type "passive")
+				)
+				(pin
+					(num "B12")
+					(name "GND")
+					(type "passive")
+				)
+				(pin
+					(num "SH")
+					(name "SHIELD")
 					(type "passive")
 				)
 			)
@@ -2210,6 +2478,36 @@
 				(pintype "passive")
 			)
 			(node
+				(ref "J3")
+				(pin "A1")
+				(pinfunction "GND_A1")
+				(pintype "passive")
+			)
+			(node
+				(ref "J3")
+				(pin "A12")
+				(pinfunction "GND_A12")
+				(pintype "power_in")
+			)
+			(node
+				(ref "J3")
+				(pin "B1")
+				(pinfunction "GND_B1")
+				(pintype "passive")
+			)
+			(node
+				(ref "J3")
+				(pin "B12")
+				(pinfunction "GND_B12")
+				(pintype "passive")
+			)
+			(node
+				(ref "J3")
+				(pin "SH")
+				(pinfunction "SHIELD_SH")
+				(pintype "passive")
+			)
+			(node
 				(ref "Q1B")
 				(pin "S")
 				(pinfunction "S_S")
@@ -2233,6 +2531,16 @@
 			)
 			(node
 				(ref "R5")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R6")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R7")
 				(pin "2")
 				(pintype "passive")
 			)
@@ -2407,6 +2715,38 @@
 		)
 		(net
 			(code "16")
+			(name "/USB_CC1")
+			(class "Default")
+			(node
+				(ref "J3")
+				(pin "A5")
+				(pinfunction "CC1_A5")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "R6")
+				(pin "1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "17")
+			(name "/USB_CC2")
+			(class "Default")
+			(node
+				(ref "J3")
+				(pin "B5")
+				(pinfunction "CC2_B5")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "R7")
+				(pin "1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "18")
 			(name "/VBAT")
 			(class "Default")
 			(node
@@ -2456,7 +2796,7 @@
 			)
 		)
 		(net
-			(code "17")
+			(code "19")
 			(name "/VCHG")
 			(class "Default")
 			(node
@@ -2471,9 +2811,33 @@
 				(pinfunction "1_1")
 				(pintype "passive")
 			)
+			(node
+				(ref "J3")
+				(pin "A4")
+				(pinfunction "VBUS_A4")
+				(pintype "passive")
+			)
+			(node
+				(ref "J3")
+				(pin "A9")
+				(pinfunction "VBUS_A9")
+				(pintype "power_in")
+			)
+			(node
+				(ref "J3")
+				(pin "B4")
+				(pinfunction "VBUS_B4")
+				(pintype "passive")
+			)
+			(node
+				(ref "J3")
+				(pin "B9")
+				(pinfunction "VBUS_B9")
+				(pintype "passive")
+			)
 		)
 		(net
-			(code "18")
+			(code "20")
 			(name "/VCHG_IN")
 			(class "Default")
 			(node
@@ -2495,7 +2859,7 @@
 			)
 		)
 		(net
-			(code "19")
+			(code "21")
 			(name "/V_MOTOR")
 			(class "Default")
 			(node
@@ -2528,7 +2892,7 @@
 			)
 		)
 		(net
-			(code "20")
+			(code "22")
 			(name "unconnected-(U3-NC-Pad4)")
 			(class "Default")
 			(node
@@ -2539,7 +2903,7 @@
 			)
 		)
 		(net
-			(code "21")
+			(code "23")
 			(name "unconnected-(U4-TD-Pad4)")
 			(class "Default")
 			(node

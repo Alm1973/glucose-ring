@@ -1,0 +1,48 @@
+(footprint "ChargePad_2x2mm"
+	(version 20241229)
+	(generator "glucose-ring")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(attr smd)
+	(descr "Exposed 2 x 2 mm gold pad for a pogo-pin charging dock. No paste layer: this pad is a contact surface, not a solder joint. Specify ENIG so it does not corrode against a spring contact.")
+	(property "Reference" "J**"
+		(at 0 -2.20 0)
+		(layer "F.SilkS")
+		(uuid "3c9d7671-4469-4949-8d0f-f3dd1cc91571")
+		(effects
+			(font
+				(size 0.7 0.7)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "ChargePad_2x2mm"
+		(at 0 2.20 0)
+		(layer "F.Fab")
+		(uuid "487d5cce-0117-4f80-9c65-19f98e3e2d95")
+		(effects
+			(font
+				(size 0.7 0.7)
+				(thickness 0.12)
+			)
+		)
+		(hide yes)
+	)
+	(fp_rect
+		(start -1.3 -1.3)
+		(end 1.3 1.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "d2bc647e-a068-4b1a-ba16-fdd70a0b259c")
+	)
+	(pad "1" smd rect
+		(at 0 0)
+		(size 2.0 2.0)
+		(layers "F.Cu" "F.Mask")
+		(uuid "8d7d0b79-5197-4311-a6c3-5f7b240086c6")
+	)
+)

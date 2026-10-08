@@ -32,7 +32,9 @@ would be a plausible-looking error that survives review.
 | C5 | 0.1 uF 0402 | — | DW01A |
 | C6 | 1 uF 0402 | — | LDO output |
 | BT1 | LiPo, ~30 mAh, 16 x 8 x 2.5 mm | — | bare cell (protection is on-board) |
-| J1,J2 | gold pads | — | charge contacts for a pogo dock |
+| J1,J2 | 2 x 2 mm gold pads | — | charge contacts for a pogo dock. ENIG, no paste. |
+| J3 | USB-C receptacle, 16P | — | **not populated** — pads only, in case BLE DFU misbehaves |
+| R6,R7 | 5.1 k, 0402 | — | USB-C CC pulldowns. Without them a USB-C source supplies nothing. |
 | TP1-4 | test pads | — | SWD |
 
 ## Nets
@@ -72,7 +74,9 @@ the bootloader.
 
 | Net | Connects |
 |---|---|
-| `VCHG` | J1 ; D2 anode |
+| `VCHG` | J1 ; D2 anode ; J3 VBUS (A4, A9, B4, B9) |
+| `USB_CC1` | J3 A5 ; R6 to `GND` |
+| `USB_CC2` | J3 B5 ; R7 to `GND` |
 | `VCHG_IN` | D2 cathode ; U2 VDD ; C4 |
 | `CHG_STAT` | U2 STAT (open drain) ; U1 **P0.17** |
 | `PROG` | U2 PROG ; R3 to `GND` |

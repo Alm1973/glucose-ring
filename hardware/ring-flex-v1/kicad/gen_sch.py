@@ -118,8 +118,22 @@ part("Q1A", "Device", "Q_NMOS", "FS8205A Q1 (discharge)", 180, 200, {"G": "DW_OD
 part("Q1B", "Device", "Q_NMOS", "FS8205A Q2 (charge)", 220, 200, {"G": "DW_OC", "S": "GND", "D": "Q1_MID"}, fp="Package_TO_SOT_SMD:SOT-23-6")
 part("C2", "Device", "C", "10uF", 255, 205, {"1": "VBAT", "2": "GND"}, fp="Capacitor_SMD:C_0805_2012Metric")
 # --- contacts and test points
-part("J1", "Connector", "TestPoint", "charge pad +", 15, 90, {"1": "VCHG"}, fp="TestPoint:TestPoint_Pad_D1.0mm")
-part("J2", "Connector", "TestPoint", "charge pad -", 35, 90, {"1": "GND"}, fp="TestPoint:TestPoint_Pad_D1.0mm")
+part("J1", "Connector", "TestPoint", "charge pad +", 15, 90, {"1": "VCHG"},
+     fp="ring-flex-v1:ChargePad_2x2mm")
+part("J2", "Connector", "TestPoint", "charge pad -", 35, 90, {"1": "GND"},
+     fp="ring-flex-v1:ChargePad_2x2mm")
+# USB-C, laid out but NOT populated. It is insurance for bring-up: if BLE DFU
+# fights back, populating this gives the UF2/serial path the XIAO has today.
+# CC1 and CC2 need their 5.1k pulldowns or a USB-C source supplies nothing.
+part("J3", "Connector", "USB_C_Receptacle_PowerOnly_24P", "USB-C (DNP)", 35, 40, {
+    "A1": "GND", "A12": "GND", "B1": "GND", "B12": "GND", "SH": "GND",
+    "A4": "VCHG", "A9": "VCHG", "B4": "VCHG", "B9": "VCHG",
+    "A5": "USB_CC1", "B5": "USB_CC2"},
+     fp="Connector_USB:USB_C_Receptacle_HCTL_HC-TYPE-C-16P-01A")
+part("R6", "Device", "R", "5.1k", 75, 35, {"1": "USB_CC1", "2": "GND"},
+     fp="Resistor_SMD:R_0402_1005Metric")
+part("R7", "Device", "R", "5.1k", 90, 35, {"1": "USB_CC2", "2": "GND"},
+     fp="Resistor_SMD:R_0402_1005Metric")
 for i, (ref, net) in enumerate([("TP1","SWDIO"),("TP2","SWCLK"),("TP3","VBAT"),("TP4","GND")]):
     part(ref, "Connector", "TestPoint", net, 235 + i*15, 105, {"1": net},
          fp="TestPoint:TestPoint_Pad_D1.0mm")
@@ -127,7 +141,7 @@ for i, (ref, net) in enumerate([("TP1","SWDIO"),("TP2","SWCLK"),("TP3","VBAT"),(
 # VBAT and V_MOTOR are already driven (charger VBAT pin, LDO VOUT), so a flag
 # there would be two power outputs on one net. DW_VCC arrives through R4 and
 # CELL_N is the cell's own negative, neither of which has a driving pin.
-for i, (net, x) in enumerate([("GND", 270), ("VCHG_IN", 285), ("DW_VCC", 300), ("CELL_N", 315)]):
+for i, (net, x) in enumerate([("GND", 270), ("VCHG_IN", 285), ("DW_VCC", 300), ("CELL_N", 315), ("VCHG", 330)]):
     part("#FLG%02d" % (i+1), "power", "PWR_FLAG", "PWR_FLAG", x, 155, {"1": net})
 
 # ---- emit

@@ -20,8 +20,11 @@ C4,1,ceramic,0402,1uF,charger input,
 C5,1,ceramic,0402,0.1uF,DW01A,
 C6,1,ceramic,0402,1uF,LDO output,
 BT1,1,LiPo cell ~30mAh,16x8x2.5mm,3.7V,battery,"bare cell - protection is on-board. Now the thickest part at 2.5mm; sets band thickness. Needs UN38.3 paperwork."
-J1,1,gold pad,,,charge contact +,for a pogo-pin dock
-J2,1,gold pad,,,charge contact -,
+J1,1,gold pad 2x2mm,ring-flex-v1:ChargePad_2x2mm,,charge contact +,"ENIG, no paste - a contact surface, not a solder joint"
+J2,1,gold pad 2x2mm,ring-flex-v1:ChargePad_2x2mm,,charge contact -,"ENIG, no paste"
+J3,0,USB-C receptacle 16P,Connector_USB:USB_C_Receptacle_HCTL_HC-TYPE-C-16P-01A,,USB-C charge (DO NOT POPULATE),"pads only. Insurance if BLE DFU misbehaves. ~3.2mm tall - would become the thickest part if ever fitted."
+R6,1,resistor,0402,5.1k,USB-C CC1 pulldown,"required or a USB-C source supplies no power"
+R7,1,resistor,0402,5.1k,USB-C CC2 pulldown,required
 TP1,1,test pad,,,SWDIO,
 TP2,1,test pad,,,SWCLK,
 TP3,1,test pad,,,VBAT,

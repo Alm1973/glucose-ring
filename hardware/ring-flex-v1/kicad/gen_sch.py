@@ -83,7 +83,8 @@ part("U1", "ring-flex-v1", "MDBT50Q-1MV2", "MDBT50Q-1MV2", 60, 60, {
     "P5": "CHG_STAT", "P6": "SWDIO", "P7": "SWCLK"})
 # --- motor stage
 part("Q2", "Device", "Q_NMOS", "AO3400A", 160, 60, {"G": "MOTOR_GATE", "D": "MOTOR_SW", "S": "GND"}, fp="Package_TO_SOT_SMD:SOT-23")
-part("M1", "Motor", "Motor_DC", "coin ERM 10x2.1mm", 160, 30, {"1": "V_MOTOR", "2": "MOTOR_SW"})
+part("M1", "Motor", "Motor_DC", "NFP-C1020 10x2.0mm ERM", 160, 30, {"1": "V_MOTOR", "2": "MOTOR_SW"},
+     fp="ring-flex-v1:Motor_Coin_10mm_WirePads")
 # D1 flyback: cathode (pin 1 = K) to the supply, anode to the switched node
 part("D1", "Device", "D_Schottky", "BAT54W", 200, 45, {"1": "V_MOTOR", "2": "MOTOR_SW"}, fp="Diode_SMD:D_SOD-323")
 part("R1", "Device", "R", "10k", 130, 90, {"1": "MOTOR_GATE", "2": "GND"}, fp="Resistor_SMD:R_0402_1005Metric")
@@ -104,7 +105,8 @@ part("C3", "Device", "C", "4.7uF", 85, 165, {"1": "VBAT", "2": "GND"}, fp="Capac
 # D2 reverse-polarity guard: anode on the contact, cathode feeding the charger
 part("D2", "Device", "D_Schottky", "BAT54W", 15, 110, {"1": "VCHG_IN", "2": "VCHG"}, fp="Diode_SMD:D_SOD-323")
 # --- cell and protection (DW01A + FS8205A back-to-back FETs, common source)
-part("BT1", "Device", "Battery_Cell", "LiPo ~30mAh", 55, 205, {"1": "VBAT", "2": "CELL_N"})
+part("BT1", "Device", "Battery_Cell", "LiPo ~30mAh 16x8x2.5", 55, 205, {"1": "VBAT", "2": "CELL_N"},
+     fp="ring-flex-v1:Battery_LiPo_16x8_WirePads")
 part("U4", "Battery_Management", "DW01A", "DW01A", 125, 205, {
     "5": "DW_VCC", "6": "CELL_N", "1": "DW_OD", "3": "DW_OC", "2": "GND", "4": None},
      fp="Package_TO_SOT_SMD:SOT-23-6")

@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/shauryakhidake/projects/glucose-ring/hardware/ring-flex-v1/kicad/ring-flex-v1.kicad_sch")
-		(date "2026-10-07T19:41:14")
+		(date "2026-10-07T20:04:42")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
@@ -56,11 +56,11 @@
 	(components
 		(comp
 			(ref "BT1")
-			(value "LiPo ~30mAh")
+			(value "LiPo ~30mAh 16x8x2.5")
+			(footprint "ring-flex-v1:Battery_LiPo_16x8_WirePads")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "ring-flex-v1:Battery_LiPo_16x8_WirePads")
 				(field
 					(name "Datasheet")
 				)
@@ -89,7 +89,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b76d36d2-6bd4-4b77-bcec-9a9df048655a")
+			(tstamps "f24ad2d3-bde5-4356-bbe5-37416a902328")
 			(units
 				(unit
 					(name "A")
@@ -143,7 +143,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "56a5828a-ba5e-4794-9876-c1d866d7d232")
+			(tstamps "d35d1723-7a19-4b06-845d-06a24e327e42")
 			(units
 				(unit
 					(name "A")
@@ -197,7 +197,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "28d49722-83f2-46e4-bdb2-eefd7a438788")
+			(tstamps "d13e958f-675f-44fc-a1b7-f54db560c301")
 			(units
 				(unit
 					(name "A")
@@ -251,7 +251,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3211a323-3ed2-45b5-8cd0-5c477163d9ad")
+			(tstamps "f042c176-0bb4-4c90-b950-ec079ab8c2a1")
 			(units
 				(unit
 					(name "A")
@@ -305,7 +305,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "33d4bec7-3188-465f-80a4-7e13e3635a54")
+			(tstamps "df47c5a8-0fdc-4584-aa00-61ba207712fe")
 			(units
 				(unit
 					(name "A")
@@ -359,7 +359,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "5ccb3892-219c-4ee1-ad77-b71272decb4c")
+			(tstamps "bd0a0d10-d6b5-45cb-8e50-b72b2adc8983")
 			(units
 				(unit
 					(name "A")
@@ -413,7 +413,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b5cca99f-8d35-4e4a-bf31-6cccba4f641f")
+			(tstamps "fa1a4040-9fac-4af3-897e-5c574a33a6fd")
 			(units
 				(unit
 					(name "A")
@@ -467,7 +467,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "1df857f7-54fc-41f0-8ded-d466c3e28378")
+			(tstamps "39e7444b-2f1e-4b5f-b858-d5afd032fbd0")
 			(units
 				(unit
 					(name "A")
@@ -521,7 +521,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "0a868f1e-8a6b-454e-8751-336d6d0294ce")
+			(tstamps "c2e2b00e-635b-453a-9d57-7bad5253deca")
 			(units
 				(unit
 					(name "A")
@@ -575,7 +575,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "16c8e733-a8d1-45b4-81e5-46778f455b62")
+			(tstamps "1b188265-d3a4-4008-b41e-6c0a283f1c01")
 			(units
 				(unit
 					(name "A")
@@ -626,7 +626,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "1fbf5986-f1a3-48be-ba1f-3cef1409d7b9")
+			(tstamps "285c22b5-db1f-458b-8faa-a2386a19d271")
 			(units
 				(unit
 					(name "A")
@@ -640,11 +640,11 @@
 		)
 		(comp
 			(ref "M1")
-			(value "coin ERM 10x2.1mm")
+			(value "NFP-C1020 10x2.0mm ERM")
+			(footprint "ring-flex-v1:Motor_Coin_10mm_WirePads")
 			(fields
 				(field
-					(name "Footprint")
-				)
+					(name "Footprint") "ring-flex-v1:Motor_Coin_10mm_WirePads")
 				(field
 					(name "Datasheet")
 				)
@@ -677,7 +677,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f96d0cac-229c-4a00-9933-78fbff0ddc74")
+			(tstamps "01f88315-76d4-4bb4-8561-7ba706eac909")
 			(units
 				(unit
 					(name "A")
@@ -727,7 +727,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b18026b6-ae7b-45b2-aa5b-1ee260d8b84f")
+			(tstamps "4bd006dc-32ef-498c-967e-b96b1ffe7e6f")
 			(units
 				(unit
 					(name "A")
@@ -780,7 +780,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cc1e6262-b847-4f1c-9b93-2be8a96c6e8c")
+			(tstamps "5da09a93-a1d9-47ab-82cd-e113d5702ea2")
 			(units
 				(unit
 					(name "A")
@@ -833,7 +833,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "183e8799-78c9-4f0b-9277-45d5e5ac9a95")
+			(tstamps "90d4fe8d-2606-4835-bdb9-0aceab22d6d5")
 			(units
 				(unit
 					(name "A")
@@ -890,7 +890,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "ca785af9-36a0-4ccb-9a7d-1e916c8fda1e")
+			(tstamps "c58203d9-8218-4467-bd89-7f3de8cfb500")
 			(units
 				(unit
 					(name "A")
@@ -944,7 +944,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "82ad00a3-09da-49d3-b329-cbd7549e977b")
+			(tstamps "db5c5d01-d957-4d31-9c7d-fb70e216b225")
 			(units
 				(unit
 					(name "A")
@@ -998,7 +998,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "7bbe40be-0472-449e-86a3-ec2f13134e7a")
+			(tstamps "d936fc3c-9da0-4895-8cb5-6254ab87053d")
 			(units
 				(unit
 					(name "A")
@@ -1052,7 +1052,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "16912d0f-9d66-43ea-919d-253789216c24")
+			(tstamps "6ec53e5b-482b-44e0-807e-e8403e69ef55")
 			(units
 				(unit
 					(name "A")
@@ -1106,7 +1106,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "17754ff0-10e1-42b3-8be6-43a835c6e74b")
+			(tstamps "15ffba8e-8784-4061-98c7-621682ce2ff4")
 			(units
 				(unit
 					(name "A")
@@ -1157,7 +1157,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d1eec62a-017a-4331-b241-308f4a0b6061")
+			(tstamps "dc23ff23-ee33-45ca-9f83-8e78bcdfb7fd")
 			(units
 				(unit
 					(name "A")
@@ -1208,7 +1208,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "07db4c38-d5f5-4697-adaa-47fbe3d6735b")
+			(tstamps "820ecb7d-5f53-464d-8250-cf78b235184d")
 			(units
 				(unit
 					(name "A")
@@ -1259,7 +1259,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "5eb7f3fc-638a-4a5b-ad00-6ba884c52048")
+			(tstamps "60bd9a89-81db-496b-81c7-8429c59adb5e")
 			(units
 				(unit
 					(name "A")
@@ -1302,7 +1302,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2026b20d-b9e5-4ed1-95c3-ed65599063ce")
+			(tstamps "1be4ff77-6ad1-468e-a44c-48067fce2cab")
 			(units
 				(unit
 					(name "A")
@@ -1371,7 +1371,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b2737808-4afc-4eec-bb48-a282c2a7a3e8")
+			(tstamps "da341939-e9ef-4868-8afb-b512bee09afa")
 			(units
 				(unit
 					(name "A")
@@ -1434,7 +1434,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "5c405f66-5422-4c80-9e95-12d7ce7e07f6")
+			(tstamps "e42c4434-8922-4407-9222-b3c700f8f4ad")
 			(units
 				(unit
 					(name "A")
@@ -1497,7 +1497,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "11885fc3-65b2-41ba-9e43-275e8aefcb38")
+			(tstamps "cf827eff-19ee-4b1a-9ea2-e6f918c0c79f")
 			(units
 				(unit
 					(name "A")
